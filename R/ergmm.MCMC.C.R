@@ -1,0 +1,260 @@
+### ergmm.MCMC.C: This is a pretty minimal R function that prepares the R data to be
+### passed into the C function, calls the C function to estimate the latent space model,
+### and then puts the C data back into readable R storage. The hope is to separate the
+### part specific to interfacing with C from the rest of the program.
+### It does NOT come up with initial values --- those must be passed to it.
+
+### If present, parameters 'samplesize' and 'interval' override those in 'control'.
+
+### Also note that it does NOT perform the burnin. To perform the burnin,
+### pass samplesize=1 and interval=burnin, and then pass the last (and only) iteration
+### to the actual run.
+
+
+ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=NULL){
+  ## Note that passing NULL as a parameter will cause the corresponding parameter in
+  ## latent_MCMC_wrapper(...) to be set to NULL when NULL is coerced to double.
+  ## (as.double(NULL)==double(0))
+
+  Ym <-getYm(model$Yg,model$response)
+  
+  n<-model$Yg$gal$n
+  d<-model$d
+  G<-model$G
+  p<-model$p
+
+  if(is.null(samplesize)) samplesize<-control$samplesize
+  if(is.null(interval)) interval<-control$interval
+  
+  if(length(prior$beta.mean)==1) prior$beta.mean<-rep(prior$beta.mean,p)
+  if(length(prior$beta.var)==1) prior$beta.var<-rep(prior$beta.var,p)
+
+  iconsts<-dconsts<-NULL
+
+
+  ## Figure out the design matrix.
+  observed<-observed.dyads(model$Yg)
+
+  if((observed==(diag(n)==0) && is.directed(model$Yg)) ||
+     (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
+    observed<-NULL
+
+  familyID<-switch(model$family,
+                   Bernoulli=0,
+                   binomial=1,
+                   Poisson=2)
+
+  ## Sanity checks: the following block of code checks that all dimensionalities and
+  ## dimensions are correct, and those optional parameters that are required by the presence
+  ## of other optional parameters are present.
+
+  if(familyID==1){
+    iconsts=model$fam.par$trials
+    if(is.null(iconsts))
+      stop("Binomial family requires parameter n.")
+  }
+  
+  for(i in 1:p)
+    if(!all(dim(model$X[[i]])==c(n,n))) stop("Incorrect size for covariate matrices.")
+
+  if(!is.null(start$Z)){
+    if(!all(dim(start$Z)==c(n,d))) stop("Incorrect size for the starting latent positions.")
+    if(is.null(control$Z.delta)) stop("Need Z-move proposal standard deviation (control$Z.delta).")
+    if(is.null(control$Z.scl.delta)) stop("Need Z-scale proposal standard deviation (control$Z.delta).")
+    if(G > 0){
+      if(length(start$Z.K)!=n) stop("Incorrect length for the vector of starting cluster assignments.")
+      if(length(start$Z.pK)!=G) stop("Incorrect length for the vector of starting cluster probabilities.")
+      if(!all(dim(start$Z.mean)==c(G,d))) stop("Incorrect size for the starting cluster means.")
+      if(length(start$Z.var)!=G) stop("Incorrect size for the starting cluster variances.")
+    } else{
+       if(length(start$Z.var)!=1) stop("Missing starting latent space variance.")
+    }
+  }  
+  if(length(start$beta)!=p) stop("Incorrect length for the starting beta vector.")
+  if(length(prior$beta.mean)!=p) stop("Incorrect length for the prior beta mean vector.")
+  if(length(prior$beta.var)!=p) stop("Incorrect length for the prior beta standard deviation vector.")
+
+  if(model$sender || model$receiver || model$sociality){
+    if(is.null(control$RE.delta)) stop("Need random effect proposal sd.")
+  }
+
+  if(model$sender){
+    if(length(start$sender)!=n) stop("Incorrect length for the vector of starting sender effects.")
+    if(is.null(start$sender.var)) stop("Need starting sender variance.")
+    if(is.null(prior$sender.var)) stop("Need sender prior variance.")
+    if(is.null(prior$sender.var.df)) stop("Need sender prior variance df.")
+  }
+  if(model$receiver){
+    if(length(start$receiver)!=n) stop("Incorrect length for the vector of starting receiver effects.")
+    if(is.null(start$receiver.var)) stop("Need starting receiver variance.")
+    if(is.null(prior$receiver.var)) stop("Need receiver prior variance.")
+    if(is.null(prior$receiver.var.df)) stop("Need receiver prior variance df.")
+  }
+
+  if(model$sociality){
+    if(length(start$sociality)!=n) stop("Incorrect length for the vector of starting sociality effects.")
+    if(is.null(start$sociality.var)) stop("Need starting sociality variance.")
+    if(is.null(prior$sociality.var)) stop("Need sociality prior variance.")
+    if(is.null(prior$sociality.var.df)) stop("Need sociality prior variance df.")
+  }
+  ## End Sanity checks.
+
+  RESERVED<-2
+  
+#  cat("Entering C routine... ")
+  Cret <- .C("ERGMM_MCMC_wrapper",
+             
+             samplesize=as.integer(samplesize),
+             interval=as.integer(interval),
+             
+             n=as.integer(n),
+             p=as.integer(p),
+             d=as.integer(d),
+             G=as.integer(G), 
+             
+             dir=as.integer(is.directed(model$Yg)),
+             vY=as.integer(Ym),
+             family=as.integer(familyID),
+             iconsts=as.integer(iconsts),
+             dconsts=as.double(dconsts),
+             
+             vX=as.double(unlist(model$X)),  
+             
+             llk.mcmc=double(samplesize+RESERVED),
+             lpZ.mcmc=if(!is.null(start$Z))double(samplesize+RESERVED) else double(0),
+             lpbeta.mcmc=if(p>0)double(samplesize+RESERVED) else double(0),
+             lpRE.mcmc=if(model$sender||model$sociality||model$receiver)double(samplesize+RESERVED) else double(0),
+             lpLV.mcmc=if(!is.null(start$Z))double(samplesize+RESERVED) else double(0),
+             lpREV.mcmc=if(model$sender || model$sociality || model$receiver)double(samplesize+RESERVED) else double(0),
+             
+             Z=as.double(start$Z),
+             
+             Z.pK=if(G > 0) as.double(start$Z.pK) else double(0),
+             Z.mean=if(G > 0) as.double(start$Z.mean) else double(0),
+             Z.var=as.double(start$Z.var),
+             Z.K=if(G > 0) as.integer(start$Z.K) else integer(0),
+             
+             prior.Z.var=as.double(prior$Z.var),
+             prior.Z.mean.var=if(G > 0) as.double(prior$Z.mean.var) else double(0),
+             prior.Z.pK=if(G > 0) as.double(prior$Z.pK) else double(0),
+             prior.Z.var.df=as.double(prior$Z.var.df),
+             
+             Z.mcmc = double((samplesize+RESERVED)*n*d),
+             Z.rate = if(d > 0) double((samplesize+RESERVED)) else double(0),
+             Z.rate.move.all = if(d > 0) double((samplesize+RESERVED)) else double(0),
+             
+             K.mcmc = if(G > 0) integer(n*(samplesize+RESERVED)) else integer(0),
+             Z.pK.mcmc = double(G*(samplesize+RESERVED)),
+             mu.mcmc = double(d*G*(samplesize+RESERVED)),
+             Z.var.mcmc = double(max(G,d>0)*(samplesize+RESERVED)),
+             
+             start.beta=as.double(start$beta),
+             prior.beta.mean=as.double(prior$beta.mean),
+             prior.beta.var=as.double(prior$beta.var),
+             beta.mcmc=double((samplesize+RESERVED)*p),
+             beta.rate=double((samplesize+RESERVED)),
+             
+             start.sender=if(model$sociality) as.double(start$sociality) else as.double(start$sender),
+             start.receiver=as.double(start$receiver),
+             sender.var=if(model$sociality) as.double(start$sociality.var) else as.double(start$sender.var),
+             receiver.var=as.double(start$receiver.var),
+             
+             prior.sender.var=as.double(prior$sender.var),
+             prior.sender.var.df=as.double(prior$sender.var.df),
+             prior.receiver.var=as.double(prior$receiver.var),
+             prior.receiver.var.df=as.double(prior$receiver.var.df),
+             
+             sender.mcmc=if(model$sender||model$sociality) double(n*(samplesize+RESERVED)) else double(0),
+             receiver.mcmc=if(model$receiver) double(n*(samplesize+RESERVED)) else double(0),
+             sender.var.mcmc=if(model$sender || model$sociality) double((samplesize+RESERVED)) else double(0),
+             receiver.var.mcmc=if(model$receiver) double((samplesize+RESERVED)) else double(0),
+             
+             lock.RE=model$sociality,
+             observed=as.integer(observed),
+
+             deltas=with(control,as.numeric(c(Z.delta,Z.tr.delta,Z.scl.delta,
+               RE.delta,RE.shift.delta,
+               rep(beta.delta,length.out=p)))),
+             
+             PACKAGE="latentnet")
+#  cat("Finished C routine.\n")
+  
+  samples<-list(## MCMC Samples
+                llk=Cret$llk.mcmc,
+                lpZ=Cret$lpZ.mcmc,
+                lpbeta=Cret$lpbeta.mcmc,
+                lpRE=Cret$lpRE.mcmc,
+                lpLV=Cret$lpLV.mcmc,
+                lpREV=Cret$lpREV.mcmc,
+                beta=matrix(Cret$beta.mcmc,ncol=p),
+                beta.rate=Cret$beta.rate,
+                Z.K = if(G>0) matrix(Cret$K.mcmc,ncol=n),
+                Z.mean = if(G>0) array(Cret$mu.mcmc,dim=c((samplesize+RESERVED),G,d)),
+                Z.var = if(d>0) matrix(Cret$Z.var.mcmc,ncol=max(G,1)),
+                Z.pK = if(G>0) matrix(Cret$Z.pK.mcmc,ncol=G),
+                Z=if(d>0)array(Cret$Z.mcmc,dim=c((samplesize+RESERVED),n,d)),
+                Z.rate=if(d>0) Cret$Z.rate, Z.rate.move.all=if(d>0) Cret$Z.rate.move.all,
+                sender=if(model$sender && !model$sociality) matrix(Cret$sender.mcmc,ncol=n),
+                receiver=if(model$receiver) matrix(Cret$receiver.mcmc,ncol=n),
+                sociality=if(model$sociality) matrix(Cret$sender.mcmc,ncol=n),
+                sender.var=if(model$sender && !model$sociality) Cret$sender.var.mcmc,
+                receiver.var=if(model$receiver) Cret$receiver.var.mcmc,
+                sociality.var=if(model$sociality) Cret$sender.var.mcmc
+                )
+  class(samples)<-"ergmm.par.list"
+  
+  
+  mcmc.mle<-samples[[1]]
+  mcmc.pmode<-samples[[2]]
+  samples<-del.iteration(samples,1:2)
+  
+  
+  ## Construct the list (of lists) for return.
+  out<-list(samples=samples,
+            mcmc.mle=mcmc.mle,
+            mcmc.pmode=mcmc.pmode)
+
+  out
+}
+
+
+
+ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l, samplesize.l=NULL, interval.l=NULL){
+  l.sizes<-c(length(model.l),
+             length(start.l),
+             length(prior.l),
+             length(control.l),
+             length(samplesize.l),
+             length(interval.l))
+  l.sizes<-l.sizes[l.sizes>0]
+  param.sets<-max(l.sizes)
+  if(any(l.sizes!=param.sets & l.sizes!=1)) stop("Length of each input list must be either 1 or a single other number.")
+
+  require(snowFT)
+  mcmc.out.l<-performParallel(threads,rep(1:param.sets,reps),
+                              ergmm.MCMC.snowFT.slave,
+                              lib=path.to.me,
+                              model.l=model.l,
+                              start.l=start.l,
+                              prior.l=prior.l,
+                              control.l=control.l,
+                              samplesize.l=samplesize.l,
+                              interval.l=interval.l)
+  mcmc.mle<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
+                                         function(i) mcmc.out.l[[i]]$mcmc.mle$llk))]]$mcmc.mle
+  
+  result.list<-list(samples=list(),mcmc.mle=mcmc.mle)
+  for(i in 1:length(mcmc.out.l)) result.list$samples[[i]]<-mcmc.out.l[[i]]$samples
+  result.list
+}
+
+ergmm.MCMC.snowFT.slave<-function(i, lib, model.l, start.l, prior.l, control.l, samplesize.l=NULL, interval.l=NULL){
+  library(latentnet,lib=lib)
+  ergmm.MCMC.C(model.l[[min(length(model.l),i)]],
+               start.l[[min(length(start.l),i)]],
+               prior.l[[min(length(prior.l),i)]],
+               control.l[[min(length(control.l),i)]],
+               samplesize.l[[min(length(samplesize.l),i)]],
+               interval.l[[min(length(interval.l),i)]])
+}
+
