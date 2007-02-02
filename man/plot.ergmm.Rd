@@ -1,0 +1,117 @@
+\name{plot.ergmm}
+\alias{plot.ergmm}
+\title{Plotting Method for class ERGMM}
+\usage{
+\method{plot}{ergmm}(ergmm.fit, \dots, vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
+                          use.par="mkl",
+                          main = NULL, xlab=NULL, ylab=NULL, xlim=NULL,ylim=NULL,
+                          object.scale=formals(plot.network.default)$object.scale,
+                          pad=formals(plot.network.default)$pad,
+                          cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
+                          vertex.col=cluster.col[1], print.formula=TRUE,
+                          edge.col=8,
+                          pie = FALSE,
+                          
+                          rand.eff=NULL,
+                          plot.means=TRUE,plot.vars=TRUE,
+                          jitter1D=1,curve1D=TRUE,suppress.center=FALSE)
+
+}
+\description{
+  \code{\link{plot.ergmm}} is the plotting method for \code{\link[=ergmm.object]{ergmm}} objects.  For
+  latent models, this plots the minimum Kullback-Leibler positions by 
+  default.  The maximum likelihood, posterior mean, posterior mode, or a
+  particular iteration's or configuration's positions
+  can be used instead, or pie charts of the posterior
+  probabilities of cluster membership can be shown. See \code{\link{ergmm}} for more information on how to fit these
+  models.
+}
+\arguments{
+  \item{ergmm.fit}{an R object of class \code{\link[=ergmm.object]{ergmm}}.
+    See documentation for \code{\link{ergmm}}.}
+
+  \item{use.par}{Character vector, integer, or an object of class
+    \code{\link[=ergmm.parobject]{ergmm.par}} that specifies
+    the point estimates to be used. Can be one of the follwoing:
+    \describe{
+      \item{"mkl"}{This is the defult. Plots the Minimum Kulblack-Leibler
+	divergence values.}
+      \item{"start"}{Plots the starting configuration.}
+      \item{"mle"}{Plots the maximum likelihood estimates. Random effects
+	are treated as fixed.}
+      \item{"pmean"}{Plots the posterior means.}
+      \item{"pmode"}{Plots the conditional posterior mode.}
+      \item{\code{\link[=ergmm.parobject]{ergmm.par}}}{Plots the configuration contained in \code{ergmm.fit}.}
+      \item{integer}{Plots the configuration of \code{ergm.fit}'th
+	stored MCMC iteration.}
+    }
+  \item{pie}{For latent clustering models, each node is drawn as a pie
+    chart representing the probabilities of cluster membership.}
+  \item{rand.eff}{A character vector selecting "sender", "receiver",
+    "sociality", or "total" random effects. Each vertex is scaled such that its area is proportional
+    to the odds ratio due to its selected random effect. }
+  \item{plot.means}{Whether cluster means are plotted for latent cluster
+    models. The "+" character is used. Defaults to \code{TRUE}.}
+  \item{plot.vars}{Whether circles with radius equal to the square root
+    of posterior latent or intracluster variance estimates are
+    plotted. Defaults to \code{TRUE}.}
+  \item{jitter1D}{For 1D latent space fits, it often helps to jitter the
+    positions for visualization. This option controls the amount of
+    jitter.}
+  \item{curve1D}{Controls whether the edges in 1D latent space fits are
+    plotted as curves. Defaults to \code{TRUE}.}
+  \item{suppress.center}{Suppresses the plotting of "+" at the
+    origin. Defaults to \code{FALSE}.}
+  \item{cluster.col}{A vector of colors used to distinguish clusters in
+    a latent cluster model.}
+  \item{vertex.cex, vertex.col, etc.}{See
+    \code{\link{plot.network}}.}
+  
+  \item{\dots}{Other optional arguments passed to the \code{\link{plot.network}} function.}
+}
+
+\details{
+  Plots the results of an ergmm fit.
+  
+  More information can be found by looking at the documentation of
+  \code{\link{ergmm}}.
+}
+\value{NULL
+
+}
+\seealso{ergmm, network, plot.network, plot, ergmm.add.contours}
+\examples{
+\dontrun{
+#
+# Using Sampson's Monk data, lets fit a 
+# simple latent position model
+#
+data(sampson)
+#
+# Get the group labels
+#
+samp.labs <- substr(get.vertex.attribute(samplike,"group"),1,1)
+#
+samp.fit <- ergmm(samplike ~ latent(d=2))
+#
+# See if we have convergence in the MCMC
+mcmc.diagnostics(samp.fit)
+#
+# Plot the fit
+#
+plot(samp.fit,label=samp.labs, vertex.col="group")
+#
+# Using Sampson's Monk data, lets fit a latent clustering model
+#
+samp.fit <- ergmm(samplike ~ latent(d=2, G=3))
+#
+# See if we have convergence in the MCMC
+mcmc.diagnostics(samp.fit)
+#
+# Lets look at the goodness of fit:
+#
+plot(samp.fit,label=samp.labs, vertex.col="group")
+plot(samp.fit,pie=TRUE,label=samp.labs)
+}
+}
+\keyword{graphs}
