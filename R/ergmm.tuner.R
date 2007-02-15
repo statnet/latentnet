@@ -6,14 +6,18 @@ ergmm.tuner<-function(model, start, prior, control,verbose=FALSE,start.is.list=F
 
   if(!start.is.list) start<-list(start)
 
-  ctrl$samplesize<-control$tuning.runsize*with(model,
-                                               p+(network.size(Yg)+1)*(d*2+sender+receiver+sociality)+1)/threads
-  ctrl$interval<-1
+  ctrl$samplesize<-ceiling(control$tuning.runsize
+                           *with(model,
+                                 p+(network.size(Yg)+1)
+                                 *(d*2+sender+receiver+sociality)+1)
+                           /threads/ctrl$interval)
   ctrl$burnin<-0
 
-  next.point<-function(msjs,ldeltas){
-    keep<-msjs>median(msjs)
-    apply(ldeltas[keep,],2,weighted.mean,(msjs[keep]-median(msjs))+sqrt(.Machine$double.eps))
+  if(verbose) cat("Running",tuning.runs,"each with sample size",ctrl$samplesize,".\n")
+  
+  next.point<-function(gmmajs,ldeltas){
+    keep<-gmmajs>median(gmmajs)
+    apply(ldeltas[keep,],2,weighted.mean,(gmmajs[keep]-median(gmmajs))+sqrt(.Machine$double.eps))
   }
     
   if(threads<=1)
@@ -38,26 +42,26 @@ ergmm.tuner<-function(model, start, prior, control,verbose=FALSE,start.is.list=F
                                 rep(beta.delta,length.out=p))))
 
   ldeltas<-matrix(numeric(0),ncol=length(ldelta.start))
-  msjs<-numeric(0)
+  gmmajs<-numeric(0)
   
   for(i in 1:tuning.runs){
     if(i<floor(tuning.runs/4)) ldelta<-ldelta.start+rnorm(1,1)+rnorm(length(ldelta.start),0,1.5)
     else if(i==floor(tuning.runs/4)) ldelta<-ldelta.start
     else if(i%%4==0) ldelta<-ldelta+rnorm(1,.5)+rnorm(length(ldelta.start),0,1)
-    else ldelta<-next.point(msjs,ldeltas)
+    else ldelta<-next.point(gmmajs,ldeltas)
     
     ldeltas<-rbind(ldeltas,ldelta)
     
-    if(verbose) cat("i=",i,": delta=",paste(round(exp(ldelta),3),collapse=",")," ",sep="")
+    if(verbose>1) cat("i=",i,": delta=",paste(round(exp(ldelta),3),collapse=",")," ",sep="")
     
-    msjs<-c(msjs,opt.f(ldelta))
+    gmmajs<-c(gmmajs,opt.f(ldelta))
 
-    if(verbose) cat("msj=",msjs[length(msjs)],"\n",sep="")
+    if(verbose>1) cat("gmmaj=",gmmajs[length(gmmajs)],"\n",sep="")
   }
   
 
-  best.delta<-exp(next.point(msjs,ldeltas))
-  cat("Estimated optimal deltas=",paste(round(best.delta,3),collapse=","),"\n")
+  best.delta<-exp(next.point(gmmajs,ldeltas))
+  if(verbose) cat("Estimated optimal deltas=",paste(round(best.delta,3),collapse=","),"\n")
   
   list(Z.delta=best.delta[1],
        Z.tr.delta=best.delta[2],
@@ -68,7 +72,7 @@ ergmm.tuner<-function(model, start, prior, control,verbose=FALSE,start.is.list=F
 }
 
 run.proposal<-function(model, start, prior, tune.control){
-  msjump(model,ergmm.MCMC.C(model,start,prior,tune.control)$samples)
+  gmmajump(model,ergmm.MCMC.C(model,start,prior,tune.control)$samples)
 }
 
 run.proposal.snowFT<-function(threads,model,start.l,prior,tune.control){
@@ -85,15 +89,13 @@ run.proposal.snowFT.slave<-function(i,lib,model,start.l,prior,tune.control){
   library(latentnet,lib=lib)
   run.proposal(model,start.l[[min(length(start.l),i)]],prior,tune.control)
 }
- 
-msjump<-function(model,samples){
 
+
+gmmajump<-function(model,samples){
   Z.ref<-samples[[which.max(samples$llk)]]$Z
   samples<-proc.Z.mean(samples,Z.ref,FALSE)
-  S<-length(samples)
 
-  
-  y<-t(sapply(1:S,function(i){
+  y<-t(sapply(1:length(samples),function(i){
     l<-samples[[i]]
 
     ## Center random effects and latent space positions for the purpose of
@@ -125,13 +127,13 @@ msjump<-function(model,samples){
     o[is.nan(o)]<-0
     o
   }))
-
-  ## Compute median square jumps.
+  
+  ## Compute mean absolute jumps.
   dy<-diff(y)
-  msjs<-apply(abs(dy),2,mean)
+  gmmajs<-apply(abs(dy),2,mean)
   
   ## "Geometric Mean" criterion. Has the benefit of being insensitive
   ## to the overall scale of the parameters.
-  exp(mean(log(msjs)))
+  exp(mean(log(gmmajs)))
 }
 
