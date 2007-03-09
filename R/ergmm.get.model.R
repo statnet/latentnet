@@ -48,7 +48,7 @@ ergmm.build.model <- function(formula,response,family,fam.par,orthogonalize,prio
   if(orthogonalize && model$p>1)
     model$X<-GS.orth.matrix(model$X,observed.dyads(Yg))
 
-  for(name in prior){
+  for(name in names(prior)){
     model$prior[[name]]<-prior[[name]]
   }
 
