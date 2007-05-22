@@ -14,8 +14,6 @@
 #include <Rmath.h>
 #include "matrix_utils.h"
 
-#define FOUND 0
-#define NOTFOUND 1
 
 
 
@@ -99,6 +97,33 @@ double **Runpack_dmatrix(double *vA, unsigned int n, unsigned int m, double **As
   return(Aspace);
 }
 
+double **Runpack_dmatrixs(double *vA, unsigned int n, unsigned int m, double **Aspace, unsigned int sample_size){
+  if(!Aspace) Aspace = dmatrix(n,m); 
+  unsigned int i,j;
+  for(i=0;i<n;i++)
+    for(j=0;j<m;j++)
+      Aspace[i][j] = vA[(i+n*j)*sample_size];
+  return Aspace;
+}
+/* Deserializes a matrix from R into a vector.
+   Note that the "top" offset needs to already be applied to "va".
+ */
+double *Runpack_dvectors(double *va, unsigned int n, double *a, unsigned int sample_size){
+  if(!a) a=dvector(n);
+  unsigned int i;
+  for(i=0;i<n;i++)
+    a[i]=va[sample_size*i];
+  return a;
+}
+
+int *Runpack_ivectors(int *va, unsigned int n, int *a, unsigned int sample_size){
+  if(!a) a=ivector(n);
+  unsigned int i;
+  for(i=0;i<n;i++)
+    a[i]=va[sample_size*i];
+  return a;
+}
+
 /* Deserializes an (integer) array from R into a matrix.
    Note that the "top" offset needs to already be applied to "to".
  */
@@ -114,7 +139,7 @@ int **Runpack_imatrix(int *vA, unsigned int n, unsigned int m, int **Aspace){
 /* Serializes a matrix for returning to R.
    Note that the "top" offset needs to already be applied to "to".
  */
-void Rpack_dmatrix(double **A, unsigned int n, unsigned int m, double *to, unsigned int sample_size){
+void Rpack_dmatrixs(double **A, unsigned int n, unsigned int m, double *to, unsigned int sample_size){
   unsigned int i,j;
   for(i=0;i<n;i++)
     for(j=0;j<m;j++)
@@ -124,7 +149,7 @@ void Rpack_dmatrix(double **A, unsigned int n, unsigned int m, double *to, unsig
 /* Serializes a dvector into an array for returning to R.
    Note that the "top" offset needs to already be applied to "to".
  */
-void Rpack_dvector(double *a, unsigned int n, double *to, unsigned int sample_size){
+void Rpack_dvectors(double *a, unsigned int n, double *to, unsigned int sample_size){
   unsigned int i;
   for(i=0;i<n;i++)
     to[sample_size*i]=a[i];
@@ -133,7 +158,7 @@ void Rpack_dvector(double *a, unsigned int n, double *to, unsigned int sample_si
 /* Serializes an ivector into an array for returning to R.
    Note that the "top" offset needs to already be applied to "to".
  */
-void Rpack_ivector(int *a, unsigned int n, int *to, unsigned int sample_size){
+void Rpack_ivectors(int *a, unsigned int n, int *to, unsigned int sample_size){
   unsigned int i;
   for(i=0;i<n;i++)
     to[sample_size*i]=a[i];
@@ -296,7 +321,7 @@ void dmatrix_plus_scalar_times_matrix(double x, double **A, unsigned int n, unsi
   }
 }
 
-/* Computes AB, where A is na by ma and B is ma by mb */
+/* Computes C0+AB, where A is na by ma and B is ma by mb, and C0 is the initial contents of C. */
 void dmatrix_multiply(double **A,unsigned int na,unsigned int ma, double **B, unsigned int mb, 
 			  double **C)
 {
@@ -427,3 +452,101 @@ void dvector_scale_by(double *v, unsigned int n, double by){
   for(i=0;i<n;i++)
     v[i]*=by;
 }
+
+/* Thanks to Raphael Gottardo */
+/* Inverts a matrix "in place".
+   "workspace" must be an expendable block of memory of length (n*n*3+4*n)*sizeof(double)*/
+R_INLINE int inverse(double **x, int n, double **res, double *workspace)
+{
+  /** QR decomposition solve x*x=I **/
+  /** res contains the result **/
+
+  int i,j, info = 0, rank, *pivot, p;
+  double tol = 1.0E-7, *qraux, *work;
+  double *xt, *yt, *rest;
+  
+  qraux = workspace;
+  work  = qraux+n;
+  rest = work+2*n;
+  yt = rest+n*n;
+  xt = yt+n*n;
+  pivot = (int *) (xt+n*n);
+ 
+  for(i = 0; i < n; i++)
+    pivot[i] = i+1;
+  
+  /** Copy the matrix by column **/
+  for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+      xt[i*(n)+j]=x[j][i];
+  
+
+  p = n;
+  
+  F77_CALL(dqrdc2)(xt, &n, &n, &p, &tol, &rank,qraux, pivot, work);
+  
+  
+  /** Copy the matrix by column **/
+
+  for(i=0;i<n;i++)
+      for(j=0;j<n;j++)
+	yt[i*(n)+j]= j==i?1:0;
+  
+  F77_CALL(dqrcf)(xt, &n, &rank, qraux,yt, &n, rest, &info);
+  
+  /** Put back into a matrix **/
+  for(i=0;i<n;i++)
+    for(j=0;j<n;j++)
+      res[j][i]=rest[i*(n)+j];
+  return(rank==n? FOUND:NOTFOUND);
+}
+
+/* vectors is non zero if want eigen vectors returned.
+   length(EValues) = n
+   dim(EVectors) = n,n
+   "workspace" must be an expendable block of memory of length (n*n*2+n*3)*sizeof(double).
+*/
+R_INLINE int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors,double *workspace)
+{
+  int err=0,i=0,j=0;
+  /*
+  double *vA = dvector(n*n);
+  double *vEVectors = dvector(n*n);
+  double *l=dvector(n);
+  double *fv1 = dvector(n);
+  double *fv2 = dvector(n);
+  */
+  //  Workaround...
+  double *vA = workspace;
+  double *vEVectors = vA+n*n;
+  double *l=vEVectors+n*n;
+  double *fv1 = l+n;
+  double *fv2 = fv1+n;
+
+  /** Copy the matrix by column **/
+  /* make A into a vector to pass in*/
+  for(j=0;j<n;j++){
+    for(i=0;i<n;i++){
+      vA[(n*j)+i] = A[i][j];
+    }
+  }
+  
+  
+  /*  int F77_NAME(rs)(int *nm, int *n, double *a, double *w,
+      int *matz, double *z, double *fv1, double *fv2, int *ierr) */
+  F77_NAME(rs)(&n, &n, vA, l, &vectorsflag, vEVectors, fv1, fv2, &err);
+  
+  for(i=0;i<n;i++){
+    EValues[i] = l[n-1-i];
+  }  
+  
+  /* put A and EVectors into matrices to return */
+  for(i=0;i<n;i++){
+    for(j=0;j<n;j++){
+      EVectors[i][j] = vEVectors[i + (n-(j+1))*n];
+    }
+  } 
+  
+  return 0;
+}
+

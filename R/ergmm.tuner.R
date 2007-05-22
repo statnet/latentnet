@@ -1,4 +1,4 @@
-ergmm.tuner<-function(model, start, prior, control,verbose=FALSE,start.is.list=FALSE){
+ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
   ctrl<-control
   tuning.runs<-ctrl$tuning.runs
   threads<-control$threads
@@ -13,13 +13,8 @@ ergmm.tuner<-function(model, start, prior, control,verbose=FALSE,start.is.list=F
                            /threads/ctrl$interval)
   ctrl$burnin<-0
 
-  if(verbose) cat("Running",tuning.runs,"each with sample size",ctrl$samplesize,".\n")
+  if(control$verbose) cat("Making",tuning.runs,"tuning runs, each with sample size",ctrl$samplesize,".\n")
   
-  next.point<-function(gmmajs,ldeltas){
-    keep<-gmmajs>median(gmmajs)
-    apply(ldeltas[keep,],2,weighted.mean,(gmmajs[keep]-median(gmmajs))+sqrt(.Machine$double.eps))
-  }
-    
   if(threads<=1)
     opt.f<-function(ldelta){
       my.ctrl<-ctrl
@@ -37,38 +32,54 @@ ergmm.tuner<-function(model, start, prior, control,verbose=FALSE,start.is.list=F
   
 
 
+
+  ## This is a slightly modified Complex Search (as described by Biles
+  ## (1981)). I find that it works better than the gradient methods.
+  
   ldelta.start<-log(with(ctrl,c(Z.delta,Z.tr.delta,Z.scl.delta,
                                 RE.delta,RE.shift.delta,
                                 rep(beta.delta,length.out=p))))
 
-  ldeltas<-matrix(numeric(0),ncol=length(ldelta.start))
   gmmajs<-numeric(0)
+
+  ldelta.min<-ldelta.start-7
+  ldelta.max<-ldelta.start+7
+
+  ldeltas<-rbind(ldelta.start,t(sapply(1:ceiling(2*length(ldelta.start)-2),function(i) runif(length(ldelta.start),ldelta.min,ldelta.max))))
+
+  a.base<-0
+  a<-0
   
   for(i in 1:tuning.runs){
-    if(i<floor(tuning.runs/4)) ldelta<-ldelta.start+rnorm(1,1)+rnorm(length(ldelta.start),0,1.5)
-    else if(i==floor(tuning.runs/4)) ldelta<-ldelta.start
-    else if(i%%4==0) ldelta<-ldelta+rnorm(1,.5)+rnorm(length(ldelta.start),0,1)
-    else ldelta<-next.point(gmmajs,ldeltas)
+    if(dim(ldeltas)[1]>length(gmmajs)) ldelta<-ldeltas[length(gmmajs)+1,]
+    else{
+      w<-which.min(gmmajs)
+      centroid<-apply(ldeltas[-w,],2,mean)
+      #a<-exp(a.base*(0.5-i/tuning.runs))/(1+exp(a.base*(0.5-i/tuning.runs))) /2 +.45
+      a<-0.6
+      if(i%%5==0) a<-1/a
+      ldelta<-centroid+a*(centroid-ldeltas[w,])
+      gmmajs<-gmmajs[-w]
+      ldeltas<-rbind(ldeltas[-w,],ldelta)
+    }
     
-    ldeltas<-rbind(ldeltas,ldelta)
-    
-    if(verbose>1) cat("i=",i,": delta=",paste(round(exp(ldelta),3),collapse=",")," ",sep="")
-    
-    gmmajs<-c(gmmajs,opt.f(ldelta))
+    if(control$verbose>1) cat("i=",i,": a=",round(a,1)," delta=",paste(round(exp(ldelta),3),collapse=",")," ",sep="")
+    gmmaj<-opt.f(ldelta)
+    gmmajs<-c(gmmajs,gmmaj)
 
-    if(verbose>1) cat("gmmaj=",gmmajs[length(gmmajs)],"\n",sep="")
+    if(control$verbose>1) cat("gmmaj=",gmmajs[length(gmmajs)],"\n",sep="")
   }
   
 
-  best.delta<-exp(next.point(gmmajs,ldeltas))
-  if(verbose) cat("Estimated optimal deltas=",paste(round(best.delta,3),collapse=","),"\n")
+  best.delta<-exp(apply(ldeltas,2,mean))
+  if(control$verbose) cat("Estimated optimal deltas=",paste(round(best.delta,3),collapse=","),"\n")
   
   list(Z.delta=best.delta[1],
        Z.tr.delta=best.delta[2],
        Z.scl.delta=best.delta[3],
        RE.delta=best.delta[4],
        RE.shift.delta=best.delta[5],
-       beta.delta=best.delta[6])
+       beta.delta=best.delta[6:length(best.delta)])
 }
 
 run.proposal<-function(model, start, prior, tune.control){
@@ -93,8 +104,9 @@ run.proposal.snowFT.slave<-function(i,lib,model,start.l,prior,tune.control){
 
 gmmajump<-function(model,samples){
   Z.ref<-samples[[which.max(samples$llk)]]$Z
-  samples<-proc.Z.mean(samples,Z.ref,FALSE)
+  samples<-proc.Z.mean.C(samples,Z.ref)
 
+  obs<-observed.dyads(model$Yg)
   y<-t(sapply(1:length(samples),function(i){
     l<-samples[[i]]
 
@@ -104,21 +116,24 @@ gmmajump<-function(model,samples){
     ## random effects. The scale of latent space positions and their centroid
     ## are also separated from individual latent space positions.
 
+    dens<-mean(ergmm.eta.L(model,l)[obs])
+
     if(model$sender){
       sender.shift<-mean(l$sender)
-      l$sender<-l$sender-mean(l$sender)
+      l$sender<-l$sender-sender.shift
     }
     if(model$receiver){
       receiver.shift<-mean(l$receiver)
-      l$receiver<-l$receiver-mean(l$receiver)
+      l$receiver<-l$receiver-receiver.shift
     }
     if(model$sociality){
       sociality.shift<-mean(l$sociality)
-      l$sociality<-l$sociality-mean(l$sociality)
+      l$sociality<-l$sociality-sociality.shift
     }
     if(model$d) l$Z<-scale(l$Z)
     
     o<-c(l$llk,
+         dens,
          pack.optim.L(l),
          if(model$sender) sender.shift,
          if(model$receiver) receiver.shift,
@@ -127,13 +142,30 @@ gmmajump<-function(model,samples){
     o[is.nan(o)]<-0
     o
   }))
-  
-  ## Compute mean absolute jumps.
-  dy<-diff(y)
-  gmmajs<-apply(abs(dy),2,mean)
-  
-  ## "Geometric Mean" criterion. Has the benefit of being insensitive
-  ## to the overall scale of the parameters.
-  exp(mean(log(gmmajs)))
-}
 
+  ## Compute mean squared jumps.
+  dy<-diff(y)
+  gmmajs<-apply(dy^2,2,trimmed.mean)
+  
+  
+  min(gmmajs)*mean(gmmajs)
+
+  # Since we expect (and want) a strong linear trend during the
+  # burnin, we detrend before computing the acf.
+#  y<-apply(y,2,function(x)lm(x~I(1:length(x)))$residuals)
+  
+  
+
+  
+#  ac1<-diag(acf(y,lag.max=1,plot=FALSE)$acf[2,,])
+
+#  ac1[is.nan(ac1)]<-1
+
+  #exp(mean(log(1-ac1)))
+#  min(-ac1)
+  
+}
+trimmed.mean<-function(x,trim=0.05){
+  n<-length(x)
+  mean(sort(x)[floor(trim*n):ceiling((1-trim)*n)])
+}

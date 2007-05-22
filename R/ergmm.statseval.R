@@ -1,6 +1,4 @@
-ergmm.statseval <- function (mcmc.out, model, start, prior, control,
-                             skipProcrustes=FALSE, Z.ref=NULL, Z.K.ref=NULL, verbose=FALSE,
-                             skipMBC=FALSE){
+ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z.K.ref=NULL){
   Yg<- model$Yg
   G <- model$G
   d <- model$d
@@ -8,214 +6,51 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,
   p <- model$p
   family <- model$family
   samplesize <- control$samplesize
-  if(!is.null(mcmc.out)){
-    ## Use the iteration with the highest probability to seed another
-    ## shot at the MLE.
-    
-    if(verbose) cat("Using the highest-likelihood iteration to seed another MLE fit.\n")
-    mle2 <- find.mle.L(model,mcmc.out$mcmc.mle,control=control,flyapart.penalty=control$flyapart.penalty)
-    if(d>0)
-      mle2$Z<-scale(mle2$Z,scale=FALSE)
-  }
-  else mle2<-list(llk=-Inf)
-  if(is.null(mle2)) mle2<-list(llk=-Inf)
-  
-  start$llk<-ergmm.loglike.L(model,start)
-  if(mle2$llk<start$llk){
-    mle2$llk<-start$llk
-    mle2$beta<-start$beta
-    mle2$Z<-start$Z
-    mle2$sender<-start$sender
-    mle2$receiver<-start$receiver
-    mle2$sociality<-start$sociality
-  }
+
   if(!is.null(Z.ref)){
     Z.ref<-scale(Z.ref,scale=FALSE)
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
-    mle2$Z<-procOPA(Z.ref,mle2$Z,scale=FALSE,reflect=TRUE)$Bhat
+    control$Z.ref<-Z.ref
   }
-
-  if(!is.null(mcmc.out) && d>0){
-    if(verbose) cat("Fitting the MKL locations... ")
-    mkl<-find.mkl.L(model,mcmc.out,control)
-    mkl$Z<-scale(mkl$Z,scale=FALSE)
-    if(!is.null(Z.ref)){
-      if(!require(shapes,quietly=TRUE)){
-        stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-      }
-      mcmc.out$Z.ref<-Z.ref
-      mkl$Z<-procOPA(Z.ref,mkl$Z,scale=FALSE,reflect=TRUE)$Bhat
-    }
-    if(verbose) cat("Finished.\n")
-    if(G>0 && !skipMBC){
-      if(verbose) cat("Fitting MKL clusters... ")
-      mkl$mbc<-bayesmbc(G,mkl$Z,prior)$pmean
-      if(!is.null(Z.K.ref)){
-        perm<-nearest.perm(Z.K.ref,mkl$mbc$Z.K)
-        mkl$mbc$Z.K<-ergmm.labelswitch(mkl$mbc$Z.K,perm)
-        mkl$mbc$Z.mean<-mkl$mbc$Z.mu[perm,]
-        mkl$mbc$Z.var<-mkl$mbc$Z.var[perm]
-      }
-      if(verbose) cat("Finished.\n")
-    }
-    mcmc.out$mkl<-mkl
+  if(!is.null(Z.K.ref)){
+    control$Z.K.ref<-Z.K.ref
   }
   
-  if(!is.null(mcmc.out) && !skipProcrustes){
-    ## Procrustify and label-switch.
-    if(d>0){
-      if(verbose) cat("Performing Procrustes tranformation... ")
-      mcmc.out$samples<-proc.Z.mean(mcmc.out$samples,mkl$Z,center=FALSE)
-      if(verbose) cat("Finished.\n")
-    }
-    if(G>1){
-      clust2<-find.clusters(model$G,mkl$Z)
-      if(!is.null(Z.K.ref)) {
-        mcmc.out$Z.K.ref<-Z.K.ref
-        clust2<-nearest.perm(Z.K.ref,clust2$Z.K)
-      }
-      else{
-        clust2<-clust2$Z.K
-      }
-      if(verbose) cat("Performing label-switching... ")
-      #mcmc.out$samples<-do.label.switching(mcmc.out$samples,mkl$Z,clust2)
-      mcmc.out$samples<-do.label.switching(mcmc.out$samples,prior,clust2)
-      if(verbose) cat("Finished.\n")
-    }
-  }
-
   ## Start putting together the output structure.
+  if(is.null(mcmc.out)) mcmc.out<-list()
   mcmc.out$model<-model
   mcmc.out$prior<-prior
   mcmc.out$control<-control
-  mcmc.out$mle<-mle2
-  if(verbose) cat("Fitting another posterior mode estimate... ")
-  mcmc.out$pmode<-find.mpe.L(model,mcmc.out$mcmc.pmode,prior=prior,control=control,flyapart.penalty=control$flyapart.penalty)
-  cat("Finished.\b")
-  
+  mcmc.out$start<-start
+  class(mcmc.out)<-"ergmm"
+
+
+
+  mcmc.out<-labelswitch.samples.ergmm(mcmc.out)
+  mcmc.out<-add.mcmc.pmode.pmode.ergmm(mcmc.out)
+  mcmc.out<-add.mcmc.mle.mle.ergmm(mcmc.out)
+  mcmc.out<-add.mkl.pos.ergmm(mcmc.out)
+  mcmc.out<-add.mkl.mbc.ergmm(mcmc.out)
+  mcmc.out<-proc.samples.ergmm(mcmc.out)
+
   class(mcmc.out)<-"ergmm"
   return(mcmc.out)
 }
 
-proc.Z.mean<-function(samples,Z.ref,center=FALSE){
-  ## For procOPA
-  if(!require(shapes,quietly=TRUE)){
-    stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
+statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
+  if(!is.null(Z.ref)){
+    Z.ref<-scale(Z.ref,scale=FALSE)
+    x$control$Z.ref<-Z.ref
   }
-
-  n<-dim(Z.ref)[1]
-  G<-dim(samples$Z.mean)[2]
-  k<-dim(Z.ref)[2]
-  ## Center Z.ref.
-  Z.ref<-Z.ref-cbind(rep(1,n))%*%nullapply(Z.ref,2,mean)
-
-  for(i in 1:dim(samples$Z)[1]){
-
-    if(center){
-      Z.centroid<-nullapply(seldrop(samples$Z[i,,,drop=FALSE],1),2,mean)
-      if(!is.null(samples$Z.mean))
-        samples$Z.mean[i,,]<-seldrop(samples$Z.mean[i,,,drop=FALSE],1)-cbind(rep(1,G))%*%Z.centroid
-      samples$Z[i,,]<-seldrop(samples$Z[i,,,drop=FALSE],1)-cbind(rep(1,n))%*%Z.centroid
-    }
-    
-    Z<-seldrop(samples$Z[i,,,drop=FALSE],1)-cbind(rep(1,n))%*%nullapply(seldrop(samples$Z[i,,,drop=FALSE],1),2,mean)
-    P<-procOPA(Z.ref,Z,FALSE,TRUE)$R
-    samples$Z[i,,]<-seldrop(samples$Z[i,,,drop=FALSE],1)%*%P
-    if(!is.null(samples$Z.mean))
-      samples$Z.mean[i,,]<-seldrop(samples$Z.mean[i,,,drop=FALSE],1)%*%P
+  if(!is.null(Z.K.ref)){
+    x$control$Z.K.ref<-Z.K.ref
   }
-  samples
-}
-
-
-do.label.switching<-function(samples,prior,Z.K.ref,Z=NULL){
-  d<-dim(samples$Z.mean)[3]
-  G<-dim(samples$Z.mean)[2]
-  S<-dim(samples$Z.mean)[1]
-  Z.n.ref<-tabulate(Z.K.ref)
-  if(G>1){
-    permute <- ergmm.permutation(G)
-    for(s in 1:S){
-      sample<-samples[[s]]
-      if(is.null(Z)) Z<-samples$Z[s,,]
-      
-      Z.mean<-samples$Z.mean[s,,]
-      Z.var<-samples$Z.var[s,]
-      Z.K<-samples$Z.K[s,]
-      Z.K.n<-c(tabulate(Z.K),numeric(G-max(Z.K)))
-      
-      Z.bar.ref<-nullapply(Z,2,function(x,Z.K.ref)tapply(x,Z.K.ref,mean),Z.K.ref = Z.K.ref)
-      Z.bar<-Z.mean*(1+Z.var/prior$Z.mean.var*Z.K.n)
-      
-      best.perm<-permute[which.min(apply(permute,1,
-                                         function(p){
-                                           sum((Z.bar[p,]-Z.bar.ref)^2)
-                                         })),]
-      
-      samples$Z.K[s,] <-ergmm.labelswitch(Z.K,best.perm)
-      samples$Z.mean[s,,] <- Z.mean[best.perm,]
-      samples$Z.var[s,] <- Z.var[best.perm]
-    }
-  }
-  samples
-}
-
-do.label.switching.old<-function(samples,Z.ref,Z.K.ref){
-  d<-dim(samples$Z.mean)[3]
-  G<-dim(samples$Z.mean)[2]
-  samplesize<-dim(samples$Z.mean)[1]
-  if(G>1){
-    mu.ref <- nullapply(Z.ref,2,function(x,ki)tapply(x,ki,mean),ki = Z.K.ref)
-    
-    permute <- ergmm.permutation(G)
-    
-    for(loop in 1:samplesize){
-      sample<-samples[[loop]]
-      mu.1 <- nullapply(if(!is.null(sample$Z))sample$Z else Z.ref,2,
-                        function(x,ki)tapply(x,ki,mean),ki = sample$Z.K)
-      mutab <- table(sample$Z.K)
-      mu.names <- as.numeric(names(mutab))
-      n1 <- length(mutab)
-      d1 <- as.matrix(dist(rbind(mu.1,mu.ref)))[1:n1,(n1+1):(n1+G)]
-      if(length(mutab)==1) {
-        d1.min <- order(d1)[1]
-        samples$Z.K[loop,] <- d1.min
-        samples$Z.mean[loop,d1.min,] <- mu.1
-      }
-      else{
-        d1.use <- rep(TRUE,G)
-        if(length(mutab)<G){
-          d1.use <- rep(FALSE,G)
-          d1.new <- matrix(0,G,G)
-          mu.new <- matrix(0,G,d) #should be #of dimensions
-          j <- 1
-          for(i in 1:G)
-            if(any(mu.names == i)){
-              d1.new[i,] <- d1[j,]
-              mu.new[i,] <- mu.1[j,]
-              j <- j + 1
-              d1.use[i] <- TRUE
-            }
-          d1 <- d1.new
-          mu.1 <- mu.new
-        }
-        
-        d1.vec <- rep(0,nrow(permute))
-        for(j in 1:nrow(permute))
-          for(i in 1:G)
-            d1.vec[j] <- d1.vec[j] + d1.use[i] * d1[i,permute[j,i]]
-        
-        d1.min <- order(d1.vec)[1]
-        per.to <- order(permute[d1.min,])
-        samples$Z.K[loop,] <-ergmm.labelswitch(samples$Z.K[loop,],per.to)
-        samples$Z.mean[loop,,] <- mu.1[per.to,]
-        samples$Z.var[loop,] <- samples$Z.var[loop,per.to]
-      }
-    }
-  }
-  return(samples)
+  x<-labelswitch.samples.ergmm(x,force=TRUE)
+  x<-add.mcmc.pmode.pmode.ergmm(x,force=rerun)
+  x<-add.mcmc.mle.mle.ergmm(x,force=rerun)
+  x<-add.mkl.pos.ergmm(x,force=rerun)
+  x<-add.mkl.mbc.ergmm(x,force=TRUE)
+  x<-proc.samples.ergmm(x,force=TRUE)
+  x
 }
 
 find.mkl.L<-function(model,mcmc.out,control){
@@ -260,29 +95,153 @@ nullapply<-function(X,margin,FUN,...){
   else apply(X,margin,FUN,...)
 }
 
-reeval.ergmm<-function(x){
-  y<-ergmm.statseval(list(samples=x$samples,mcmc.mle=x$mcmc.mle),x$model,x$start,x$prior,x$control,Z.ref=NULL)
-  if(!is.null(x$tuning)) y$tuning<-x$tuning
-  if(!is.null(x$tuning.history)) y$tuning.history<-x$tuning.history
-  if(!is.null(x$main.start)) y$main.start<-x$main.start
-  y
-}
-
-relabel.ergmm<-function(x,per.to){
-  for(s in 1:x$control$samplesize){
-    if(!is.null(x$samples$Z.K))
-      x$samples$Z.K[i,]<-ergmm.labelswitch(x$samples$Z.K[i,],per.to)
-    if(!is.null(x$samples$Z.mean))
-      x$samples$Z.mean[i,,]<-x$samples$Z.mean[i,per.to,]
-    if(!is.null(x$samples$Z.var))
-      x$samples$Z.var[i,]<-x$samples$Z.var[i,per.to]
+add.mkl.mbc.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=FALSE){
+  if(!is.null(x$mkl) && x$model$d>0 && x$model$G>0 && (!x$control$skip.MBC || force)){
+    if(x$control$verbose) cat("Fitting MKL clusters:\n")
+    x$mkl$mbc<-bayesmbc(x$model$G,x$mkl$Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
   }
-  invisible(x)
+  x
 }
 
-reProcrustify.ergmm<-function(x,Z.ref,center=FALSE){
-  x$mcmc.mle$Z<-procOPA(Z.ref,x$mcmc.mle$Z,scale=FALSE,reflect=TRUE)$Bhat
-  x$mkl$Z<-procOPA(Z.ref,x$mkl$Z,scale=FALSE,reflect=TRUE)$Bhat
-  x$samples<-proc.Z.mean(x$samples,x$mkl$Z,center=center)
-  invisible(x)
+add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
+  
+  if(is.null(x$mle)||force) x$mle<-find.mle.loop(x$model,x$start,control=x$control)
+  
+  if(!is.null(x$mcmc.mle) && (is.null(x$mle) || force)){
+    ## Use the iteration with the highest probability to seed another
+    ## shot at the MLE.
+    
+    if(x$control$verbose) cat("Using the highest-likelihood iteration to seed another MLE fit.\n")
+    mle2 <- find.mle.loop(x$model,x$mcmc.mle,control=x$control)
+    if(x$model$d>0)
+      mle2$Z<-scale(mle2$Z,scale=FALSE)
+  }
+  else mle2<-list(llk=-Inf)
+  if(is.null(mle2)) mle2<-list(llk=-Inf)
+  
+  
+  if(mle2$llk>x$mle$llk){
+    x$mle<-mle2
+  }
+  
+  if(x$model$d>0){
+    x$mle$Z<-scale(x$mle$Z,scale=FALSE)
+    
+    if(!require(shapes,quietly=TRUE)){
+      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
+    }
+    x$mle$Z<-procOPA(Z.ref,x$mle$Z,scale=FALSE,reflect=TRUE)$Bhat
+  }
+  
+  x
+}
+
+find.mle.loop<-function(model,start,control){
+  mle<-start
+  for(i in 1:control$mle.maxit){
+    mle.old<-mle
+    mle<-find.mle.L(model,start,control=control,flyapart.penalty=control$flyapart.penalty)
+    if(all.equal(mle.old,mle)[1]==TRUE) break
+  }
+  mle
+}
+
+
+add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
+  if(is.null(x$pmode) || force){
+    pmode2<-find.pmode.loop(x$model,x$start,prior=x$prior,control=x$control)
+    if(!is.null(x$mcmc.pmode)){
+      if(x$control$verbose) cat("Fitting another posterior mode estimate... ")
+      x$pmode<-find.pmode.loop(x$model,x$mcmc.pmode,prior=x$prior,control=x$control)
+      cat("Finished.\n")
+      if(!require(shapes,quietly=TRUE)){
+        stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
+      }
+      if(pmode2$mlp<x$pmode$mlp) x$pmode->pmode2
+    }
+
+    x$pmode<-pmode2
+    
+  }
+  if(x$model$d>0 && !is.null(x$pmode)){
+    Z<-scale(x$pmode$Z,scale=FALSE)
+    if(!require(shapes,quietly=TRUE)){
+      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
+    }
+    P<-procOPA(Z.ref,Z,scale=FALSE,reflect=TRUE)$R
+    x$pmode$Z<-x$pmode$Z%*%P
+    if(!is.null(x$pmode$Z.mean))
+      x$pmode$Z.mean<-x$pmode$Z.mean%*%P
+  }
+  x
+}
+
+find.pmode.loop<-function(model,start,prior,control){
+  pmode<-start
+  for(i in 1:control$mle.maxit){
+    pmode.old<-pmode
+    pmode<-find.mpe.L(model,pmode,prior=prior,control=control,flyapart.penalty=control$flyapart.penalty)
+    if(model$G>1) pmode$Z.K<-find.clusters(model$G,pmode$Z)$Z.K
+    if(all.equal(pmode.old,pmode)[1]==TRUE) break
+  }
+  pmode
+}
+
+add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
+  if(!is.null(x$samples) && x$model$d>0 && (is.null(x$mkl) || force)){
+    if(x$control$verbose) cat("Fitting the MKL locations... ")
+    x$mkl<-find.mkl.L(x$model,x,x$control)
+    x$mkl$Z<-scale(x$mkl$Z,scale=FALSE)
+    if(!require(shapes,quietly=TRUE)){
+      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
+    }
+  }
+  if(!is.null(x$mkl)) x$mkl$Z<-procOPA(Z.ref,x$mkl$Z,scale=FALSE,reflect=TRUE)$Bhat
+  if(x$control$verbose) cat("Finished.\n")
+  x
+}
+  
+proc.samples.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
+  if(!is.null(x$samples) && (!x$control$skip.Procrustes || force) && x$model$d>0){
+    if(x$control$verbose) cat("Performing Procrustes tranformation... ")
+    x$samples<-proc.Z.mean.C(x$samples,Z.ref)
+    if(x$control$verbose) cat("Finished.\n")
+  }
+  x
+}
+
+labelswitch.samples.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=FALSE){
+  if(!is.null(x$samples) && x$model$G>1 && (!x$control$skip.KLswitch || force)){
+    if(x$control$verbose) cat("Performing label-switching... ")
+    require(mclust,quiet=TRUE)
+    Q.start<-t(apply(unmap(Z.K.ref)+1/x$model$G^2,1,function(x) x/sum(x)))
+    x$samples<-klswitch.C(Q.start,x$samples)
+    if(x$control$verbose) cat("Finished.\n")
+  }
+  x
+}
+
+best.avail.Z.ref.ergmm<-function(x){
+  if(x$model$d==0) return(NULL)
+  
+  if(!is.null(x$control$Z.ref)) return(x$control$Z.ref)
+  if(!is.null(x$mkl)) return(x$mkl$Z)
+  if(!is.null(x$pmode)) return(x$pmode$Z)
+  if(!is.null(x$mcmc.pmode)) return(x$mcmc.pmode$Z)
+  if(!is.null(x$mle)) return(x$mle$Z)
+  if(!is.null(x$mcmc.mle)) return(x$mcmc.mle$Z)
+  if(!is.null(x$start)) return(x$start$Z)
+}
+
+best.avail.Z.K.ref.ergmm<-function(x){
+  if(x$model$G==0) return(NULL)
+  
+  if(!is.null(x$control$Z.K.ref)) return(x$control$Z.K.ref)
+  if(!is.null(attr(x$samples,"Q"))) return(apply(attr(x$samples,"Q"),1,which.max))
+  if(!is.null(x$pmode)) return(x$pmode$Z.K)
+  if(!is.null(x$mkl$mbc)) return(x$mkl$.mbc$Z.K)
+  if(!is.null(x$mcmc.pmode)) return(x$mcmc.pmode$Z.K)
+  if(!is.null(x$start)) return(x$start$Z.K)
+  
+  return(find.clusters(x$model$G,best.avial.Z.ref.ergmm(x))$Z.K)
 }

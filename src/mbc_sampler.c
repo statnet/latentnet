@@ -226,16 +226,16 @@ void MBC_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM_M
   
   // Cluster-related.
   // Cluster assignments.
-  Rpack_ivector((int *)par->Z_K,model->verts,outlists->Z_K+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
+  Rpack_ivectors((int *)par->Z_K,model->verts,outlists->Z_K+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
   
   // Cluster means.
-  Rpack_dmatrix(par->Z_mu,model->clusters,model->latent,outlists->Z_mu+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
+  Rpack_dmatrixs(par->Z_mu,model->clusters,model->latent,outlists->Z_mu+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
   
   // Intracluster variances.
-  Rpack_dvector(par->Z_var,model->clusters,outlists->Z_var+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
+  Rpack_dvectors(par->Z_var,model->clusters,outlists->Z_var+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
   
   // Cluster probabilities.
-  Rpack_dvector(par->Z_pK,model->clusters,outlists->Z_pK+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
+  Rpack_dvectors(par->Z_pK,model->clusters,outlists->Z_pK+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
   
 }
 

@@ -96,7 +96,7 @@
     }
   }
   
-  \emph{Fixed Effects}\cr\cr
+  \emph{Fixed Effects}\cr
   Each coefficient for a fixed effect covariate has a normal prior whose
   mean and variance are set by the \code{mean} and \code{var} parameters
   of the term. For those formula terms that add more than one covariate,

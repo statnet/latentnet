@@ -1,5 +1,5 @@
-ergmm.initvals <- function(model,user.start,prior,control,verbose=FALSE){
-  optim.control<-list(trace=verbose)
+ergmm.initvals <- function(model,user.start,prior,control){
+  optim.control<-list(trace=control$verbose)
 
   need.to.fit<-list(beta=model$p>0 && is.null(user.start$beta), ## beta
                     Z=model$d>0 && is.null(user.start$Z), ## Z
@@ -25,13 +25,13 @@ ergmm.initvals <- function(model,user.start,prior,control,verbose=FALSE){
   pm<-user.start
   
   if(need.to.fit$Z){
-    if(verbose) cat("Computing geodesic distances... ")
+    if(control$verbose) cat("Computing geodesic distances... ")
     D <- ergmm.geodesicmatrix(Yg)
     D[is.infinite(D)]<-2*n
-    if(verbose) cat("Finished.\n")
-    if(verbose) cat("Computing MDS locations... ")
+    if(control$verbose) cat("Finished.\n")
+    if(control$verbose) cat("Computing MDS locations... ")
     pm$Z <- cmdscale(D,model$d)
-    if(verbose) cat("Finished.\n")
+    if(control$verbose) cat("Finished.\n")
   }
 
   if("Z" %in% names(pm)) {
@@ -94,25 +94,20 @@ ergmm.initvals <- function(model,user.start,prior,control,verbose=FALSE){
   if(need.to.fit$receiver.var){
     pm$receiver.var<-var(pm$receiver)
   }
-  if(verbose) cat("Iterating fitting posterior mode conditional on cluster assignments and clustering conditioned on latent space positions...")
+  if(control$verbose) cat("Iterating fitting posterior mode conditional on cluster assignments and clustering conditioned on latent space positions...")
   for(i in 1:control$mle.maxit){
-    if(verbose) cat(i," ",sep="")
+    if(control$verbose) cat(i," ",sep="")
     pm.old<-pm
     pm<-find.mpe.L(model,pm,user.start,prior=prior,control=optim.control,fit.vars=need.to.fit,flyapart.penalty=control$flyapart.penalty)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit$Z.K)pm$Z.K<-find.clusters(G,pm$Z)$Z.K
-    if(all.equal(pm.old,pm)==TRUE) break
+    if(all.equal(pm.old,pm)[1]==TRUE) break
   }
-  if(verbose) cat("Finished.\n")
-
-  ## Center the positions around the origin
-  if(d>0)
-    pm$Z <- scale(pm$Z,scale=FALSE)
+  if(control$verbose) cat("Finished.\n")
 
   class(pm)<-"ergmm.par"
   pm
 }
-
 
 find.clusters<-function(G,Z){
   if(!require(mclust,quietly=TRUE, warn.conflicts = FALSE)){

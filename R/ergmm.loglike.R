@@ -146,7 +146,6 @@ ergmm.eta.L<-function(model,theta){
 
 ergmm.EY.L<-function(model,theta){
   eta<-ergmm.eta.L(model,theta)
-  obs<-observed.dyads(model$Yg)
   mk.EY.f(model$family)(eta)
 }
 
