@@ -4,12 +4,13 @@
                           object.scale=formals(plot.network.default)$object.scale,
                           pad=formals(plot.network.default)$pad,
                           cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
-                          vertex.col=cluster.col[1], print.formula=TRUE,
+                          vertex.col=NULL, print.formula=TRUE,
                           edge.col=8,
                           pie = FALSE,
-                          
+                          labels=TRUE,
                           rand.eff=NULL,
                           plot.means=TRUE,plot.vars=TRUE,
+                          suppress.axes=FALSE,
                           jitter1D=1,curve1D=TRUE,suppress.center=FALSE)
 {
 
@@ -30,6 +31,7 @@
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
+    Z.pZK<-summ$Z.pZK
     if (missing(main)) 
       main <- paste(deparse(substitute(which.par))," Latent Positions of ", 
                     deparse(substitute(ergmm.fit)),sep="")
@@ -39,6 +41,7 @@
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
+    if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Initial Latent Positions of ", 
                     deparse(substitute(ergmm.fit)),sep="")
@@ -49,6 +52,8 @@
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
+    plot.means<-plot.vars<-FALSE
+    if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Multistage MLEs of Latent Positions of", 
                     deparse(substitute(ergmm.fit)))
@@ -56,9 +61,10 @@
     summ<-summary(ergmm.fit,point.est=c("pmean"))
     Z.pos <- summ$pmean$Z
     summ<-summ$pmean
-      Z.mean<-summ$Z.mean
+    Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
+    Z.pZK<-summ$Z.pZK
     if (missing(main)) 
       main <- paste("Posterior Mean Positions of", 
                     deparse(substitute(ergmm.fit)))
@@ -80,6 +86,7 @@
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
+    if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Posterior Mode Latent Positions of", 
                     deparse(substitute(ergmm.fit)))
@@ -104,6 +111,7 @@
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
+    if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Iteration #",which.par," Latent Positions of ", 
                     deparse(substitute(ergmm.fit)),sep="")
@@ -123,9 +131,10 @@
       Z.pos<-predict(prc,Z.pos)[,1:2]
     }
   
-  if(missing(vertex.col)){
-    if(is.latent.cluster(ergmm.fit))
+  if(is.null(vertex.col)){
+    if(is.latent.cluster(ergmm.fit) && !pie)
       vertex.col <- cluster.col[Z.K]
+    else vertex.col<-cluster.col[1]
   }
   else if(length(vertex.col)==1 && is.character(vertex.col)){
     trycol <- as.numeric(as.factor(unlist(get.vertex.attribute(Yg,vertex.col))))
@@ -152,7 +161,7 @@
   
   plot.network(Yg,coord=Z.pos,
                main=main,
-               vertex.col=vertex.col,
+               vertex.col=if(is.null(vertex.col)) 0 else vertex.col,
                vertex.cex=vertex.cex,
                xlab=xlab,
                ylab=ylab,
@@ -160,12 +169,12 @@
                ylim=ylim,
                object.scale=object.scale,
                pad=pad,
-               suppress.axes=FALSE,
+               suppress.axes=suppress.axes,
                vertex.sides=16*sqrt(vertex.cex),
                jitter=FALSE,
                usecurve=curve1D,
                edge.curve=distances,
-               displaylabels=!(ergmm.fit$model$d==1 && curve1D==TRUE),
+               displaylabels=labels&&!(ergmm.fit$model$d==1 && curve1D==TRUE),
                tick=!(ergmm.fit$model$d==1 && curve1D==TRUE),
                edge.col=edge.col,
                ...)

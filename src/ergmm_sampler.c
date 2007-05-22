@@ -447,27 +447,27 @@ void ERGMM_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM
     outlists->lpREV[pos] = par->lpREV;
 
   // Covariate coefficients.
-  Rpack_dvector(par->coef,model->coef,outlists->coef+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+  Rpack_dvectors(par->coef,model->coef,outlists->coef+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 
 
   if(model->latent){
     // Latent positions.
-    Rpack_dmatrix(par->Z,model->verts,model->latent,outlists->Z+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+    Rpack_dmatrixs(par->Z,model->verts,model->latent,outlists->Z+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 
       
     // Cluster-related.
     if(model->clusters>0){      
       // Cluster assignments.
-      Rpack_ivector((int *)par->Z_K,model->verts,outlists->Z_K+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+      Rpack_ivectors((int *)par->Z_K,model->verts,outlists->Z_K+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 	  
       // Cluster means.
-      Rpack_dmatrix(par->Z_mu,model->clusters,model->latent,outlists->Z_mu+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+      Rpack_dmatrixs(par->Z_mu,model->clusters,model->latent,outlists->Z_mu+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 	  
       // Intracluster variances.
-      Rpack_dvector(par->Z_var,model->clusters,outlists->Z_var+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+      Rpack_dvectors(par->Z_var,model->clusters,outlists->Z_var+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 
       // Cluster probabilities.
-      Rpack_dvector(par->Z_pK,model->clusters,outlists->Z_pK+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+      Rpack_dvectors(par->Z_pK,model->clusters,outlists->Z_pK+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 
     }
     else
@@ -476,13 +476,13 @@ void ERGMM_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM
 
   // Sender effects.
   if(par->sender){
-    Rpack_dvector(par->sender,model->verts,outlists->sender+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+    Rpack_dvectors(par->sender,model->verts,outlists->sender+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
     outlists->sender_var[pos] = par->sender_var;
   }
 
   // Receiver effects.
   if(par->receiver && !model->sociality){
-    Rpack_dvector(par->receiver,model->verts,outlists->receiver+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+    Rpack_dvectors(par->receiver,model->verts,outlists->receiver+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
     outlists->receiver_var[pos] = par->receiver_var;
   }      
       
