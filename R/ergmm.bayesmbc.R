@@ -14,7 +14,7 @@ bayesmbc<-function(G,Z,prior,Z.K.ref=NULL,samplesize=2000,interval=10,burnin=500
   if(verbose>1) cat("Finished.\n")
 
   if(verbose>1) cat("Running label switching... ")
-  Q.start <- t(apply(unmap(if(is.null(Z.K.ref)) start$Z.K else Z.K.ref)+1/G,1,function(x) x/sum(x)))
+  Q.start <- switch.Q.K(if(is.null(Z.K.ref)) start$Z.K else Z.K.ref,G)
   mcmc.out$samples<-klswitch.C(Q.start,mcmc.out$samples,Z)
   if(verbose>1) cat("Finished.\n")
   

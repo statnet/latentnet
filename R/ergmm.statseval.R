@@ -96,18 +96,28 @@ nullapply<-function(X,margin,FUN,...){
 }
 
 add.mkl.mbc.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=FALSE){
-  if(!is.null(x$mkl) && x$model$d>0 && x$model$G>0 && (!x$control$skip.MBC || force)){
+  if(is.null(x$mkl)){
+    warning("Using best.avail.Z.ref.ergmm in place of MKL.")
+    Z<-best.avail.Z.ref.ergmm(x)
+  }else Z<-x$mkl$Z
+  
+  if(x$model$d>0 && x$model$G>0 && (!x$control$skip.MBC || force)){
     if(x$control$verbose) cat("Fitting MKL clusters:\n")
-    x$mkl$mbc<-bayesmbc(x$model$G,x$mkl$Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
+    x$mkl$mbc<-bayesmbc(x$model$G,Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
   }
   x
 }
 
 add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   
-  if(is.null(x$mle)||force) x$mle<-find.mle.loop(x$model,x$start,control=x$control)
+  if((!x$control$skip.mle && is.null(x$mle))||force){
+    x$mle<-find.mle.loop(x$model,x$start,control=x$control)
+  }else{
+    x$mle<-x$start
+    x$mle$llk<-ergmm.loglike.L(x$model,x$start)
+  }
   
-  if(!is.null(x$mcmc.mle) && (is.null(x$mle) || force)){
+  if(!is.null(x$mcmc.mle) && ((!x$control$skip.mle && is.null(x$mle))|| force)){
     ## Use the iteration with the highest probability to seed another
     ## shot at the MLE.
     
@@ -148,7 +158,7 @@ find.mle.loop<-function(model,start,control){
 
 
 add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
-  if(is.null(x$pmode) || force){
+  if((!x$control$skip.pmode && is.null(x$pmode)) || force){
     pmode2<-find.pmode.loop(x$model,x$start,prior=x$prior,control=x$control)
     if(!is.null(x$mcmc.pmode)){
       if(x$control$verbose) cat("Fitting another posterior mode estimate... ")
@@ -188,7 +198,7 @@ find.pmode.loop<-function(model,start,prior,control){
 }
 
 add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
-  if(!is.null(x$samples) && x$model$d>0 && (is.null(x$mkl) || force)){
+  if(!is.null(x$samples) && x$model$d>0 && ((!x$control$skip.mkl && is.null(x$mkl)) || force)){
     if(x$control$verbose) cat("Fitting the MKL locations... ")
     x$mkl<-find.mkl.L(x$model,x,x$control)
     x$mkl$Z<-scale(x$mkl$Z,scale=FALSE)
@@ -214,7 +224,7 @@ labelswitch.samples.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=
   if(!is.null(x$samples) && x$model$G>1 && (!x$control$skip.KLswitch || force)){
     if(x$control$verbose) cat("Performing label-switching... ")
     require(mclust,quiet=TRUE)
-    Q.start<-t(apply(unmap(Z.K.ref)+1/x$model$G^2,1,function(x) x/sum(x)))
+    Q.start<-switch.Q.K(Z.K.ref,x$model$G)
     x$samples<-klswitch.C(Q.start,x$samples)
     if(x$control$verbose) cat("Finished.\n")
   }

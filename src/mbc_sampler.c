@@ -55,7 +55,8 @@ void MBC_MCMC_wrapper(int *samples_stored,
 		KiList, Z_pKList, muList, SigmaList);
   
   PutRNGstate();
-
+  P_free_all();
+  // R's garbage collector takes care of freeing memory.
   return;
 }
 
@@ -177,8 +178,6 @@ void MBC_MCMC_init(unsigned int samples_stored,
   
   MBC_MCMC_loop(&model, &prior, &start, &setting, &outlists);
 
-
-  // R's garbage collector takes care of freeing memory.
 }
 
 

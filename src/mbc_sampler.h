@@ -8,7 +8,7 @@
 /* First 1 positions in the outlists are reserved for special values:
    [0] Iteration with the highest likelihood so far.
 */
-#define MBC_OUTLISTS_RESERVE 2
+#define MBC_OUTLISTS_RESERVE 1
 void MBC_MCMC_wrapper(int *samples_stored,
 		      int *interval,
 

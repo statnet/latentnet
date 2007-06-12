@@ -100,15 +100,12 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
   double **Z_mu_start = mu ? Runpack_dmatrix(mu,*G,*d,NULL) : NULL;
   int **Y = Runpack_imatrix(vY, *n, *n, NULL);
   unsigned int **observed_ties = vobserved_ties ? (unsigned int **) Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL;
-  double ***X = (double ***) R_alloc(*p,sizeof(double**)); 
+  double ***X = d3array(*p,*n,*n);
 
   // set up all of the covariate matrices if covariates are involed 
   // if p=0 (ie no covariates then these next two loops will do nothing)
   //
 
-  for(i=0;i<*p;i++){
-    X[i] = dmatrix((*n),(*n));
-  } 
   for(k=0;k<*p;k++){
     for(i=0;i<*n;i++){
       for(j=0;j<*n;j++){
@@ -162,7 +159,7 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 		  deltas[3],deltas[4],deltas+COEF_DELTA_START);
 
   PutRNGstate();
-
+  P_free_all();
   return;
 }
 

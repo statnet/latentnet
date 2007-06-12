@@ -21,7 +21,7 @@ bayesmbc.MCMC.C<-function(G, start, prior, samplesize=NULL, interval=NULL){
 
   ## End Sanity checks.
 
-  RESERVED<-2
+  RESERVED<-1
 
 #  cat("Entering C routine... ")
   Cret <- .C("MBC_MCMC_wrapper",
