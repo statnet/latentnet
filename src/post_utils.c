@@ -167,10 +167,11 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
     **Z_pK_space = dmatrix(*S, *G);
   unsigned int **Z_K_space= (unsigned int **) imatrix(*S,*n);
 
+  if(*Z_ref) Runpack_dmatrix(vZ_mcmc, *n, *d, Z_space[0]);
 
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par *cur=samples+s;
-    if(*Z_ref) cur->Z = Runpack_dmatrix(vZ_mcmc,*n, *d, Z_space[0]);
+    if(*Z_ref) cur->Z = Z_space[0];
     else cur->Z = Runpack_dmatrixs(vZ_mcmc+s,*n,*d,Z_space[s],*S);
     cur->Z_mu = Runpack_dmatrixs(vZ_mu_mcmc+s,*G,*d,Z_mu_space[s],*S);
     cur->Z_var = Runpack_dvectors(vZ_var_mcmc+s,*G,Z_var_space[s],*S);
@@ -186,7 +187,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
     for(unsigned int i=0; i<*n; i++){
       double pKsum=0;
       for(unsigned int g=0; g<*G; g++){
-	pK[s][i][g]=dindnormmu(*d,cur->Z[*Z_ref?0:i],
+	pK[s][i][g]=dindnormmu(*d,cur->Z[i],
 			       cur->Z_mu[g],sqrt(cur->Z_var[g]),FALSE);
 	pK[s][i][g]*=cur->Z_pK[g];
 	pKsum+=pK[s][i][g];
@@ -197,9 +198,6 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
     }
   }
 
-
-  
-  
   unsigned int *perm=(unsigned int *)P_alloc(*G,sizeof(unsigned int)), *bestperm=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
   unsigned int *dir=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
   double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);

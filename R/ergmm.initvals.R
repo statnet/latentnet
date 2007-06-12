@@ -1,6 +1,4 @@
 ergmm.initvals <- function(model,user.start,prior,control){
-  optim.control<-list(trace=control$verbose)
-
   need.to.fit<-list(beta=model$p>0 && is.null(user.start$beta), ## beta
                     Z=model$d>0 && is.null(user.start$Z), ## Z
                     sender=model$sender && is.null(user.start$sender), ## sender
@@ -98,7 +96,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   for(i in 1:control$mle.maxit){
     if(control$verbose) cat(i," ",sep="")
     pm.old<-pm
-    pm<-find.mpe.L(model,pm,user.start,prior=prior,control=optim.control,fit.vars=need.to.fit,flyapart.penalty=control$flyapart.penalty)
+    pm<-find.mpe.L(model,pm,user.start,prior=prior,control=control,fit.vars=need.to.fit,flyapart.penalty=control$flyapart.penalty)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit$Z.K)pm$Z.K<-find.clusters(G,pm$Z)$Z.K
     if(all.equal(pm.old,pm)[1]==TRUE) break
