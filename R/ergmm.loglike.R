@@ -774,6 +774,14 @@ add.lists<-function(...){
   out
 }
 
+cmp.lists<-function(x,y){
+  out<-list()
+  for(name in names(x))
+    if(name %in% names(y))
+      out[[name]]<-mean(abs(x[[name]]-y[[name]]))/mean(abs(x[[name]]))
+  out
+}
+
 ergmm.lp.grad<-function(Yg,response=NULL,Ym=NULL,family="Bernoulli",fam.par=NULL,beta=NULL,X=NULL,Z=NULL,sender=NULL,receiver=NULL,sociality=NULL,
                         Z.var=NULL,Z.mean=NULL,Z.K=NULL,
                         sender.var=NULL,receiver.var=NULL,sociality.var=NULL,
@@ -792,17 +800,19 @@ ergmm.lp.grad<-function(Yg,response=NULL,Ym=NULL,family="Bernoulli",fam.par=NULL
                                    sender.var.prior=prior$sender.var,receiver.var.prior=prior$receiver.var,sociality.var.prior=prior$sociality.var,
                                    sender.var.df=prior$sender.var.df,receiver.var.df=prior$receiver.var.df,sociality.var.df=prior$sociality.var.df),
                   if("lpLV" %in% opt) ergmm.lpLV.grad(Z.var=Z.var,Z.mean=Z.mean,Z.var.prior=prior$Z.var,Z.var.df=prior$Z.var.df,Z.mean.var=prior$Z.mean.var))
-                  
-  if(!is.null(grad$beta))grad$beta<-grad$beta-flyapart.penalty*2*beta
-  if(!is.null(grad$Z))grad$Z<-grad$Z-flyapart.penalty*2*Z
-  if(!is.null(grad$sender))grad$sender<-grad$sender-flyapart.penalty*2*sender
-  if(!is.null(grad$receiver))grad$receiver<-grad$receiver-flyapart.penalty*2*receiver
-  if(!is.null(grad$sociality))grad$sociality<-grad$sociality-flyapart.penalty*2*sociality
-  if(!is.null(grad$Z.var))grad$Z.var<-grad$Z.var-flyapart.penalty*2*Z.var
-  if(!is.null(grad$Z.mean)) grad$Z.mean<-grad$Z.mean-flyapart.penalty*2*Z.mean
-  if(!is.null(grad$sender.var))grad$sender.var<-grad$sender.var-flyapart.penalty*2*sender.var
-  if(!is.null(grad$receiver.var))grad$receiver.var<-grad$receiver.var-flyapart.penalty*2*receiver.var
-  if(!is.null(grad$sociality.var))grad$sociality.var<-grad$sociality.var-flyapart.penalty*2*sociality.var
+
+  # R's partial matching in lists маздай.
+  ingrad<-function(x){ x %in% names(grad) }
+  if(ingrad("beta"))grad$beta<-grad$beta-flyapart.penalty*2*beta
+  if(ingrad("Z"))grad$Z<-grad$Z-flyapart.penalty*2*Z
+  if(ingrad("sender"))grad$sender<-grad$sender-flyapart.penalty*2*sender
+  if(ingrad("receiver"))grad$receiver<-grad$receiver-flyapart.penalty*2*receiver
+  if(ingrad("sociality"))grad$sociality<-grad$sociality-flyapart.penalty*2*sociality
+  if(ingrad("Z.var"))grad$Z.var<-grad$Z.var-flyapart.penalty*2*Z.var
+  if(ingrad("Z.mean"))grad$Z.mean<-grad$Z.mean-flyapart.penalty*2*Z.mean
+  if(ingrad("sender.var"))grad$sender.var<-grad$sender.var-flyapart.penalty*2*sender.var
+  if(ingrad("receiver.var"))grad$receiver.var<-grad$receiver.var-flyapart.penalty*2*receiver.var
+  if(ingrad("sociality.var"))grad$sociality.var<-grad$sociality.var-flyapart.penalty*2*sociality.var
   grad
 }
 
@@ -840,7 +850,7 @@ ergmm.lp.grad.approx<-function(Yg,response=NULL,Ym=NULL,family="Bernoulli",fam.p
                            sociality=rep(which.vars$sociality,length(sociality)),
                            Z.var=rep(which.vars$Z.var,length(Z.var)),
                            Z.mean=rep(which.vars$Z.mean,length(Z.mean)),
-                         sender.var=rep(which.vars$sender.var,length(sender.var)),
+                           sender.var=rep(which.vars$sender.var,length(sender.var)),
                            receiver.var=rep(which.vars$receiver.var,length(receiver.var)),
                            sociality.var=rep(which.vars$sociality.var,length(sociality.var)),
                            fit.vars)
