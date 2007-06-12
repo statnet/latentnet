@@ -497,7 +497,7 @@ mk.lp.optim.fs<-function(fit.vars,
            )
 }
 
-find.mle<-function(fit.vars,Yg,response=NULL,Ym=NULL,control=list(maxit=200,trace=0),
+find.mle<-function(fit.vars,Yg,response=NULL,Ym=NULL,control=list(mle.maxit=200,verbose=0),
                    family="Bernoulli",fam.par=NULL,
                    beta=NULL,X=NULL,Z=NULL,sender=NULL,receiver=NULL,sociality=NULL,
                    hessian=FALSE,mllk=TRUE,flyapart.penalty=0){
@@ -539,7 +539,7 @@ find.mle.L<-function(model,start,given=list(),control,
          )
 }
 
-find.mpe<-function(fit.vars,Yg,response=NULL,Ym=NULL,control=list(maxit=200,trace=0),
+find.mpe<-function(fit.vars,Yg,response=NULL,Ym=NULL,control=list(mle.maxit=200,verbose=0),
                    family="Bernoulli",fam.par=NULL,
                    beta=NULL,X=NULL,Z=NULL,sender=NULL,receiver=NULL,sociality=NULL,
                    Z.var=NULL,Z.mean=NULL,Z.K=NULL,
@@ -553,6 +553,8 @@ find.mpe<-function(fit.vars,Yg,response=NULL,Ym=NULL,control=list(maxit=200,trac
   fit.vars<-reg.fit.vars(fit.vars)
 
   control$fnscale=-1
+  control$maxit<-control$mle.maxit
+  control$trace<-control$verbose
   partial.eta<-ergmm.eta(Yg,
                          beta=if(fit.vars$beta) NULL else beta,
                          X=if(fit.vars$beta) NULL else X,

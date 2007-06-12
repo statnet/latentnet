@@ -111,13 +111,13 @@ add.mkl.mbc.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=FALSE){
 add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   
   if((!x$control$skip.mle && is.null(x$mle))||force){
-    x$mle<-find.mle.loop(x$model,x$start,control=x$control)
+    mle1<-find.mle.loop(x$model,x$start,control=x$control)
   }else{
-    x$mle<-x$start
-    x$mle$llk<-ergmm.loglike.L(x$model,x$start)
+    mle1<-x$start
+    mle1$llk<-ergmm.loglike.L(x$model,x$start)
   }
   
-  if(!is.null(x$mcmc.mle) && ((!x$control$skip.mle && is.null(x$mle))|| force)){
+  if(!is.null(x$mcmc.mle) && ((!x$control$skip.mle && is.null(x$mle)) || force)){
     ## Use the iteration with the highest probability to seed another
     ## shot at the MLE.
     
@@ -130,9 +130,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   if(is.null(mle2)) mle2<-list(llk=-Inf)
   
   
-  if(mle2$llk>x$mle$llk){
-    x$mle<-mle2
-  }
+  if(mle2$llk>mle1$llk) x$mle<-mle2 else x$mle<-mle1
   
   if(x$model$d>0){
     x$mle$Z<-scale(x$mle$Z,scale=FALSE)
