@@ -1,6 +1,7 @@
 #ifndef MATRIX_UTILS_H
 #define MATRIX_UTILS_H 1
 #include<R.h>
+#include"P_alloc.h"
 
 #define FOUND 0
 #define NOTFOUND !0
@@ -9,6 +10,7 @@ double *dvector(unsigned int n);
 int *ivector(unsigned int n);
 double **dmatrix(unsigned int n,unsigned int m);
 int **imatrix(unsigned int n,unsigned int m);
+double ***d3array(unsigned int n1,unsigned int n2, unsigned int n3);
 
 double **Runpack_dmatrix(double *vA, unsigned int n, unsigned int m, double **Aspace);
 double **Runpack_dmatrixs(double *vA, unsigned int n, unsigned int m, double **Aspace, unsigned int sample_size);

@@ -35,7 +35,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
   int **Y = Runpack_imatrix(vY, *n, *n, NULL);
   unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
-  double ***X = (double ***) R_alloc(*p,sizeof(double**));
+  double ***X = (double ***) P_alloc(*p,sizeof(double**));
   
   // set up all of the covariate matrices if covariates are involed 
   // if p=0 (ie no covariates then these next two loops will do nothing)
@@ -101,6 +101,8 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
   };
 
   *llk = ERGMM_MCMC_lp_Y(&model,&params,1);
+
+  P_free_all();
 
   /* Memory freed by GC. */
 

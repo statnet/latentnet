@@ -15,8 +15,6 @@
 #include "matrix_utils.h"
 
 
-
-
 /*  General Notes
     n: number of rows in a matrix or length of a vector
     m: number of colums in a matrix
@@ -26,7 +24,7 @@
 double *dvector(unsigned int n){
   double *a;
   unsigned int i;
-  a = (double*) R_alloc(n,sizeof(double));
+  a = (double*) P_alloc(n,sizeof(double));
   if(a == NULL) printf("Not enough memory to make double vector");
   for(i=0;i<n;i++){
     a[i]=0.0;
@@ -38,7 +36,7 @@ double *dvector(unsigned int n){
 int *ivector(unsigned int n){
   int *a;
   unsigned int i;
-  a = (int*) R_alloc(n,sizeof(int));
+  a = (int*) P_alloc(n,sizeof(int));
   if(a == NULL) printf("Not enough memory to make integer vector");
   for(i=0;i<n;i++){
     a[i]=0;
@@ -53,19 +51,47 @@ double **dmatrix(unsigned int n,unsigned int m)
   unsigned int i, j;
 
   /* assigning memory and initialize */
-  A = (double**) R_alloc(n,sizeof(double*));
+  A = (double**) P_alloc(n,sizeof(double*));
   if(A == NULL) printf("Not enough memory to make double matrix");
+  A[0] = (double *) P_alloc(n*m,sizeof(double));
+  if(A[0] == NULL) printf("Not enough memory to make double matrix");
   for(i=0;i<n;i++){
-     A[i] = (double*) R_alloc(m,sizeof(double));
-     if(A[i] == NULL) printf("Not enough memory to make double matrix");
-     for(j=0;j<m;j++){
-       A[i][j]=0.0;
-     }
+    A[i] = A[0]+i*m;
+    for(j=0;j<m;j++){
+      A[i][j]=0.0;
+    }
   }
 
   return A;
 }
 
+/*  Allocates memory for an n1 by n2 by n3 matrix of doubles */
+double ***d3array(unsigned int n1,unsigned int n2, unsigned int n3)
+{
+  double ***A;
+
+  /* allocate space for the matrix and the pointers */
+  A = (double***) P_alloc(n1,sizeof(double**));
+  if(A == NULL) printf("Not enough memory to make double matrix");
+  A[0] = (double **) P_alloc(n1*n2,sizeof(double*));
+  if(A[0] == NULL) printf("Not enough memory to make double matrix");
+  A[0][0] = (double *) P_alloc(n1*n2*n3,sizeof(double));
+  if(A[0] == NULL) printf("Not enough memory to make double matrix");
+
+  
+  for(unsigned int i1=0;i1<n1;i1++){
+    A[i1] = A[0]+i1*n2;
+    A[i1][0] = A[0][0]+i1*n2*n3;
+    for(unsigned int i2=1;i2<n2;i2++){
+      A[i1][i2] = A[i1][0]+i2*n3;
+      for(unsigned int i3=0;i3<n3;i3++){
+	A[i1][i2][i3]=0.0;
+      }
+    }
+  }
+
+  return A;
+}
 
 /*  Allocates memory for an n by m matrix of doubles */
 int **imatrix(unsigned int n,unsigned int m)
@@ -73,14 +99,15 @@ int **imatrix(unsigned int n,unsigned int m)
   int **A;
   unsigned int i, j;
   /* assigning memory and initialize */
-  A = (int**) R_alloc(n,sizeof(int*));
+  A = (int**) P_alloc(n,sizeof(int*));
   if(A == NULL) printf("Not enough memory to make integer matrix");
+  A[0] = (int*) P_alloc(n*m,sizeof(int));
+  if(A[0] == NULL) printf("Not enough memory to make integer matrix");
   for(i=0;i<n;i++){
-     A[i] = (int*) R_alloc(m,sizeof(int));
-     if(A[i] == NULL) printf("Not enough memory to make integer matrix");
-     for(j=0;j<m;j++){
-       A[i][j]=0;
-     }
+    A[i] = A[0]+i*m;
+    for(j=0;j<m;j++){
+      A[i][j]=0;
+    }
   }
   return A;
 }
