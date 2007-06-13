@@ -24,7 +24,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
       if(control$burnin>0){
         if(control$tune){
           if(control$verbose) cat("Tuning parameters for burnin...\n")
-          tuning<-ergmm.tuner(model,state,prior,control,control$verbose)
+          tuning<-ergmm.tuner(model,state,prior,control)
           if(control$verbose) cat("Finished.\n")
           for(name in names(tuning)){
             control[[name]]<-tuning[[name]]
@@ -63,7 +63,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
 
       if(control$tune){
         if(control$verbose) cat("Tuning parameters for sampling run...\n ")
-        tuning<-ergmm.tuner(model,state,prior,control,control$verbose,control$burnin>0 && control$threads>1)
+        tuning<-ergmm.tuner(model,state,prior,control,control$burnin>0 && control$threads>1)
         if(control$verbose) cat("Finished.\n")
         for(name in names(tuning)){
           control[[name]]<-tuning[[name]]
