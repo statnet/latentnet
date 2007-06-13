@@ -12,8 +12,9 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
                                  *(d*2+sender+receiver+sociality)+1)
                            /threads/ctrl$interval)
   ctrl$burnin<-0
+#  ctrl$interval<-1
 
-  if(control$verbose) cat("Making",tuning.runs,"tuning runs, each with sample size",ctrl$samplesize,".\n")
+  if(control$verbose) cat("Making",tuning.runs,"tuning runs, each with sample size",ctrl$samplesize,"*",ctrl$interval,".\n")
   
   if(threads<=1)
     opt.f<-function(ldelta){
@@ -34,7 +35,8 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
 
 
   ## This is a slightly modified Complex Search (as described by Biles
-  ## (1981)). I find that it works better than the gradient methods.
+  ## (1981)). I find that it works better than the gradient methods,
+  ## probably because the data here are very "noisy".
   
   ldelta.start<-log(with(ctrl,c(Z.delta,Z.tr.delta,Z.scl.delta,
                                 RE.delta,RE.shift.delta,
@@ -116,7 +118,9 @@ gmmajump<-function(model,samples){
     ## random effects. The scale of latent space positions and their centroid
     ## are also separated from individual latent space positions.
 
-    dens<-mean(ergmm.eta.L(model,l)[obs])
+    etas<-ergmm.eta.L(model,l)[obs]
+    dens<-mean(etas)
+    vdens<-var(etas)
 
     if(model$sender){
       sender.shift<-mean(l$sender)
@@ -134,6 +138,7 @@ gmmajump<-function(model,samples){
     
     o<-c(l$llk,
          dens,
+         vdens,
          pack.optim.L(l),
          if(model$sender) sender.shift,
          if(model$receiver) receiver.shift,
