@@ -54,6 +54,7 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
 }
 
 find.mkl.L<-function(model,mcmc.out,control){
+  if(control$verbose>1) cat("Evaluating matrix of predicted dyad values... ")
   EY.f<-mk.EY.f(model$family)
   EYm<-matrix(0,network.size(model$Yg),network.size(model$Yg))
   for(i in 1:control$samplesize){
@@ -86,8 +87,16 @@ find.mkl.L<-function(model,mcmc.out,control){
       min.mkl<-i
     }
   }
+  if(control$verbose>1) cat("Finished.\nMaximizing...")
 
-  find.mle.L(model,start=mcmc.out$samples[[min.mkl]],control=control,mllk=FALSE,Ym=EYm)
+  mkl<-mcmc.out$samples[[min.mkl]]
+  for(i in 1:control$mle.maxit){
+    if(control$verbose>1) cat(" ",i," ")
+    mkl.old<-mkl
+    mkl<-find.mle.L(model,start=mkl,control=control,mllk=FALSE,Ym=EYm)
+    if(isTRUE(all.equal(mkl.old,mkl))) break
+  }
+  mkl
 }
 
 nullapply<-function(X,margin,FUN,...){
@@ -212,7 +221,7 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
 proc.samples.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   if(!is.null(x$samples) && (!x$control$skip.Procrustes || force) && x$model$d>0){
     if(x$control$verbose) cat("Performing Procrustes tranformation... ")
-    x$samples<-proc.Z.mean.C(x$samples,Z.ref)
+    x$samples<-proc.Z.mean.C(x$samples,Z.ref,verbose=x$control$verbose)
     if(x$control$verbose) cat("Finished.\n")
   }
   x
@@ -223,7 +232,7 @@ labelswitch.samples.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=
     if(x$control$verbose) cat("Performing label-switching... ")
     require(mclust,quiet=TRUE)
     Q.start<-switch.Q.K(Z.K.ref,x$model$G)
-    x$samples<-klswitch.C(Q.start,x$samples)
+    x$samples<-klswitch.C(Q.start,x$samples,verbose=x$control$verbose)
     if(x$control$verbose) cat("Finished.\n")
   }
   x

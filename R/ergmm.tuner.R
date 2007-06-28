@@ -14,7 +14,7 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
   ctrl$burnin<-0
 #  ctrl$interval<-1
 
-  if(control$verbose) cat("Making",tuning.runs,"tuning runs, each with sample size",ctrl$samplesize,"*",ctrl$interval,".\n")
+  if(control$verbose) cat("Making",tuning.runs,"tuning runs, each with sample size",ctrl$samplesize,"with interval",ctrl$interval,"in",threads,"thread(s).\n")
   
   if(threads<=1)
     opt.f<-function(ldelta){
@@ -28,7 +28,8 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
       my.ctrl<-ctrl
       my.ctrl[c("Z.delta","Z.tr.delta","Z.scl.delta","RE.delta","RE.shift.delta")]<-exp(ldelta[1:5])
       my.ctrl$beta.delta<-exp(ldelta[6:length(ldelta)])
-      exp(mean(log(run.proposal.snowFT(threads,model,start,prior,my.ctrl))))
+      opts<-run.proposal.snowFT(threads,model,start,prior,my.ctrl)
+      min(opts)*mean(opts)
     }
   
 
@@ -44,8 +45,8 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
 
   gmmajs<-numeric(0)
 
-  ldelta.min<-ldelta.start-7
-  ldelta.max<-ldelta.start+7
+  ldelta.min<-ldelta.start-log(100)
+  ldelta.max<-ldelta.start+log(100)
 
   ldeltas<-rbind(ldelta.start,t(sapply(1:ceiling(2*length(ldelta.start)-2),function(i) runif(length(ldelta.start),ldelta.min,ldelta.max))))
 
@@ -59,21 +60,27 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
       centroid<-apply(ldeltas[-w,],2,mean)
       #a<-exp(a.base*(0.5-i/tuning.runs))/(1+exp(a.base*(0.5-i/tuning.runs))) /2 +.45
       a<-0.6
-      if(i%%5==0) a<-1/a
       ldelta<-centroid+a*(centroid-ldeltas[w,])
+      ldeltas<-rbind(ldeltas,ldelta)
+      # Also, "queue" a "long shot".
+      if(i%%5==0){
+        a<-1/a
+        ldeltas<-rbind(ldeltas,centroid+a*(centroid-ldeltas[w,]))
+      }
+      
       gmmajs<-gmmajs[-w]
-      ldeltas<-rbind(ldeltas[-w,],ldelta)
+      ldeltas<-ldeltas[-w,]
     }
     
     if(control$verbose>1) cat("i=",i,": a=",round(a,1)," delta=",paste(round(exp(ldelta),3),collapse=",")," ",sep="")
     gmmaj<-opt.f(ldelta)
     gmmajs<-c(gmmajs,gmmaj)
 
-    if(control$verbose>1) cat("gmmaj=",gmmajs[length(gmmajs)],"\n",sep="")
+    if(control$verbose>1) cat("gmmaj=",gmmajs[length(gmmajs)],"\n",sep="")    
   }
   
-
-  best.delta<-exp(apply(ldeltas,2,mean))
+  
+  best.delta<-exp(apply(ldeltas[-which.min(gmmajs),],2,mean))
   if(control$verbose) cat("Estimated optimal deltas=",paste(round(best.delta,3),collapse=","),"\n")
   
   list(Z.delta=best.delta[1],
