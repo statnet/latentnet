@@ -1,4 +1,4 @@
-proc.Z.mean.C<-function(samples,Z.ref,center=FALSE){
+proc.Z.mean.C<-function(samples,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]
   G<-dim(samples$Z.mean)[2]
   d<-dim(Z.ref)[2]
@@ -13,14 +13,16 @@ proc.Z.mean.C<-function(samples,Z.ref,center=FALSE){
            G=as.integer(G),
            Z.ref=as.double(Z.ref),
            Z=as.double(samples$Z),
-           Z.mean=as.double(samples$Z.mean))
+           Z.mean=as.double(samples$Z.mean),
+           verbose=as.integer(verbose),
+           PACKAGE="latentnet")
   samples$Z<-if(d>0)array(Cret$Z,dim=c(S,n,d))
   samples$Z.mean<-if(G>0)array(Cret$Z.mean,dim=c(S,G,d))
   
   samples
 }
 
-klswitch.C <- function(Q.start,samples,Z=NULL,maxit=100)
+klswitch.C <- function(Q.start,samples,Z=NULL,maxit=100,verbose=0)
 {
   
   Z.ref<-!is.null(Z)
@@ -46,6 +48,7 @@ klswitch.C <- function(Q.start,samples,Z=NULL,maxit=100)
              Z.K = as.integer(samples$Z.K),
              Z.pK = as.double(samples$Z.pK),
              Q = as.double(Q.start),
+             verbose=as.integer(verbose),
              PACKAGE="latentnet")
   
   samples$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))

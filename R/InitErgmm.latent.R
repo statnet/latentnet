@@ -1,5 +1,5 @@
-InitErgmm.latent<-function(model, d, G=0, var.mul=1/4, var=NULL, var.df.mul=1/2, var.df=NULL,
-                           mean.var.mul=2, mean.var=NULL, pK.mul=1/2, pK=NULL){
+InitErgmm.latent<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+                           mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if (nargs()<2)
     stop(paste("latent() model term expected at least 1 argument, got ",
                nargs()-1, sep=""), call.=FALSE)

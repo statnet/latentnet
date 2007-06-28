@@ -5,13 +5,16 @@
 #include "mvnorm.h"
 
 void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
-			     double *vZ_mcmc, double *vZ_mu_mcmc){
+			     double *vZ_mcmc, double *vZ_mu_mcmc, int *verbose){
+
+  if(*verbose>1) Rprintf("Procrustes: Allocating memory.\n");
+
   double **Z=dmatrix(*n,*d), **Z_mu=vZ_mu_mcmc?dmatrix(*G,*d):NULL, **Zo=Runpack_dmatrix(vZo,*n,*d,NULL);
   double **A, **tZ, **tZo, **Ahalf, **AhalfInv;
   double **tptrans, **eAvectors, **eADvalues, **teAvectors, *avZ; 
   double *eAvalues, **dd_helper, **dn_helper, **dd2_helper;
   double *workspace;
-    
+  
   procr_alloc(*n, *d, *G,
 	      &A, &tZ, &tZo, &Ahalf, 
 	      &AhalfInv, &tptrans, &eAvectors, 
@@ -20,7 +23,8 @@ void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
 	      &dn_helper, &dd2_helper,
 	      &workspace);
 
-  for(int s=0; s<*S; s++){
+  if(*verbose>1) Rprintf("Procrustes: Rotating.\n");
+  for(unsigned int s=0; s<*S; s++){
     Runpack_dmatrixs(vZ_mcmc,*n,*d,Z,*S);
     if(vZ_mu_mcmc) Runpack_dmatrixs(vZ_mu_mcmc,*G,*d,Z_mu,*S);
     procr_transform(Z,Z_mu,Zo,*n,*d,*G,
@@ -33,7 +37,10 @@ void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
     Rpack_dmatrixs(Z,*n,*d,vZ_mcmc++,*S);
     if(vZ_mu_mcmc) Rpack_dmatrixs(Z_mu,*G,*d,vZ_mu_mcmc++,*S);
     R_CheckUserInterrupt();
+    if(*verbose>2 && (s+1)%(*S/(*verbose))==0) Rprintf("Procrustes: Completed %u/%d.\n",s+1,*S);
   }
+
+  if(*verbose>1) Rprintf("Procrustes: Finished.\n");
 
   P_free_all();
     
@@ -67,6 +74,8 @@ void procr_alloc(int n, int d, int G,
   *tptrans=dmatrix(d,n);
   *workspace=dvector(d*d*3+d*4);
 }
+
+/* Procustes code due to Raphael Gottardo */
 
 int procr_transform(double **Z, double **Z_mu, double **Zo, int n, int d, int G,
 		    double **pZ, double **pZ_mu,
@@ -155,12 +164,24 @@ int procr_transform(double **Z, double **Z_mu, double **Zo, int n, int d, int G,
 void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 		      double *vZ_mcmc, int *Z_ref, double *vZ_mu_mcmc, double *vZ_var_mcmc,
 		      int *vZ_K_mcmc, double *vZ_pK_mcmc,
-		      double *vQ){
-  ERGMM_MCMC_Par *samples = (ERGMM_MCMC_Par *) P_alloc(*S,sizeof(ERGMM_MCMC_Par));
+		      double *vQ, int *verbose){
 
   /* R function enabling uniform RNG (for tie-beaking) */
   GetRNGstate();
   
+
+  if(*verbose>1) Rprintf("KLswitch: Allocating memory.\n");
+  ERGMM_MCMC_Par *samples = (ERGMM_MCMC_Par *) P_alloc(*S,sizeof(ERGMM_MCMC_Par));
+  unsigned int *perm=(unsigned int *)P_alloc(*G,sizeof(unsigned int)), *bestperm=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
+  unsigned int *dir=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
+  double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);
+  ERGMM_MCMC_Par tmp;
+    
+  tmp.Z_mu=dmatrix(*G,*d);
+  tmp.Z_var=dvector(*G);
+  tmp.Z_pK=dvector(*G);
+  tmp.Z_K=ivector(*n);
+
   double  ***pK=d3array(*S,*n,*G), 
     ***Z_space=*Z_ref ? d3array(1,*n,*d):d3array(*S,*n,*d),
     ***Z_mu_space=d3array(*S,*G,*d), **Z_var_space=dmatrix(*S,*G),
@@ -168,6 +189,8 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   unsigned int **Z_K_space= (unsigned int **) imatrix(*S,*n);
 
   if(*Z_ref) Runpack_dmatrix(vZ_mcmc, *n, *d, Z_space[0]);
+
+  if(*verbose>1) Rprintf("KLswitch: Unpacking R input and precalculating pK.\n");
 
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par *cur=samples+s;
@@ -196,20 +219,12 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 	pK[s][i][g]/=pKsum;
       }
     }
+    if(*verbose>2 && (s+1)%(*S/(*verbose))==0) Rprintf("KLswitch: Unpacking & precalculating: Completed %u/%d.\n",s+1,*S);
   }
 
-  unsigned int *perm=(unsigned int *)P_alloc(*G,sizeof(unsigned int)), *bestperm=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
-  unsigned int *dir=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
-  double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);
-  ERGMM_MCMC_Par tmp;
-    
-  tmp.Z_mu=dmatrix(*G,*d);
-  tmp.Z_var=dvector(*G);
-  tmp.Z_pK=dvector(*G);
-  tmp.Z_K=ivector(*n);
+  if(*verbose>1) Rprintf("KLswitch: Iterating between label-switching to Q and recalculating Q.\n");
 
   for(unsigned int it=0; it<*maxit; it++){
-
     /* Do NOT switch the function call and "it>0", or you will short-circuit the function call.
 
        The first time through the loop, label-switch to MKL of Q, and recalculate Q.
@@ -217,11 +232,16 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
        since it already has been calculated with those labels). 
     */
     if(!klswitch_step2(Q, samples, &tmp, *S, *n, *d, *G, perm, bestperm, dir, pK) && it>0){
-      Rprintf("Q converged after %u iterations.\n", it+1);
+      if(*verbose>1) Rprintf("KLswitch: Iterating: Q converged after %u iterations.\n", it+1);
       break;
     }
     klswitch_step1(samples, *S, *n, *d, *G, Q, pK);
+
+
+    if(*verbose>2) Rprintf("KLswitch: Iterating: Completed %u/%d.\n",it+1,*maxit);
   }
+
+  if(*verbose>1) Rprintf("KLswitch: Packing for return to R.\n");
 
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par *cur=samples+s;
@@ -232,6 +252,8 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   }
 
   Rpack_dmatrixs(Q,*n,*G,vQ,1);
+
+  if(*verbose>1) Rprintf("KLswitch: Finished.\n");
 
   PutRNGstate();
   P_free_all();

@@ -2,7 +2,7 @@
 #define POST_UTILS_H
 #include "ergmm_structs.h"
 void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
-			     double *vZ_mcmc, double *vZ_mu_mcmc);
+			     double *vZ_mcmc, double *vZ_mu_mcmc, int *verbose);
 
 
 void procr_alloc(int n, int d, int G,
@@ -25,7 +25,8 @@ int procr_transform(double **Z, double **Z_mu, double **Zo, int n, int d, int G,
 void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 		      double *vZ_mcmc, int *Z_ref, double *vZ_mu_mcmc, double *vZ_var_mcmc,
 		      int *vZ_K, double *vZ_pK,
-		      double *vQ);
+		      double *vQ,
+		      int *verbose);
 
 void klswitch_step1(ERGMM_MCMC_Par *samples, int S, int n, int d, int G, double **Q, double ***pK);
 int klswitch_step2(double **Q, ERGMM_MCMC_Par *samples, ERGMM_MCMC_Par *tmp, 

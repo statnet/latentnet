@@ -10,8 +10,8 @@ Author: Pavel N. Krivitsky <pavel@stat.washington.edu>,
         Peter Hoff <hoff@stat.washington.edu>.
 Maintainer: Pavel N. Krivitsky <pavel@stat.washington.edu>
 Description: Latent position and cluster models for statistical networks. 
-Depends: network, locfit, mvtnorm
-Suggests: coda, mclust, shapes, KernSmooth
+Depends: network, locfit, mvtnorm, shapes
+Suggests: coda, mclust, KernSmooth
 License: GPL version 2 (June, 1991)
 URL: http://csde.washington.edu/statnet
 

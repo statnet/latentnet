@@ -57,8 +57,8 @@ ergmm.build.model <- function(formula,response,family,fam.par,orthogonalize,prio
 
   if(!("Z.var" %in% names(prior))) prior$Z.var<-prior$Z.var.mul*(network.size(model$Yg)/max(1,model$G))^(2/model$d)
   if(!("Z.mean.var" %in% names(prior))) prior$Z.mean.var<-prior$Z.mean.var.mul*prior$Z.var*max(1,model$G)^(2/model$d)
-  if(!("Z.var.df" %in% names(prior))) prior$Z.var.df<-prior$Z.var.df.mul*network.size(model$Yg)/max(1,model$G)
-  if(!("Z.pK" %in% names(prior))) prior$Z.pK<-prior$Z.pK.mul*network.size(model$Yg)/max(1,model$G)
+  if(!("Z.var.df" %in% names(prior))) prior$Z.var.df<-prior$Z.var.df.mul*sqrt(network.size(model$Yg)/max(1,model$G))
+  if(!("Z.pK" %in% names(prior))) prior$Z.pK<-prior$Z.pK.mul*sqrt(network.size(model$Yg)/max(1,model$G))
 
   class(model)<-"ergmm.model"  
   list(model=model,prior=prior)

@@ -99,7 +99,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
     pm<-find.mpe.L(model,pm,user.start,prior=prior,control=control,fit.vars=need.to.fit,flyapart.penalty=control$flyapart.penalty)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit$Z.K)pm$Z.K<-find.clusters(G,pm$Z)$Z.K
-    if(all.equal(pm.old,pm)[1]==TRUE) break
+    if(isTRUE(all.equal(pm.old,pm))) break
   }
   if(control$verbose) cat("Finished.\n")
 
