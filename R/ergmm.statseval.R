@@ -170,7 +170,7 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FAL
     if(!is.null(x$mcmc.pmode)){
       if(x$control$verbose) cat("Fitting another posterior mode estimate... ")
       x$pmode<-find.pmode.loop(x$model,x$mcmc.pmode,prior=x$prior,control=x$control)
-      cat("Finished.\n")
+      if(x$control$verbose) cat("Finished.\n")
       if(!require(shapes,quietly=TRUE)){
         stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
       }
