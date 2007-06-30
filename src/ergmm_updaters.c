@@ -109,7 +109,7 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
     copy_dvector(new->coef,old->coef,model->coef);
 
   if(cur->prop_LV==PROP_ALL){
-    if(new->Z_mu) copy_dmatrix(new->Z_mu,old->Z_mu,model->clusters,model->latent);
+    if(new->Z_mean) copy_dmatrix(new->Z_mean,old->Z_mean,model->clusters,model->latent);
     if(new->Z_var) copy_dvector(new->Z_var,old->Z_var,model->clusters?model->clusters:1);
   }
 
@@ -254,8 +254,8 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
     dmatrix_scale_by(par->Z,model->verts,model->latent,h);
     latentpos_translate(par->Z,model->verts,model->latent,cur->tr_by);
     if(model->clusters){
-      dmatrix_scale_by(par->Z_mu,model->clusters,model->latent,h);
-      latentpos_translate(par->Z_mu,model->clusters,model->latent,cur->tr_by);
+      dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
+      latentpos_translate(par->Z_mean,model->clusters,model->latent,cur->tr_by);
       dvector_scale_by(par->Z_var,model->clusters,h*h);
     }
     else
@@ -336,7 +336,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   for(i=0;i<model->verts;i++){
     sum = 0;
     for(j=0;j<model->clusters;j++){
-      temp=dindnormmu(model->latent,par->Z[i],par->Z_mu[j],sqrt(par->Z_var[j]),FALSE);
+      temp=dindnormmu(model->latent,par->Z[i],par->Z_mean[j],sqrt(par->Z_var[j]),FALSE);
       if(j>0)
 	cur->pK[j] = cur->pK[j-1] + par->Z_pK[j] * temp;
       else 
@@ -358,7 +358,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   
   //rdirichlet for epsilon
   for(i=0;i<model->clusters;i++){
-    par->Z_pK[i] = (double)(cur->n[i]+prior->clust_dirichlet);
+    par->Z_pK[i] = (double)(cur->n[i]+prior->Z_pK);
   }
   rdirich(model->clusters,par->Z_pK);
   
@@ -374,7 +374,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
     for(j=0;j<model->verts;j++)
       if((par->Z_K[j] - 1) == i)
 	for(loop1=0;loop1<model->latent;loop1++)
-	  S_hat += (par->Z[j][loop1] - par->Z_mu[i][loop1]) * (par->Z[j][loop1] - par->Z_mu[i][loop1]);
+	  S_hat += (par->Z[j][loop1] - par->Z_mean[i][loop1]) * (par->Z[j][loop1] - par->Z_mean[i][loop1]);
 
     par->Z_var[i] = rsclinvchisq(cur->n[i]*model->latent + prior->Z_var_df,
 				 (prior->Z_var*prior->Z_var_df + S_hat)/
@@ -385,10 +385,10 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   //mvrnorm for mumat
   for(i=0;i<model->clusters;i++){
     for(j=0;j<model->latent;j++)
-      cur->Z_bar[i][j] = cur->n[i] * cur->Z_bar[i][j]/(cur->n[i]+ par->Z_var[i]/prior->Z_mu_var);
-    useSig = par->Z_var[i]/(cur->n[i] + par->Z_var[i]/prior->Z_mu_var);
+      cur->Z_bar[i][j] = cur->n[i] * cur->Z_bar[i][j]/(cur->n[i]+ par->Z_var[i]/prior->Z_mean_var);
+    useSig = par->Z_var[i]/(cur->n[i] + par->Z_var[i]/prior->Z_mean_var);
     for(j=0;j<model->latent;j++)
-      par->Z_mu[i][j] = rnorm(cur->Z_bar[i][j],sqrt(useSig));
+      par->Z_mean[i][j] = rnorm(cur->Z_bar[i][j],sqrt(useSig));
   }
   // The following functions update par->lpZ and par->lpLV; they are NOT frivolous.
   ERGMM_MCMC_logp_Z(model,par);

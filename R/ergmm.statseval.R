@@ -53,6 +53,21 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   x
 }
 
+find.mkl.L.C<-function(model,start,samples,control){
+  if(control$verbose>1) cat("Evaluating matrix of predicted dyad values... ")
+  EYm<-post.predict.C(model,samples,control)
+  if(control$verbose>1) cat("Finished.\nMaximizing...")
+
+  mkl<-start
+  for(i in 1:control$mle.maxit){
+    if(control$verbose>1) cat(" ",i," ")
+    mkl.old<-mkl
+    mkl<-find.mle.L(model,start=mkl,control=control,mllk=FALSE,Ym=EYm)
+    if(isTRUE(all.equal(mkl.old,mkl))) break
+  }
+  mkl
+}
+
 find.mkl.L<-function(model,mcmc.out,control){
   if(control$verbose>1) cat("Evaluating matrix of predicted dyad values... ")
   EY.f<-mk.EY.f(model$family)
@@ -69,7 +84,7 @@ find.mkl.L<-function(model,mcmc.out,control){
     EYm<-EYm+EY.f(eta,model$fam.par)
   }
   EYm<-EYm/control$samplesize
-
+  if(control$verbose>1) cat("Finished.\nFinding the iteration closest to predicted...")
   min.mkl<-control$samplesize
   min.SSY<-sum((EYm-EY.f(eta,model$fam.par))^2)
   for(i in (control$samplesize-1):1){
@@ -207,7 +222,7 @@ find.pmode.loop<-function(model,start,prior,control){
 add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   if(!is.null(x$samples) && x$model$d>0 && ((!x$control$skip.mkl && is.null(x$mkl)) || force)){
     if(x$control$verbose) cat("Fitting the MKL locations... ")
-    x$mkl<-find.mkl.L(x$model,x,x$control)
+    x$mkl<-find.mkl.L.C(x$model,if(!is.null(x$pmode)) x$pmode else x$mcmc.pmode,x$samples,x$control)
     x$mkl$Z<-scale(x$mkl$Z,scale=FALSE)
     if(!require(shapes,quietly=TRUE)){
       stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
@@ -256,7 +271,7 @@ best.avail.Z.K.ref.ergmm<-function(x){
   if(!is.null(x$control$Z.K.ref)) return(x$control$Z.K.ref)
   if(!is.null(attr(x$samples,"Q"))) return(apply(attr(x$samples,"Q"),1,which.max))
   if(!is.null(x$pmode)) return(x$pmode$Z.K)
-  if(!is.null(x$mkl$mbc)) return(x$mkl$.mbc$Z.K)
+  if(!is.null(x$mkl$mbc)) return(x$mkl$mbc$Z.K)
   if(!is.null(x$mcmc.pmode)) return(x$mcmc.pmode$Z.K)
   if(!is.null(x$start)) return(x$start$Z.K)
   

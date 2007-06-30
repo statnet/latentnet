@@ -22,10 +22,16 @@
 
 /*  Allocates memory for a vector of doubles of length n */
 double *dvector(unsigned int n){
+  if(n<=0) return NULL;
+
   double *a;
   unsigned int i;
   a = (double*) P_alloc(n,sizeof(double));
-  if(a == NULL) printf("Not enough memory to make double vector");
+  if(a == NULL){
+    P_free_all();
+    error("Not enough memory to make double vector.");
+  }
+
   for(i=0;i<n;i++){
     a[i]=0.0;
   }
@@ -34,10 +40,16 @@ double *dvector(unsigned int n){
 
 /*  Allocates memory for a vector of doubles of length n */
 int *ivector(unsigned int n){
+  if(n<=0) return NULL;
+
   int *a;
   unsigned int i;
   a = (int*) P_alloc(n,sizeof(int));
-  if(a == NULL) printf("Not enough memory to make integer vector");
+  if(a == NULL){
+    P_free_all();
+    error("Not enough memory to make integer vector.");
+  }
+
   for(i=0;i<n;i++){
     a[i]=0;
   }
@@ -47,14 +59,22 @@ int *ivector(unsigned int n){
 /*  Allocates memory for an n by m matrix of doubles */
 double **dmatrix(unsigned int n,unsigned int m)
 {
+  if(n<=0 || m<=0) return NULL;
+
   double **A;
   unsigned int i, j;
 
   /* assigning memory and initialize */
   A = (double**) P_alloc(n,sizeof(double*));
-  if(A == NULL) printf("Not enough memory to make double matrix");
+  if(A == NULL){
+    P_free_all();
+    error("Not enough memory to make double matrix.");
+  }
   A[0] = (double *) P_alloc(n*m,sizeof(double));
-  if(A[0] == NULL) printf("Not enough memory to make double matrix");
+  if(A[0] == NULL){
+    P_free_all();
+    error("Not enough memory to make double matrix.");
+  }
   for(i=0;i<n;i++){
     A[i] = A[0]+i*m;
     for(j=0;j<m;j++){
@@ -68,15 +88,26 @@ double **dmatrix(unsigned int n,unsigned int m)
 /*  Allocates memory for an n1 by n2 by n3 matrix of doubles */
 double ***d3array(unsigned int n1,unsigned int n2, unsigned int n3)
 {
+  if(n1<=0 || n2<=0 || n3<=0) return NULL;
+
   double ***A;
 
   /* allocate space for the matrix and the pointers */
   A = (double***) P_alloc(n1,sizeof(double**));
-  if(A == NULL) printf("Not enough memory to make double matrix");
+  if(A == NULL){
+    P_free_all();
+    error("Not enough memory to make 3D array.");
+  }
   A[0] = (double **) P_alloc(n1*n2,sizeof(double*));
-  if(A[0] == NULL) printf("Not enough memory to make double matrix");
+  if(A[0] == NULL){
+    P_free_all();
+    error("Not enough memory to make 3D array.");
+  }
   A[0][0] = (double *) P_alloc(n1*n2*n3,sizeof(double));
-  if(A[0] == NULL) printf("Not enough memory to make double matrix");
+  if(A[0] == NULL){
+    P_free_all();
+    error("Not enough memory to make 3D array.");
+  }
 
   
   for(unsigned int i1=0;i1<n1;i1++){
@@ -96,13 +127,21 @@ double ***d3array(unsigned int n1,unsigned int n2, unsigned int n3)
 /*  Allocates memory for an n by m matrix of doubles */
 int **imatrix(unsigned int n,unsigned int m)
 {
+  if(n<=0 || m<=0) return NULL;
+
   int **A;
   unsigned int i, j;
-  /* assigning memory and initialize */
+  /* assigning memory and initializing */
   A = (int**) P_alloc(n,sizeof(int*));
-  if(A == NULL) printf("Not enough memory to make integer matrix");
+  if(A == NULL){
+    P_free_all();
+    error("Not enough memory to make integer matrix.");
+  }
   A[0] = (int*) P_alloc(n*m,sizeof(int));
-  if(A[0] == NULL) printf("Not enough memory to make integer matrix");
+  if(A[0] == NULL){
+    P_free_all();
+    error("Not enough memory to make integer matrix.");
+  }
   for(i=0;i<n;i++){
     A[i] = A[0]+i*m;
     for(j=0;j<m;j++){

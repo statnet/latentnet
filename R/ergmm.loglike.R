@@ -217,8 +217,6 @@ ergmm.loglike.grad<-function(Yg,response=NULL,Ym=NULL,family="Bernoulli",fam.par
   grad
 }
   
-  
-
 ergmm.loglike.C<-function(Yg,response=NULL,Ym=NULL,family="Bernoulli",iconsts=NULL,dconsts=NULL,beta=NULL,X=NULL,Z=NULL,sender=NULL,receiver=NULL,sociality=NULL){
   Y <-if(is.null(Ym)) getYm(Yg,response) else Ym
   n<-Yg$gal$n

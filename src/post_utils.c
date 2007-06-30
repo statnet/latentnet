@@ -2,14 +2,16 @@
 #include <Rmath.h>
 #include "post_utils.h"
 #include "matrix_utils.h"
+#include "ergmm_probs.h"
+#include "ergmm_families.h"
 #include "mvnorm.h"
 
 void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
-			     double *vZ_mcmc, double *vZ_mu_mcmc, int *verbose){
+			     double *vZ_mcmc, double *vZ_mean_mcmc, int *verbose){
 
   if(*verbose>1) Rprintf("Procrustes: Allocating memory.\n");
 
-  double **Z=dmatrix(*n,*d), **Z_mu=vZ_mu_mcmc?dmatrix(*G,*d):NULL, **Zo=Runpack_dmatrix(vZo,*n,*d,NULL);
+  double **Z=dmatrix(*n,*d), **Z_mean=vZ_mean_mcmc?dmatrix(*G,*d):NULL, **Zo=Runpack_dmatrix(vZo,*n,*d,NULL);
   double **A, **tZ, **tZo, **Ahalf, **AhalfInv;
   double **tptrans, **eAvectors, **eADvalues, **teAvectors, *avZ; 
   double *eAvalues, **dd_helper, **dn_helper, **dd2_helper;
@@ -26,16 +28,16 @@ void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
   if(*verbose>1) Rprintf("Procrustes: Rotating.\n");
   for(unsigned int s=0; s<*S; s++){
     Runpack_dmatrixs(vZ_mcmc,*n,*d,Z,*S);
-    if(vZ_mu_mcmc) Runpack_dmatrixs(vZ_mu_mcmc,*G,*d,Z_mu,*S);
-    procr_transform(Z,Z_mu,Zo,*n,*d,*G,
-		    Z,Z_mu,
+    if(vZ_mean_mcmc) Runpack_dmatrixs(vZ_mean_mcmc,*G,*d,Z_mean,*S);
+    procr_transform(Z,Z_mean,Zo,*n,*d,*G,
+		    Z,Z_mean,
 		    A,tZ,tZo,Ahalf,
 		    AhalfInv,tptrans,eAvectors,
 		    eADvalues,teAvectors,avZ,
 		    eAvalues,dd_helper,
 		    dn_helper,dd2_helper,workspace);
     Rpack_dmatrixs(Z,*n,*d,vZ_mcmc++,*S);
-    if(vZ_mu_mcmc) Rpack_dmatrixs(Z_mu,*G,*d,vZ_mu_mcmc++,*S);
+    if(vZ_mean_mcmc) Rpack_dmatrixs(Z_mean,*G,*d,vZ_mean_mcmc++,*S);
     R_CheckUserInterrupt();
     if(*verbose>2 && (s+1)%(*S/(*verbose))==0) Rprintf("Procrustes: Completed %u/%d.\n",s+1,*S);
   }
@@ -77,8 +79,8 @@ void procr_alloc(int n, int d, int G,
 
 /* Procustes code due to Raphael Gottardo */
 
-int procr_transform(double **Z, double **Z_mu, double **Zo, int n, int d, int G,
-		    double **pZ, double **pZ_mu,
+int procr_transform(double **Z, double **Z_mean, double **Zo, int n, int d, int G,
+		    double **pZ, double **pZ_mean,
 		    double **A, double **tZ, double **tZo, double **Ahalf, 
 		    double **AhalfInv, double **tptrans, double **eAvectors, 
 		    double **eADvalues, double **teAvectors, double *avZ, 
@@ -150,19 +152,142 @@ int procr_transform(double **Z, double **Z_mu, double **Zo, int n, int d, int G,
   dmatrix_multiply(dd2_helper,d,d,tZ,n,tptrans);
   t(tptrans,d,n,pZ);
 
-  if(Z_mu){
-    // Note that n>=G, so we can reuse tZ et al for Z_mu.
-    t(Z_mu,G,d,tZ);
+  if(Z_mean){
+    // Note that n>=G, so we can reuse tZ et al for Z_mean.
+    t(Z_mean,G,d,tZ);
     init_dmatrix(tptrans,d,n,0.0);
     dmatrix_multiply(dd2_helper,d,d,tZ,G,tptrans);
-    t(tptrans,d,G,pZ_mu);
+    t(tptrans,d,G,pZ_mean);
   }
 
   return(FOUND);
 }
 
+void post_pred_wrapper(int *S, 
+		       
+		       int *n, int *p, int *d,
+		       
+		       int *dir,
+		       int *family, int *iconsts, double *dconsts,
+		       
+		       double *vX,
+		       
+		       double *Z_mcmc, 
+		       double *coef_mcmc,
+		       double *sender_mcmc, double *receiver_mcmc,
+		       
+		       int *sociality,
+		       int *vobserved_ties,
+
+		       double *vEY,
+		       int *verbose){
+  unsigned int i,j,k;
+  double **EY = dmatrix(*n, *n);
+  unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
+  double ***X = d3array(*p,*n,*n);
+  double **Z = dmatrix(*n,*d), *coef = dvector(*p), *sender = sender_mcmc ? dvector(*n):NULL, *receiver = receiver_mcmc ? dvector(*n):NULL;
+  double (*E_edge)(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *, unsigned int, unsigned int);
+    
+  // set up all of the covariate matrices if covariates are involed 
+  // if p=0 (ie no covariates then these next two loops will do nothing)
+  //
+
+  for(k=0;k<*p;k++){
+    for(i=0;i<*n;i++){
+      for(j=0;j<*n;j++){
+	X[k][i][j] = vX[ k*(*n)*(*n) + i*(*n) + j ];
+      }
+    }
+  }
+
+  // Set the E(Y|eta) function.
+  switch(*family){
+  case 0:
+    E_edge=ERGMM_MCMC_E_edge_Bernoulli_logit;
+    break;
+  case 1:
+    E_edge=ERGMM_MCMC_E_edge_binomial_logit;
+    break;
+  case 2:
+    E_edge=ERGMM_MCMC_E_edge_Poisson_log;
+    break;
+  }
+
+  ERGMM_MCMC_Model model = {*dir,
+			    NULL, // Y
+			    X, // X
+			    observed_ties,
+			    NULL,
+			    0,
+			    iconsts,
+			    dconsts,
+			    *n, // verts
+			    *d, // latent
+			    *p, // coef
+			    0,
+			    *sociality};
+  
+  
+
+  for(unsigned int s=0; s<*S; s++){
+    ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z
+			  Runpack_dvectors(coef_mcmc+s,*p,coef,*S), // coef
+			  NULL, // Z_mean
+			  NULL, // Z_var
+			  NULL, // Z_pK			  
+			  sender_mcmc? Runpack_dvectors(sender_mcmc+s,*n,sender,*S):NULL, // sender
+			  0, // sender_var
+			  receiver_mcmc? Runpack_dvectors(receiver_mcmc+s,*n,receiver,*S):NULL, // receiver
+			  0, // receiver_var
+			  NULL, // Z_K
+			  0, // llk
+			  NULL, // lpedge
+			  0, // lpZ		  
+			  0, // lpLV
+			  0, // lpcoef
+			  0 // lpRE
+    };
+
+    if(model.dir){
+      for(i=0;i<model.verts;i++)
+	for(j=0;j<model.verts;j++)
+	  if(IS_OBSERVABLE(model.observed_ties,i,j))
+	    EY[i][j]+=E_edge(&model,&par,i,j);
+    }
+    else{
+      for(i=0;i<model.verts;i++)
+	for(j=0;j<=i;j++)
+	  if(IS_OBSERVABLE(model.observed_ties,i,j))
+	    EY[i][j]+=E_edge(&model,&par,i,j);
+    }
+  }
+
+  if(model.dir){
+    for(i=0;i<model.verts;i++)
+      for(j=0;j<model.verts;j++)
+	if(IS_OBSERVABLE(model.observed_ties,i,j))
+	  EY[i][j]/=*S;
+  }
+  else{
+    for(i=0;i<model.verts;i++)
+      for(j=0;j<=i;j++)
+	if(IS_OBSERVABLE(model.observed_ties,i,j))
+	  EY[i][j]/=*S;
+  }
+
+  
+  Rpack_dmatrixs(EY,*n,*n,vEY,1);
+  
+
+  P_free_all();
+
+  /* Memory freed by GC. */
+
+  return;
+}
+
 void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
-		      double *vZ_mcmc, int *Z_ref, double *vZ_mu_mcmc, double *vZ_var_mcmc,
+		      double *vZ_mcmc, int *Z_ref, double *vZ_mean_mcmc, double *vZ_var_mcmc,
 		      int *vZ_K_mcmc, double *vZ_pK_mcmc,
 		      double *vQ, int *verbose){
 
@@ -177,14 +302,14 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);
   ERGMM_MCMC_Par tmp;
     
-  tmp.Z_mu=dmatrix(*G,*d);
+  tmp.Z_mean=dmatrix(*G,*d);
   tmp.Z_var=dvector(*G);
   tmp.Z_pK=dvector(*G);
   tmp.Z_K=ivector(*n);
 
   double  ***pK=d3array(*S,*n,*G), 
     ***Z_space=*Z_ref ? d3array(1,*n,*d):d3array(*S,*n,*d),
-    ***Z_mu_space=d3array(*S,*G,*d), **Z_var_space=dmatrix(*S,*G),
+    ***Z_mean_space=d3array(*S,*G,*d), **Z_var_space=dmatrix(*S,*G),
     **Z_pK_space = dmatrix(*S, *G);
   unsigned int **Z_K_space= (unsigned int **) imatrix(*S,*n);
 
@@ -196,7 +321,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
     ERGMM_MCMC_Par *cur=samples+s;
     if(*Z_ref) cur->Z = Z_space[0];
     else cur->Z = Runpack_dmatrixs(vZ_mcmc+s,*n,*d,Z_space[s],*S);
-    cur->Z_mu = Runpack_dmatrixs(vZ_mu_mcmc+s,*G,*d,Z_mu_space[s],*S);
+    cur->Z_mean = Runpack_dmatrixs(vZ_mean_mcmc+s,*G,*d,Z_mean_space[s],*S);
     cur->Z_var = Runpack_dvectors(vZ_var_mcmc+s,*G,Z_var_space[s],*S);
     cur->Z_pK = Runpack_dvectors(vZ_pK_mcmc+s,*G,Z_pK_space[s],*S);
     cur->Z_K = Runpack_ivectors(vZ_K_mcmc+s,*n,Z_K_space[s],*S);
@@ -211,7 +336,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
       double pKsum=0;
       for(unsigned int g=0; g<*G; g++){
 	pK[s][i][g]=dindnormmu(*d,cur->Z[i],
-			       cur->Z_mu[g],sqrt(cur->Z_var[g]),FALSE);
+			       cur->Z_mean[g],sqrt(cur->Z_var[g]),FALSE);
 	pK[s][i][g]*=cur->Z_pK[g];
 	pKsum+=pK[s][i][g];
       }
@@ -245,7 +370,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par *cur=samples+s;
-    Rpack_dmatrixs(cur->Z_mu,*G,*d,vZ_mu_mcmc+s,*S);
+    Rpack_dmatrixs(cur->Z_mean,*G,*d,vZ_mean_mcmc+s,*S);
     Rpack_dvectors(cur->Z_var,*G,vZ_var_mcmc+s,*S);
     Rpack_dvectors(cur->Z_pK,*G,vZ_pK_mcmc+s,*S);
     Rpack_ivectors(cur->Z_K,*n,vZ_K_mcmc+s,*S);
@@ -307,13 +432,13 @@ R_INLINE int nextperm(unsigned int n, unsigned int *p, unsigned int *dir){
 
 
 R_INLINE void apply_perm(unsigned int *perm, ERGMM_MCMC_Par *to, double **pK, ERGMM_MCMC_Par *tmp, int n, int d, int G){
-  copy_dmatrix(to->Z_mu,tmp->Z_mu,G,d);
+  copy_dmatrix(to->Z_mean,tmp->Z_mean,G,d);
   copy_dvector(to->Z_var,tmp->Z_var,G);
   copy_dvector(to->Z_pK,tmp->Z_pK,G);
   copy_ivector(to->Z_K,tmp->Z_K,n);
 
   for(unsigned int g=0; g<G; g++){
-    copy_dvector(tmp->Z_mu[perm[g]-1],to->Z_mu[g],d);
+    copy_dvector(tmp->Z_mean[perm[g]-1],to->Z_mean[g],d);
     to->Z_var[g]=tmp->Z_var[perm[g]-1];
     to->Z_pK[g]=tmp->Z_pK[perm[g]-1];
     for(unsigned int i=0; i<n; i++){

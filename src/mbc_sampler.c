@@ -32,7 +32,7 @@ void MBC_MCMC_wrapper(int *samples_stored,
 		      double *muList, 
 		      double *SigmaList){
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
-  double **Z_mu_start = mu ? Runpack_dmatrix(mu,*G,*d,NULL) : NULL;
+  double **Z_mean_start = mu ? Runpack_dmatrix(mu,*G,*d,NULL) : NULL;
   
   /* R function enabling uniform RNG */
   GetRNGstate();
@@ -47,7 +47,7 @@ void MBC_MCMC_wrapper(int *samples_stored,
 		lpZList, lpLVList,
 		
 		Z, 
-		epsilon,Z_mu_start,Sigma,(unsigned int *) Ki,
+		epsilon,Z_mean_start,Sigma,(unsigned int *) Ki,
 		Sigprior? *Sigprior : 0,
 		muSigprior ? *muSigprior : 0,
 		dirprior ? *dirprior : 0,
@@ -74,7 +74,7 @@ void MBC_MCMC_init(unsigned int samples_stored,
 		   double **Z,
 
 		   double *epsilon, 
-		   double **Z_mu_start, 
+		   double **Z_mean_start, 
 		   double *Sigma, 
 		   unsigned int *Ki,
 
@@ -109,7 +109,7 @@ void MBC_MCMC_init(unsigned int samples_stored,
 				     NULL, // X_means
 				     samples_stored,interval};
 
-  ERGMM_MCMC_Priors prior = {muSigprior, // Z_mu_var
+  ERGMM_MCMC_Priors prior = {muSigprior, // Z_mean_var
 			     Sigprior, // Z_var
 			     alphaprior, // a.k.a. Z_var_df (I hope)
 			     NULL,
@@ -119,7 +119,7 @@ void MBC_MCMC_init(unsigned int samples_stored,
   
   ERGMM_MCMC_Par state = {Z, // Z
 			  NULL, // coef
-			  Z_mu_start, // Z_mu
+			  Z_mean_start, // Z_mean
 			  Sigma, // Z_var
 			  epsilon, // Z_pK			  
 			  NULL,
@@ -228,7 +228,7 @@ void MBC_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM_M
   Rpack_ivectors((int *)par->Z_K,model->verts,outlists->Z_K+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
   
   // Cluster means.
-  Rpack_dmatrixs(par->Z_mu,model->clusters,model->latent,outlists->Z_mu+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
+  Rpack_dmatrixs(par->Z_mean,model->clusters,model->latent,outlists->Z_mean+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);
   
   // Intracluster variances.
   Rpack_dvectors(par->Z_var,model->clusters,outlists->Z_var+pos,setting->sample_size+MBC_OUTLISTS_RESERVE);

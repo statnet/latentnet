@@ -14,7 +14,7 @@
  */
 
 typedef struct {
-  double **Z, *coef, **Z_mu, *Z_var, *Z_pK;
+  double **Z, *coef, **Z_mean, *Z_var, *Z_pK;
   double *sender,sender_var,*receiver,receiver_var;
   unsigned int *Z_K;
   double llk, **lpedge, lpZ, lpLV, lpcoef, lpRE, lpREV;
@@ -38,17 +38,14 @@ typedef struct {
 } ERGMM_MCMC_MCMCSettings;
 
 /* The structure to house the parameters of the prior distribution. 
- * Z_mu_var is formerly known as "muSigprior" a.k.a. \omega
- * Z_var is formely known as "Sigprior"
- * Z_var_df is formerly known as "alphaprior", the df of the prior on the
- * intracluster variance */
+ */
 typedef struct {
-  double Z_mu_var, Z_var, Z_var_df, *coef_mean, *coef_var, clust_dirichlet, sender_var, sender_var_df, receiver_var, receiver_var_df;
+  double Z_mean_var, Z_var, Z_var_df, *coef_mean, *coef_var, Z_pK, sender_var, sender_var_df, receiver_var, receiver_var_df;
 } ERGMM_MCMC_Priors;
 
 typedef struct {
   double *llk, *lpZ, *lpcoef, *lpRE, *lpLV, *lpREV;
-  double *Z, *Z_rate_move, *Z_rate_move_all, *coef, *coef_rate, *Z_mu, *Z_var, *Z_pK, *sender, *sender_var, *receiver, *receiver_var;
+  double *Z, *Z_rate_move, *Z_rate_move_all, *coef, *coef_rate, *Z_mean, *Z_var, *Z_pK, *sender, *sender_var, *receiver, *receiver_var;
   int *Z_K;
 } ERGMM_MCMC_ROutput;
 

@@ -76,3 +76,47 @@ switch.Q.K<-function(K,G,smooth=1/G){
   for(i in 1:n) Q[i,K[i]]<-1+smooth
   t(apply(Q,1,function(x) x/sum(x)))
 }
+
+post.predict.C<-function(model,samples,control){
+  n<-network.size(model$Yg)
+  d<-model$d
+  p<-model$p
+
+  ## Figure out the design matrix.
+  observed<-observed.dyads(model$Yg)
+
+  if((observed==(diag(n)==0) && is.directed(model$Yg)) ||
+     (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
+    observed<-NULL
+
+  familyID<-switch(model$family,
+                   Bernoulli=0,
+                   binomial=1,
+                   Poisson=2)
+  
+  array(.C("post_pred_wrapper",
+           S = as.integer(control$samplesize),
+           
+           n = as.integer(n),
+           p = as.integer(p),
+           d = as.integer(d),
+           
+           dir=is.directed(model$Yg),
+           family=as.integer(familyID),
+           iconsts=as.integer(model$iconsts),
+           dconsts=as.double(model$dconsts),
+           
+           X=as.double(unlist(model$X)),
+           
+           Z = as.double(samples$Z),
+           beta = as.double(samples$beta), # coef
+           sender = as.double(samples$sender),
+           receiver = as.integer(samples$receiver),
+           sociality = as.integer(model$sociality),
+           observed=as.integer(observed),
+           
+           EY=double(n*n),
+           
+           verbose=as.integer(control$verbose),
+           PACKAGE="latentnet")$EY,dim=c(1,n,n))[1,,] 
+}
