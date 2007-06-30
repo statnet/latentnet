@@ -43,61 +43,61 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 
 			double *vX,
 			  
-			double *llkList,
-			double *lpZList,
-			double *lpcoefList,
-			double *lpREList,
-			double *lpLVList,
-			double *lpREVList,
+			double *llk_mcmc,
+			double *lpZ_mcmc,
+			double *lpcoef_mcmc,
+			double *lpRE_mcmc,
+			double *lpLV_mcmc,
+			double *lpREV_mcmc,
 			   
 			double *vZ_start,
 
-			double *epsilon,
-			double *mu,
-			double *Sigma,
-			int *Ki,
+			double *Z_pK_start,
+			double *vZ_mean_start,
+			double *Z_var_start,
+			int *Z_K_start,
 
-			double *Sigprior,
-			double *muSigprior, 
-			double *dirprior,
-			double *alphaprior,
+			double *Z_var_prior,
+			double *Z_mean_prior_var, 
+			double *Z_pK_prior,
+			double *Z_var_prior_df,
 
-			double *vZ_post,
+			double *Z_mcmc,
 			double *Z_rate_move,
 			double *Z_rate_move_all,
 
-			int *KiList,
-			double *Z_pKList,
-			double *muList,
-			double *SigmaList,
+			int *Z_K_mcmc,
+			double *Z_pK_mcmc,
+			double *Z_mean_mcmc,
+			double *Z_var_mcmc,
 			  
 			double *coef_start,
-			double *coef_mean,
+			double *coef_prior_mean,
 			double *coef_var,
-			double *Coef,
-			double *B_rate, 
+			double *coef_mcmc,
+			double *coef_rate, 
 			  
-			double *sender,
-			double *receiver,
-			double *sender_var,
-			double *receiver_var,
+			double *sender_start,
+			double *receiver_start,
+			double *sender_var_start,
+			double *receiver_var_start,
 
 			double *sender_var_prior,
 			double *sender_var_prior_df,
 			double *receiver_var_prior,
 			double *receiver_var_prior_df,
 
-			double *senderList,
-			double *receiverList,
-			double *sender_varList,
-			double *receiver_varList,
+			double *sender_mcmc,
+			double *receiver_mcmc,
+			double *sender_var_mcmc,
+			double *receiver_var_mcmc,
 
 			int *sociality,
 			int *vobserved_ties,
 			double *deltas){
   int i=0,j=0,k=0;
   double **Z_start = vZ_start ? Runpack_dmatrix(vZ_start,*n,*d, NULL) : NULL;
-  double **Z_mu_start = mu ? Runpack_dmatrix(mu,*G,*d,NULL) : NULL;
+  double **Z_mean_start = vZ_mean_start ? Runpack_dmatrix(vZ_mean_start,*G,*d,NULL) : NULL;
   int **Y = Runpack_imatrix(vY, *n, *n, NULL);
   unsigned int **observed_ties = vobserved_ties ? (unsigned int **) Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL;
   double ***X = d3array(*p,*n,*n);
@@ -130,29 +130,29 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 		  family ? *family : 0,iconsts,dconsts,
 		  X,
 
-		  llkList, lpZList, lpcoefList, lpREList, lpLVList, lpREVList,
+		  llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
 		    
 		  Z_start, 
-		  epsilon,Z_mu_start,Sigma,(unsigned int *)Ki,
-		  Sigprior? *Sigprior : 0,
-		  muSigprior ? *muSigprior : 0,
-		  dirprior ? *dirprior : 0,
-		  alphaprior ? *alphaprior : 0,
-		  vZ_post, Z_rate_move, Z_rate_move_all, KiList, Z_pKList, muList, SigmaList,
+		  Z_pK_start,Z_mean_start,Z_var_start,(unsigned int *)Z_K_start,
+		  Z_var_prior? *Z_var_prior : 0,
+		  Z_mean_prior_var ? *Z_mean_prior_var : 0,
+		  Z_pK_prior ? *Z_pK_prior : 0,
+		  Z_var_prior_df ? *Z_var_prior_df : 0,
+		  Z_mcmc, Z_rate_move, Z_rate_move_all, Z_K_mcmc, Z_pK_mcmc, Z_mean_mcmc, Z_var_mcmc,
 
 		  coef_start,
-		  Coef, B_rate,    
-		  coef_mean, coef_var,
+		  coef_mcmc, coef_rate,    
+		  coef_prior_mean, coef_var,
 
-		  sender,receiver,
-		  sender_var ? *sender_var : 0,
-		  receiver_var ? *receiver_var : 0,
+		  sender_start,receiver_start,
+		  sender_var_start ? *sender_var_start : 0,
+		  receiver_var_start ? *receiver_var_start : 0,
 		  sender_var_prior ? *sender_var_prior : 0,
 		  sender_var_prior_df ? *sender_var_prior_df : 0,
 		  receiver_var_prior ? *receiver_var_prior : 0,
 		  receiver_var_prior_df ? *receiver_var_prior_df : 0,
-		  senderList, receiverList, 
-		  sender_varList, receiver_varList,
+		  sender_mcmc, receiver_mcmc, 
+		  sender_var_mcmc, receiver_var_mcmc,
 		  *sociality,
 		  observed_ties,
 		  deltas[0],deltas[1],deltas[2],
@@ -175,26 +175,26 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 
 		     double ***X,
 
-		     double *llkList, double *lpZList, double *lpcoefList, double *lpREList, double *lpLVList, double *lpREVList,
+		     double *llk_mcmc, double *lpZ_mcmc, double *lpcoef_mcmc, double *lpRE_mcmc, double *lpLV_mcmc, double *lpREV_mcmc,
 
 		     double **Z_start,
-		     double *epsilon, double **Z_mu_start, double *Sigma, unsigned int *Ki,
-		     double Sigprior, double muSigprior, double dirprior,
-		     double alphaprior,
-		     double *ZList, double *Z_rate_move, double *Z_rate_move_all, int *KList,
-		     double *Z_pKList,
-		     double *muList, double *SigmaList,
+		     double *Z_pK_start, double **Z_mean_start, double *Z_var_start, unsigned int *Z_K_start,
+		     double Z_var_prior, double Z_mean_prior_var, double Z_pK_prior,
+		     double Z_var_prior_df,
+		     double *Z_mcmc, double *Z_rate_move, double *Z_rate_move_all, int *K_mcmc,
+		     double *Z_pK_mcmc,
+		     double *Z_mean_mcmc, double *Z_var_mcmc,
 
-		     double *coef_mle,
-		     double *coefList, double *coef_rate, 
-		     double *coef_mean, double *coef_var, 
+		     double *coef_start,
+		     double *coef_mcmc, double *coef_rate, 
+		     double *coef_prior_mean, double *coef_var, 
 
-		     double *sender, double *receiver,
-		     double sender_var, double receiver_var,
+		     double *sender_start, double *receiver_start,
+		     double sender_var_start, double receiver_var_start,
 		     double sender_var_prior, double sender_var_prior_df,
 		     double receiver_var_prior, double receiver_var_prior_df,
-		     double *senderList, double *receiverList,
-		     double *sender_varList, double *receiver_varList,
+		     double *sender_mcmc, double *receiver_mcmc,
+		     double *sender_var_mcmc, double *receiver_var_mcmc,
 		     unsigned int sociality,
 		     unsigned int **observed_ties,
 
@@ -259,27 +259,27 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
     setting.X_means[k]=X_sum/n_observed;
   }
 
-  ERGMM_MCMC_Priors prior = {muSigprior, // Z_mu_var
-			     Sigprior, // Z_var
-			     alphaprior, // a.k.a. Z_var_df (I hope)
-			     coef_mean,
+  ERGMM_MCMC_Priors prior = {Z_mean_prior_var, // Z_mean_var
+			     Z_var_prior, // Z_var
+			     Z_var_prior_df, // a.k.a. Z_var_df (I hope)
+			     coef_prior_mean,
 			     coef_var,
-			     dirprior,
+			     Z_pK_prior,
 			     sender_var_prior,
 			     sender_var_prior_df,
 			     receiver_var_prior,
 			     receiver_var_prior_df};
   
   ERGMM_MCMC_Par state = {Z_start, // Z
-			  coef_mle, // coef
-			  Z_mu_start, // Z_mu
-			  Sigma, // Z_var
-			  epsilon, // Z_pK			  
-			  sender,
-			  sender_var,
-			  model.sociality?sender:receiver,
-			  receiver_var,
-			  Ki, // Z_K
+			  coef_start, // coef
+			  Z_mean_start, // Z_mean
+			  Z_var_start, // Z_var
+			  Z_pK_start, // Z_pK			  
+			  sender_start,
+			  sender_var_start,
+			  model.sociality?sender_start:receiver_start,
+			  receiver_var_start,
+			  Z_K_start, // Z_K
 			  0, // llk
 			  dmatrix(model.verts,model.verts), // lpedge
 			  0, // lpZ		  
@@ -291,12 +291,12 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 
   ERGMM_MCMC_Par prop = {model.latent ? dmatrix(model.verts,model.latent):NULL, // Z
 			 model.coef ? dvector(model.coef):NULL, // coef
-			 model.clusters ? dmatrix(model.clusters,model.latent):NULL, // Z_mu
+			 model.clusters ? dmatrix(model.clusters,model.latent):NULL, // Z_mean
 			 model.latent ? dvector(model.clusters?model.clusters:1):NULL, // Z_var
 			 model.clusters ? dvector(model.clusters):NULL, // Z_pK
-			 sender ? dvector(model.verts):NULL, // sender
+			 sender_start ? dvector(model.verts):NULL, // sender
 			 0, // sender_var
-			 receiver && !model.sociality ? dvector(model.verts):NULL, // receiver
+			 receiver_start && !model.sociality ? dvector(model.verts):NULL, // receiver
 			 0,
 			 state.Z_K, // prop.Z_K === state.Z_K
 			 0, // llk
@@ -321,16 +321,16 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 				PROP_NONE, // prop_LV
 				PROP_NONE, // prop_REV
 				FALSE, // after_Gibbs
-				(model.latent || sender || receiver) ? (unsigned int *) ivector(model.verts) : NULL // update_order
+				(model.latent || sender_start || receiver_start) ? (unsigned int *) ivector(model.verts) : NULL // update_order
   };
   
-  ERGMM_MCMC_ROutput outlists = {llkList, lpZList, lpcoefList, lpREList, lpLVList, lpREVList,
-				 ZList, Z_rate_move, Z_rate_move_all,
-				 coefList,coef_rate,
-				 muList,SigmaList,Z_pKList,
-				 senderList,sender_varList,
-				 receiverList,receiver_varList,
-				 KList};
+  ERGMM_MCMC_ROutput outlists = {llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
+				 Z_mcmc, Z_rate_move, Z_rate_move_all,
+				 coef_mcmc,coef_rate,
+				 Z_mean_mcmc,Z_var_mcmc,Z_pK_mcmc,
+				 sender_mcmc,sender_var_mcmc,
+				 receiver_mcmc,receiver_var_mcmc,
+				 K_mcmc};
 
   if(model.clusters>0)
     for(i=0;i<model.verts;i++)
@@ -458,7 +458,7 @@ void ERGMM_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM
       Rpack_ivectors((int *)par->Z_K,model->verts,outlists->Z_K+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 	  
       // Cluster means.
-      Rpack_dmatrixs(par->Z_mu,model->clusters,model->latent,outlists->Z_mu+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+      Rpack_dmatrixs(par->Z_mean,model->clusters,model->latent,outlists->Z_mean+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 	  
       // Intracluster variances.
       Rpack_dvectors(par->Z_var,model->clusters,outlists->Z_var+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);

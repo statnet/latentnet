@@ -35,15 +35,12 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
   int **Y = Runpack_imatrix(vY, *n, *n, NULL);
   unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
-  double ***X = (double ***) P_alloc(*p,sizeof(double**));
+  double ***X = d3array(*p,*n,*n);
   
   // set up all of the covariate matrices if covariates are involed 
   // if p=0 (ie no covariates then these next two loops will do nothing)
   //
 
-  for(i=0;i<*p;i++){
-    X[i] = dmatrix((*n),(*n));
-  } 
   for(k=0;k<*p;k++){
     for(i=0;i<*n;i++){
       for(j=0;j<*n;j++){
@@ -84,7 +81,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 
   ERGMM_MCMC_Par params = {Z, // Z
 			   coef, // coef
-			   NULL, // Z_mu
+			   NULL, // Z_mean
 			   NULL, // Z_var
 			   NULL, // Z_pK			  
 			   sender,
@@ -240,7 +237,7 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
 
 
 
-/* logp_Z gives log P(Z|Z_mu,Z_K,Z_var) 
+/* logp_Z gives log P(Z|Z_mean,Z_K,Z_var) 
  */
 double ERGMM_MCMC_logp_Z(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
   unsigned int i;
@@ -248,7 +245,7 @@ double ERGMM_MCMC_logp_Z(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
   if(model->clusters>0)
     for(i=0;i<model->verts;i++)
       par->lpZ += dindnormmu(model->latent,par->Z[i],
-			     par->Z_mu[par->Z_K[i]-1],sqrt(par->Z_var[par->Z_K[i]-1]),TRUE);
+			     par->Z_mean[par->Z_K[i]-1],sqrt(par->Z_var[par->Z_K[i]-1]),TRUE);
   else
     for(i=0;i<model->verts;i++)
       par->lpZ += diidnorm0(model->latent, par->Z[i], sqrt(par->Z_var[0]),TRUE);
@@ -271,8 +268,8 @@ double ERGMM_MCMC_logp_Z_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur
   i=cur->prop_Z;
 
   if(model->clusters>0)
-    lpZ_diff=dindnormmu(model->latent,new->Z[i],new->Z_mu[new->Z_K[i]-1],sqrt(new->Z_var[new->Z_K[i]-1]),TRUE)-
-      dindnormmu(model->latent,old->Z[i],old->Z_mu[old->Z_K[i]-1],sqrt(old->Z_var[old->Z_K[i]-1]),TRUE);
+    lpZ_diff=dindnormmu(model->latent,new->Z[i],new->Z_mean[new->Z_K[i]-1],sqrt(new->Z_var[new->Z_K[i]-1]),TRUE)-
+      dindnormmu(model->latent,old->Z[i],old->Z_mean[old->Z_K[i]-1],sqrt(old->Z_var[old->Z_K[i]-1]),TRUE);
   else
     lpZ_diff=diidnorm0(model->latent, new->Z[i], sqrt(new->Z_var[0]),TRUE)-
       diidnorm0(model->latent, old->Z[i], sqrt(old->Z_var[0]),TRUE);
@@ -326,7 +323,7 @@ double ERGMM_MCMC_logp_RE_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cu
   return(lpRE_diff);
 }
 
-/* logp_latentvars gives P(Z_mu,Z_var|priors)
+/* logp_latentvars gives P(Z_mean,Z_var|priors)
  * Note that it does NOT include probabilities involved in cluster assignments (might add later).
  */
 double ERGMM_MCMC_logp_LV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MCMC_Priors *prior){
@@ -335,7 +332,7 @@ double ERGMM_MCMC_logp_LV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MC
   if(model->clusters>0)
     for(i = 0; i < model->clusters; i++){
       for(j = 0; j < model->latent; j++)
-	par->lpLV += dnorm(par->Z_mu[i][j],0,sqrt(prior->Z_mu_var),1);
+	par->lpLV += dnorm(par->Z_mean[i][j],0,sqrt(prior->Z_mean_var),1);
       par->lpLV+=dsclinvchisq(par->Z_var[i],prior->Z_var_df,prior->Z_var,1);
     }
   else

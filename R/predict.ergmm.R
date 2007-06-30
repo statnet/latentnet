@@ -1,19 +1,21 @@
-predict.ergmm<-function(ergmm.fit,theta="mkl"){
-  if(is.list(theta)){
-    theta<-theta
-  }else if(theta=="start"){
-    theta<-ergmm.fit$start
-  }else if(theta=="mle"){
-    theta<-summary(ergmm.fit,point.est=c("mle"),se=FALSE)$mle
-  }else if(theta=="pmean"){
-    theta<-summary(ergmm.fit,point.est=c("pmean"))$pmean
-  }else if(theta=="mkl"){
-    theta<-summary(ergmm.fit,point.est=c("mkl"))$mkl
-  }else if(theta=="pmode"){
-    theta<-summary(ergmm.fit,point.est=c("pmode"))$pmode
-  }else if(is.numeric(theta) && round(theta)==theta){
-    theta<-ergmm.fit$samples[[theta]]
+predict.ergmm<-function(ergmm.fit,which.par="post"){
+  if(class(which.par)=="ergmm.par"){
+    which.par<-which.par
+  }else if(which.par=="start"){
+    which.par<-ergmm.fit$start
+  }else if(which.par=="mle"){
+    which.par<-ergmm.fit$mle
+  }else if(which.par=="pmean"){
+    which.par<-summary(ergmm.fit,point.est=c("pmean"))$pmean
+  }else if(which.par=="mkl"){
+    which.par<-ergmm.fit$mkl
+  }else if(which.par=="pmode"){
+    which.par<-ergmm.fit$pmode
+  }else if(which.par=="post"){
+    return(with(ergmm.fit,post.predict.C(model,samples,control)))
+  }else if(is.numeric(which.par) && round(which.par)==which.par){
+    which.par<-ergmm.fit$samples[[which.par]]
   }else stop("Invalid parameter structure.")
 
-  ergmm.EY.L(ergmm.fit$model,theta)
+  ergmm.EY.L(ergmm.fit$model,which.par)
 }

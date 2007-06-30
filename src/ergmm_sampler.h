@@ -42,32 +42,32 @@ void ERGMM_MCMC_wrapper(int *samples_stored, int *interval,
 
 			double *vX,
 			  
-			double *llkList, double *lpZList, double *lpcoefList, double *lpREList, double *lpLVList, double *lpREVList,
+			double *llk_mcmc, double *lpZ_mcmc, double *lpcoef_mcmc, double *lpRE_mcmc, double *lpLV_mcmc, double *lpREV_mcmc,
 			   
 			double *vZ_start,
 
-			double *epsilon, double *mu,double *Sigma,int *Ki,
+			double *Z_pK_start, double *vZ_mean_start,double *Z_var_start,int *Z_K_start,
 
-			double *Sigprior, double *muSigprior, 
-			double *dirprior, double *alphaprior,
+			double *Z_var_prior, double *Z_mean_prior_var, 
+			double *Z_K_prior, double *Z_var_prior_df,
 
-			double *vZ_post, double *Z_rate_move, double *Z_rate_move_all,
+			double *Z_mcmc, double *Z_rate_move, double *Z_rate_move_all,
 
-			int *KiList, double *Z_pKList, double *muList, double *SigmaList,
+			int *Z_K_mcmc, double *Z_pK_mcmc, double *Z_mean_mcmc, double *Z_var_mcmc,
 			  
 			double *coef_start,
-			double *coef_mean, double *coef_var,
-			double *Coef, double *B_rate, 
+			double *coef_mean, double *coef_prior_var,
+			double *coef_mcmc, double *coef_rate, 
 			  
 			  
-			double *sender, double *receiver,
-			double *sender_var, double *receiver_var,
+			double *sender_start, double *receiver_start,
+			double *sender_var_start, double *receiver_var_start,
 
 			double *sender_var_prior, double *sender_var_prior_df,
 			double *receiver_var_prior, double *receiver_var_prior_df,
 
-			double *senderList, double *receiverList,
-			double *sender_varList, double *receiver_varList,
+			double *sender_mcmc, double *receiver_mcmc,
+			double *sender_var_mcmc, double *receiver_var_mcmc,
 
 			int *sociality,
 			int *vobserved_ties,
@@ -84,26 +84,26 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 
 		     double ***X,
 
-		     double *llkList, double *lpZList, double *lpcoefList, double *lpREList, double *lpLVList, double *lpREVList,
+		     double *llk_mcmc, double *lpZ_mcmc, double *lpcoef_mcmc, double *lpRE_mcmc, double *lpLV_mcmc, double *lpREV_mcmc,
 
 		     double **Z_start,
-		     double *epsilon, double **Z_mu_start, double *Sigma, unsigned int *Ki,
-		     double Sigprior, double muSigprior, double dirprior,
-		     double alphaprior,
-		     double *ZList, double *Z_rate_move, double *Z_rate_move_all, int *KList,
-		     double *Z_pKList,
-		     double *muList, double *SigmaList,
+		     double *Z_pK_start, double **Z_mean_start, double *Z_var_start, unsigned int *Z_K_start,
+		     double Z_var_prior, double Z_mean_prior_var, double Z_K_prior,
+		     double Z_var_prior_df,
+		     double *Z_mcmc, double *Z_rate_move, double *Z_rate_move_all, int *K_mcmc,
+		     double *Z_pK_mcmc,
+		     double *Z_mean_mcmc, double *Z_var_mcmc,
 
-		     double *coef_mle,
-		     double *coefList, double *coef_rate, 
-		     double *coef_mean, double *coef_var, 
+		     double *coef_start,
+		     double *coef_mcmc, double *coef_rate, 
+		     double *coef_mean, double *coef_prior_var, 
 
-		     double *sender, double *receiver,
-		     double sender_var, double receiver_var,
+		     double *sender_start, double *receiver_start,
+		     double sender_var_start, double receiver_var_start,
 		     double sender_var_prior, double sender_var_prior_df,
 		     double receiver_var_prior, double receiver_var_prior_df,
-		     double *senderList, double *receiverList,
-		     double *sender_varList, double *receiver_varList,
+		     double *sender_mcmc, double *receiver_mcmc,
+		     double *sender_var_mcmc, double *receiver_var_mcmc,
 		     unsigned int sociality,
 		     unsigned int **observed_ties,
 

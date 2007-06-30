@@ -1,5 +1,5 @@
-#ifndef LATENT_PROBS_H
-#define LATENT_PROBS_H 1
+#ifndef ERGMM_PROBS_H
+#define ERGMM_PROBS_H
 #include <R.h>
 
 #include "ergmm_structs.h"
@@ -31,4 +31,4 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			   double *llk);
 
 
-#endif
+#endif /* ERGMM_PROBS_H */

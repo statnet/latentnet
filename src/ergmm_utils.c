@@ -105,7 +105,7 @@ R_INLINE void uiswap(unsigned int *a, unsigned int *b){
 void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_Par *dest){
   if(source->Z && (source->Z != dest->Z)) copy_dmatrix(source->Z,dest->Z,model->verts,model->latent);
   if(source->coef && (source->coef != dest->coef)) copy_dvector(source->coef,dest->coef,model->coef);
-  if(source->Z_mu && (source->Z_mu != dest->Z_mu)) copy_dmatrix(source->Z_mu,dest->Z_mu,model->clusters,model->latent);
+  if(source->Z_mean && (source->Z_mean != dest->Z_mean)) copy_dmatrix(source->Z_mean,dest->Z_mean,model->clusters,model->latent);
   if(source->Z_var && (source->Z_var != dest->Z_var)) copy_dvector(source->Z_var,dest->Z_var,model->clusters?model->clusters:1);
   if(source->Z_pK && (source->Z_pK != dest->Z_pK)) copy_dvector(source->Z_pK,dest->Z_pK,model->clusters);
   if(source->sender && (source->sender != dest->sender)) copy_dvector(source->sender,dest->sender,model->verts);
