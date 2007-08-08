@@ -24,16 +24,17 @@
 
 /* A wrapper for lp_Y_recompute to be called directly from R. */
 void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
-			   int *dir, int *vY,
-			   int *family, int *iconsts, double *dconsts,
-			   double *vX, double *vZ,
-			   double *coef,
-			   double *sender, double *receiver, int *sociality,
-			   int *vobserved_ties,
-			   double *llk){
+			int *dir, int *viY, double *vdY,
+			int *family, int *iconsts, double *dconsts,
+			double *vX, double *vZ,
+			double *coef,
+			double *sender, double *receiver, int *sociality,
+			int *vobserved_ties,
+			double *llk){
   unsigned int i,j,k;
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
-  int **Y = Runpack_imatrix(vY, *n, *n, NULL);
+  int **iY = iY ? Runpack_imatrix(viY, *n, *n, NULL) : NULL;
+  double **dY = dY ? Runpack_dmatrix(vdY, *n, *n, NULL) : NULL;
   unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
   double ***X = d3array(*p,*n,*n);
   
@@ -50,10 +51,12 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
   }
   
   ERGMM_MCMC_Model model = {*dir,
-			    Y, // Y
+			    iY, // iY
+			    dY, // dY
 			    X, // X
 			    observed_ties,
-			    NULL,
+			    ERGMM_MCMC_lp_edge[*family-1],
+			    ERGMM_MCMC_E_edge[*family-1],
 			    0,
 			    iconsts,
 			    dconsts,
@@ -63,21 +66,8 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			    0,
 			    *sociality};
   
-  // Set the link function.
-  switch(*family){
-  case 0:
-    model.lp_edge=ERGMM_MCMC_lp_edge_Bernoulli_logit;
-    ERGMM_MCMC_set_lp_Yconst_Bernoulli_logit(&model);
-    break;
-  case 1:
-    model.lp_edge=ERGMM_MCMC_lp_edge_binomial_logit;
-    ERGMM_MCMC_set_lp_Yconst_binomial_logit(&model);
-    break;
-  case 2:
-    model.lp_edge=ERGMM_MCMC_lp_edge_Poisson_log;
-    ERGMM_MCMC_set_lp_Yconst_Poisson_log(&model);
-    break;
-  }
+  // Precompute the normalizing constant.
+  ERGMM_MCMC_set_lp_Yconst[*family](&model);
 
   ERGMM_MCMC_Par params = {Z, // Z
 			   coef, // coef
@@ -97,7 +87,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			   0 // lpRE
   };
 
-  *llk = ERGMM_MCMC_lp_Y(&model,&params,1);
+  *llk = ERGMM_MCMC_lp_Y(&model,&params,FALSE);
 
   P_free_all();
 
@@ -123,15 +113,9 @@ R_INLINE double ERGMM_MCMC_etaij(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par,un
 /* recomputes log probability of the graph
    "own_lpedge" is used for debugging --- if set, lp_Y_recompute allocates its own
    lpedge matrix and deallocates it when done, leaving no traces of it having been run */
-double ERGMM_MCMC_lp_Y(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int own_lpedge){
-  double llk=model->lp_Yconst, **lpedge;
+double ERGMM_MCMC_lp_Y(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int update_lpedge){
+  double llk=model->lp_Yconst, lpedge;
   unsigned int i, j;
-  if(own_lpedge){
-    lpedge=dmatrix(model->verts,model->verts);
-  }
-  else {
-    lpedge=par->lpedge;
-  }
 
   /* actually calculating log-likelihood */
   // This is actually more readable than the nested ifs.
@@ -142,24 +126,26 @@ double ERGMM_MCMC_lp_Y(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned in
   if(model->dir){
     for(i=0;i<model->verts;i++)
       for(j=0;j<model->verts;j++)
-	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  llk+=model->lp_edge(model,par,i,j);
+	if(IS_OBSERVABLE(model->observed_ties,i,j)){
+	  llk+=lpedge=model->lp_edge(model,par,i,j);
+	  if(update_lpedge) par->lpedge[i][j]=lpedge;
+	}
   }
   else{
     for(i=0;i<model->verts;i++)
       for(j=0;j<=i;j++)
-	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  llk+=model->lp_edge(model,par,i,j);
+	if(IS_OBSERVABLE(model->observed_ties,i,j)){
+	  llk+=lpedge=model->lp_edge(model,par,i,j);
+	  if(update_lpedge) par->lpedge[i][j]=lpedge;
+	}
   }
   
   /* Do NOT add on log P(Z|means,vars,clusters) or log
      P(sender,receiver|vars) here.  This is a _log-likelihood_, so
      it's log P(Y|everything else), not log P(Y,Z|everything else).*/
 
-  if(own_lpedge){
-    return(llk);
-  }
-  return(par->llk=llk);
+  if(!update_lpedge) return(llk);
+  else return(par->llk=llk);
 }
 
 
@@ -170,7 +156,7 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
 
   ERGMM_MCMC_Par *new=cur->prop,*old=cur->state;
   if(cur->prop_coef!=PROP_NONE || cur->prop_Z==PROP_ALL || cur->prop_RE==PROP_ALL)
-    return(ERGMM_MCMC_lp_Y(model,new,0)-old->llk);
+    return(ERGMM_MCMC_lp_Y(model,new,TRUE)-old->llk);
   if(cur->prop_Z!=PROP_NONE) prop_i=prop_j=cur->prop_Z;
   else if(cur->prop_RE!=PROP_NONE){
     if(old->sender) prop_i=cur->prop_RE;
@@ -186,7 +172,7 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
       i=prop_i;
       for(j=0; j<model->verts; j++){
 	if(IS_OBSERVABLE(model->observed_ties,i,j)){
-	  llk_diff+=model->lp_edge(model,new,i,j);
+	  llk_diff+=new->lpedge[i][j]=model->lp_edge(model,new,i,j);
 	  llk_diff-=old->lpedge[i][j];
 	}
       }
@@ -195,7 +181,7 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
       j=prop_j;
       for(i=0; i<model->verts; i++){
 	if(IS_OBSERVABLE(model->observed_ties,i,j)){
-	  llk_diff+=model->lp_edge(model,new,i,j);
+	  llk_diff+=new->lpedge[i][j]=model->lp_edge(model,new,i,j);
 	  llk_diff-=old->lpedge[i][j];
 	}
       }
@@ -205,7 +191,7 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
       i=prop_i;
       j=prop_j;
       if(IS_OBSERVABLE(model->observed_ties,i,j)){
-	llk_diff-=new->lpedge[i][j];
+	llk_diff-=new->lpedge[i][j]=new->lpedge[i][j];
 	llk_diff+=old->lpedge[i][j];
       }
     }
@@ -215,13 +201,13 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
       i=prop_i;
       for(j=0; j<i; j++){
 	if(IS_OBSERVABLE(model->observed_ties,i,j)){
-	  llk_diff+=model->lp_edge(model,new,i,j);
+	  llk_diff+=new->lpedge[i][j]=model->lp_edge(model,new,i,j);
 	  llk_diff-=old->lpedge[i][j];
 	}
       }
       for(j=i; j<model->verts; j++){
 	if(IS_OBSERVABLE(model->observed_ties,j,i)){
-	  llk_diff+=model->lp_edge(model,new,j,i);
+	  llk_diff+=new->lpedge[j][i]=model->lp_edge(model,new,j,i);
 	  llk_diff-=old->lpedge[j][i];
 	}
       }

@@ -16,9 +16,9 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
   ## latent_MCMC_wrapper(...) to be set to NULL when NULL is coerced to double.
   ## (as.double(NULL)==double(0))
 
-  Ym <-getYm(model$Yg,model$response)
+  Ym <-model$Ym
   
-  n<-model$Yg$gal$n
+  n<-network.size(model$Yg)
   d<-model$d
   G<-model$G
   p<-model$p
@@ -29,9 +29,6 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
   if(length(prior$beta.mean)==1) prior$beta.mean<-rep(prior$beta.mean,p)
   if(length(prior$beta.var)==1) prior$beta.var<-rep(prior$beta.var,p)
 
-  iconsts<-dconsts<-NULL
-
-
   ## Figure out the design matrix.
   observed<-observed.dyads(model$Yg)
 
@@ -39,20 +36,9 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
      (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
     observed<-NULL
 
-  familyID<-switch(model$family,
-                   Bernoulli=0,
-                   binomial=1,
-                   Poisson=2)
-
   ## Sanity checks: the following block of code checks that all dimensionalities and
   ## dimensions are correct, and those optional parameters that are required by the presence
   ## of other optional parameters are present.
-
-  if(familyID==1){
-    iconsts=model$fam.par$trials
-    if(is.null(iconsts))
-      stop("Binomial family requires parameter n.")
-  }
   
   for(i in 1:p)
     if(!all(dim(model$X[[i]])==c(n,n))) stop("Incorrect size for covariate matrices.")
@@ -113,10 +99,11 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
              G=as.integer(G), 
              
              dir=as.integer(is.directed(model$Yg)),
-             vY=as.integer(Ym),
-             family=as.integer(familyID),
-             iconsts=as.integer(iconsts),
-             dconsts=as.double(dconsts),
+             viY=as.integer(Ym),
+             vdY=as.double(Ym),
+             family=as.integer(model$familyID),
+             iconsts=as.integer(model$iconsts),
+             dconsts=as.double(model$dconsts),
              
              vX=as.double(unlist(model$X)),  
              

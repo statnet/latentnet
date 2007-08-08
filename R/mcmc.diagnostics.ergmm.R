@@ -7,23 +7,30 @@ if(!exists("mcmc.diagnostics", mode="function")){
   }
 }
 
-mcmc.diagnostics.ergmm <- function(x,burnin=FALSE,
+mcmc.diagnostics.ergmm <- function(x,which.diags=c("acf","trace","raftery"),
+                                   burnin=FALSE,
                                    which.vars=NULL,
                                    vertex.i=c(1)){
-  oldask=par("ask")
-  on.exit(par(ask=oldask))
   x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i,vertex.i)
 
-  autocorr.plot(x)
+  if("acf" %in% which.diags)
+    autocorr.plot(x)
 
-  par(ask=dev.interactive())
-  plot(x)
-  rd<-raftery.diag(x,r=0.0125)
-  print(rd)
-  invisible(rd)
+  if("trace" %in% which.diags){
+    oldask=par("ask")
+    on.exit(par(ask=oldask))
+    par(ask=dev.interactive())
+    plot(x)
+  }
+
+  if("raftery" %in% which.diags){
+    rd<-raftery.diag(x,r=0.0125)
+    print(rd)
+    invisible(rd)
+  }
 }
 
-as.mcmc.list.ergmm<-function(x,burnin=FALSE,
+as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,
                              Z.i=c(1),
                              randeff.i=c(1)){

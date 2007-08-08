@@ -91,42 +91,7 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
  University of Washington, April 2005.
 }
 \examples{
-#
-# See http://www.csde.washington.edu/statnet
-# for examples
-#
-# load the Florentine marriage data matrix
-#
-data(flo)
-#
-# attach the sociomatrix for the Florentine marriage data
-# This is not yet a network object.
-#
-flo
-#
-# Create a network object out of the adjacency matrix
-#
-flomarriage <- network(flo,directed=FALSE)
-flomarriage
-#
-# print out the sociomatrix for the Florentine marriage data
-#
-sociomatrix(flomarriage)
-#
-# create a vector indicating the wealth of each family (in thousands of lira) 
-# and add it as a covariate to the network object
-#
-flomarriage <- set.vertex.attribute(flomarriage,"wealth",
-  c(10,36,27,146,55,44,20,8,42,103,48,49,10,48,32,3))
-flomarriage
-#
-# create a plot of the social network
-#
-plot(flomarriage)
-#
-# now make the vertex size proportional to their wealth
-#
-plot(flomarriage, vertex.cex="wealth", main="Marriage Ties")
+
 #
 # Use 'data(package = "latentnet")' to list the data sets in a
 #
@@ -139,46 +104,30 @@ data(sampson)
 #
 # Get the group labels
 #
-group <- get.vertex.attribute(samplike,"group")
-samp.labs <- substr(group,1,1)
-#
-samp.fit <- ergmm(samplike ~ latent(k=2), burnin=10000,
-                 MCMCsamplesize=2000, interval=30)
+
+samp.fit <- ergmm(samplike ~ latent(d=2), control=ergmm.control(burnin=10000,
+                 samplesize=2000, interval=10)
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
 #
 # Plot the fit
 #
-plot(samp.fit,label=samp.labs, vertex.col="group")
+plot(samp.fit)
 #
 # Using Sampson's Monk data, lets fit a latent clustering model
 #
 \dontrun{
-samp.fit <- ergmm(samplike ~ latentcluster(k=2, ngroups=3), burnin=10000,
-                 MCMCsamplesize=2000, interval=30)
+samp.fit <- ergmm(samplike ~ latentcluster(d=2, G=3), ergmm.control(burnin=10000,
+                 samplesize=2000, interval=10)
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
 #
 # Lets look at the goodness of fit:
 #
-plot(samp.fit,label=samp.labs, vertex.col="group")
-plot(samp.fit,pie=TRUE,label=samp.labs)
-plot(samp.fit,density=c(2,2))
-plot(samp.fit,contours=5,contour.color="red")
-plot(samp.fit,density=TRUE,drawarrows=TRUE)
-#
-# Add contours
-#
-ergmm.add.contours(samp.fit,nlevels=8,lwd=2)
-points(samp.fit$Z.mkl,pch=19,col=samp.fit$class)
-#
-# Try a covariate on the group
-#
-samegroup <- outer(group, group, "==")
-diag(samegroup) <- 0
-samp.fit <- ergmm(samplike ~ latentcov(samegroup) + latent(k=2))
+plot(samp.fit)
+plot(samp.fit,pie=TRUE)
 summary(samp.fit)
 }
 }

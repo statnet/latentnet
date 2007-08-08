@@ -1,4 +1,4 @@
-ergmm.build.model <- function(formula,response,family,fam.par,orthogonalize,prior){
+ergmm.get.model <- function(formula,response,family,fam.par,orthogonalize,prior){
   
   terms<-terms(formula)
 
@@ -11,8 +11,10 @@ ergmm.build.model <- function(formula,response,family,fam.par,orthogonalize,prio
 
   model<-list(formula=formula,
               Yg=Yg,
+              Ym=getYm(Yg,response),
               response=response,
               family=family,
+              familyID=family.IDs[[family]],
               fam.par=fam.par,
               coef.names=character(0),
               X=list(),
@@ -26,8 +28,8 @@ ergmm.build.model <- function(formula,response,family,fam.par,orthogonalize,prio
               prior=list() ## Only here for convenience.
               )
 
-
-
+  model<-fam.par.check(model)
+  
   if(model$intercept){
     model<-InitErgmm.latentcov(model,observed.dyads(Yg),"density")
   }

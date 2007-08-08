@@ -163,6 +163,21 @@ int procr_transform(double **Z, double **Z_mean, double **Zo, int n, int d, int 
   return(FOUND);
 }
 
+R_INLINE void ergmm_par_pred(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
+  if(model->dir){
+    for(unsigned i=0;i<model->verts;i++)
+      for(unsigned j=0;j<model->verts;j++)
+	if(IS_OBSERVABLE(model->observed_ties,i,j))
+	  model->dY[i][j]+=model->E_edge(model,par,i,j);
+  }
+  else{
+    for(unsigned i=0;i<model->verts;i++)
+      for(unsigned j=0;j<=i;j++)
+	if(IS_OBSERVABLE(model->observed_ties,i,j))
+	  model->dY[i][j]+=model->E_edge(model,par,i,j);
+  }
+}
+
 void post_pred_wrapper(int *S, 
 		       
 		       int *n, int *p, int *d,
@@ -180,14 +195,13 @@ void post_pred_wrapper(int *S,
 		       int *vobserved_ties,
 
 		       double *vEY,
+		       int *s_MKL,
 		       int *verbose){
   unsigned int i,j,k;
-  double **EY = dmatrix(*n, *n);
   unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
   double ***X = d3array(*p,*n,*n);
   double **Z = dmatrix(*n,*d), *coef = dvector(*p), *sender = sender_mcmc ? dvector(*n):NULL, *receiver = receiver_mcmc ? dvector(*n):NULL;
-  double (*E_edge)(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *, unsigned int, unsigned int);
-    
+  
   // set up all of the covariate matrices if covariates are involed 
   // if p=0 (ie no covariates then these next two loops will do nothing)
   //
@@ -200,24 +214,13 @@ void post_pred_wrapper(int *S,
     }
   }
 
-  // Set the E(Y|eta) function.
-  switch(*family){
-  case 0:
-    E_edge=ERGMM_MCMC_E_edge_Bernoulli_logit;
-    break;
-  case 1:
-    E_edge=ERGMM_MCMC_E_edge_binomial_logit;
-    break;
-  case 2:
-    E_edge=ERGMM_MCMC_E_edge_Poisson_log;
-    break;
-  }
-
   ERGMM_MCMC_Model model = {*dir,
-			    NULL, // Y
+			    NULL, // iY
+			    dmatrix(*n,*n), // dY
 			    X, // X
 			    observed_ties,
-			    NULL,
+			    ERGMM_MCMC_lp_edge[*family-1],
+			    ERGMM_MCMC_E_edge[*family-1],			    
 			    0,
 			    iconsts,
 			    dconsts,
@@ -227,8 +230,6 @@ void post_pred_wrapper(int *S,
 			    0,
 			    *sociality};
   
-  
-
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z
 			  Runpack_dvectors(coef_mcmc+s,*p,coef,*S), // coef
@@ -247,37 +248,43 @@ void post_pred_wrapper(int *S,
 			  0, // lpcoef
 			  0 // lpRE
     };
-
-    if(model.dir){
-      for(i=0;i<model.verts;i++)
-	for(j=0;j<model.verts;j++)
-	  if(IS_OBSERVABLE(model.observed_ties,i,j))
-	    EY[i][j]+=E_edge(&model,&par,i,j);
-    }
-    else{
-      for(i=0;i<model.verts;i++)
-	for(j=0;j<=i;j++)
-	  if(IS_OBSERVABLE(model.observed_ties,i,j))
-	    EY[i][j]+=E_edge(&model,&par,i,j);
-    }
+    ergmm_par_pred(&model,&par);
   }
 
-  if(model.dir){
-    for(i=0;i<model.verts;i++)
-      for(j=0;j<model.verts;j++)
-	if(IS_OBSERVABLE(model.observed_ties,i,j))
-	  EY[i][j]/=*S;
-  }
-  else{
-    for(i=0;i<model.verts;i++)
-      for(j=0;j<=i;j++)
-	if(IS_OBSERVABLE(model.observed_ties,i,j))
-	  EY[i][j]/=*S;
-  }
-
+  dscalar_times_matrix(1/(double)*S, model.dY, model.verts, model.verts, model.dY);
   
-  Rpack_dmatrixs(EY,*n,*n,vEY,1);
-  
+  Rpack_dmatrixs(model.dY,*n,*n,vEY,1);
+
+  if(s_MKL){
+    *s_MKL=-1;
+    double m_llk=-HUGE_VAL;
+    for(unsigned int s=0; s<*S; s++){
+      ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z
+			    Runpack_dvectors(coef_mcmc+s,*p,coef,*S), // coef
+			    NULL, // Z_mean
+			    NULL, // Z_var
+			    NULL, // Z_pK			  
+			    sender_mcmc? Runpack_dvectors(sender_mcmc+s,*n,sender,*S):NULL, // sender
+			    0, // sender_var
+			    receiver_mcmc? Runpack_dvectors(receiver_mcmc+s,*n,receiver,*S):NULL, // receiver
+			    0, // receiver_var
+			    NULL, // Z_K
+			    0, // llk
+			    NULL, // lpedge
+			    0, // lpZ		  
+			    0, // lpLV
+			    0, // lpcoef
+			    0 // lpRE
+      };
+      
+      double llk=ERGMM_MCMC_lp_Y(&model,&par,FALSE);
+
+      if(llk>m_llk){
+	*s_MKL=s;
+	m_llk=llk;
+      }
+    }
+  }
 
   P_free_all();
 

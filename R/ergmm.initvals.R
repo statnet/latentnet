@@ -1,4 +1,5 @@
 ergmm.initvals <- function(model,user.start,prior,control){
+  if(control$verbose) cat("Generating initial values for MCMC:\n")
   need.to.fit<-list(beta=model$p>0 && is.null(user.start$beta), ## beta
                     Z=model$d>0 && is.null(user.start$Z), ## Z
                     sender=model$sender && is.null(user.start$sender), ## sender
@@ -24,7 +25,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if(need.to.fit$Z){
     if(control$verbose) cat("Computing geodesic distances... ")
-    D <- ergmm.geodesicmatrix(Yg)
+    D <- ergmm.geodesicmatrix(model)
     D[is.infinite(D)]<-2*n
     if(control$verbose) cat("Finished.\n")
     if(control$verbose) cat("Computing MDS locations... ")
@@ -32,6 +33,8 @@ ergmm.initvals <- function(model,user.start,prior,control){
     if(control$verbose) cat("Finished.\n")
   }
 
+  if(control$verbose) cat("Computing other initial values... ")
+  
   if("Z" %in% names(pm)) {
     i.keep<-mahalanobis(pm$Z,0,cov(pm$Z))<20
     pm$Z[!i.keep,]<-0
@@ -92,11 +95,16 @@ ergmm.initvals <- function(model,user.start,prior,control){
   if(need.to.fit$receiver.var){
     pm$receiver.var<-var(pm$receiver)
   }
-  if(control$verbose) cat("Iterating fitting posterior mode conditional on cluster assignments and clustering conditioned on latent space positions...")
+
+  if(control$verbose) cat("Finished.\n")
+  
+  if(control$verbose) cat("Finding the conditional posterior mode... ")
   for(i in 1:control$mle.maxit){
-    if(control$verbose) cat(i," ",sep="")
+    if(control$verbose>1) cat(i,"")
     pm.old<-pm
-    pm<-find.mpe.L(model,pm,user.start,prior=prior,control=control,fit.vars=need.to.fit,flyapart.penalty=control$flyapart.penalty)
+    pm<-find.mpe(model,pm,
+                 given=merge.lists(as.ergmm.par.list(list(Z.K=pm$Z.K)),user.start),
+                 prior=prior,control=control,fit.vars=need.to.fit)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit$Z.K)pm$Z.K<-find.clusters(G,pm$Z)$Z.K
     if(isTRUE(all.equal(pm.old,pm))) break

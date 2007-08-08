@@ -55,11 +55,14 @@ typedef struct {
 */
 struct ERGMM_MCMC_Model_struct{
   unsigned int dir;
-  int **Y;
+  int **iY;
+  double **dY;
   double ***X;
   unsigned int **observed_ties;
 
   double (*lp_edge)(struct ERGMM_MCMC_Model_struct*,ERGMM_MCMC_Par*,unsigned int,unsigned int);
+  double (*E_edge)(struct ERGMM_MCMC_Model_struct*,ERGMM_MCMC_Par*,unsigned int,unsigned int);
+
   double lp_Yconst;
   int *iconst;
   double *dconst;

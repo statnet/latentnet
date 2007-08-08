@@ -1,4 +1,4 @@
-"plot.ergmm" <- function (ergmm.fit, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
+"plot.ergmm" <- function (x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
                           which.par="mkl",
                           main = NULL, xlab=NULL, ylab=NULL, xlim=NULL,ylim=NULL,
                           object.scale=formals(plot.network.default)$object.scale,
@@ -7,19 +7,19 @@
                           vertex.col=NULL, print.formula=TRUE,
                           edge.col=8,
                           pie = FALSE,
-                          labels=TRUE,
+                          labels=FALSE,
                           rand.eff=NULL,
                           plot.means=TRUE,plot.vars=TRUE,
                           suppress.axes=FALSE,
                           jitter1D=1,curve1D=TRUE,suppress.center=FALSE)
 {
 
-  Yg<-ergmm.fit$model$Yg
-  Ym <- sociomatrix(Yg)
+  Yg<-x$model$Yg
   distances<-NULL
 
   n<-network.size(Yg)
-
+  if(x$model$G<1) pie<-FALSE
+  
   if (missing(xlab)) 
     xlab <- ""
   if (missing(ylab)) 
@@ -34,9 +34,9 @@
     Z.pZK<-summ$Z.pZK
     if (missing(main)) 
       main <- paste(deparse(substitute(which.par))," Latent Positions of ", 
-                    deparse(substitute(ergmm.fit)),sep="")
+                    deparse(substitute(x)),sep="")
   }else if(which.par=="start"){
-    summ<-ergmm.fit$start
+    summ<-x$start
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
@@ -44,9 +44,9 @@
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Initial Latent Positions of ", 
-                    deparse(substitute(ergmm.fit)),sep="")
+                    deparse(substitute(x)),sep="")
   }else if(which.par=="mle"){
-    summ<-summary(ergmm.fit,point.est=c("mle"),se=FALSE)
+    summ<-summary(x,point.est=c("mle"),se=FALSE)
     Z.pos <- summ$mle$Z
     summ<-summ$mle
     Z.mean<-summ$Z.mean
@@ -56,9 +56,9 @@
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Multistage MLEs of Latent Positions of", 
-                    deparse(substitute(ergmm.fit)))
+                    deparse(substitute(x)))
   }else if(which.par=="pmean"){
-    summ<-summary(ergmm.fit,point.est=c("pmean"))
+    summ<-summary(x,point.est=c("pmean"))
     Z.pos <- summ$pmean$Z
     summ<-summ$pmean
     Z.mean<-summ$Z.mean
@@ -67,20 +67,26 @@
     Z.pZK<-summ$Z.pZK
     if (missing(main)) 
       main <- paste("Posterior Mean Positions of", 
-                    deparse(substitute(ergmm.fit)))
+                    deparse(substitute(x)))
   }else if(which.par=="mkl"){
-    summ<-summary(ergmm.fit,point.est=c("pmean","mkl"))
+    summ<-summary(x,point.est=c("pmean","mkl"))
     Z.pos <- summ$mkl$Z
-    Z.mean<-summ$mkl$mbc$Z.mean
-    Z.var<-summ$mkl$mbc$Z.var
+    if(!is.null(x$mkl$mbc)){
+      Z.mean<-summ$mkl$mbc$Z.mean
+      Z.var<-summ$mkl$mbc$Z.var
+    }else{
+      if(!is.null(summ$pmean$Z.mean)) Z.mean<-summ$pmean$Z.mean
+      else plot.means<-FALSE
+      Z.var<-summ$pmean$Z.var
+    }
     Z.K<-summ$pmean$Z.K
     Z.pZK<-summ$pmean$Z.pZK
     summ<-summ$mkl
     if (missing(main)) 
       main <- paste("MKL Latent Positions of", 
-                    deparse(substitute(ergmm.fit)))
+                    deparse(substitute(x)))
   }else if(which.par=="pmode"){
-    summ<-summary(ergmm.fit,point.est=c("pmode"))
+    summ<-summary(x,point.est=c("pmode"))
     Z.pos <- summ$pmode$Z
     summ<-summ$pmode
     Z.mean<-summ$Z.mean
@@ -89,24 +95,30 @@
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Posterior Mode Latent Positions of", 
-                    deparse(substitute(ergmm.fit)))
+                    deparse(substitute(x)))
   }else if(which.par=="cloud"){
-    summ<-summary(ergmm.fit,point.est=c("pmean","mkl"))
+    summ<-summary(x,point.est=c("pmean","mkl"))
     Z.pos <- summ$mkl$Z
-    Z.mean<-summ$mkl$mbc$Z.mean
-    Z.var<-summ$mkl$mbc$Z.var
+    if(!is.null(x$mkl$mbc)){
+      Z.mean<-summ$mkl$mbc$Z.mean
+      Z.var<-summ$mkl$mbc$Z.var
+    }else{
+      if(!is.null(summ$pmean$Z.mean)) Z.mean<-summ$pmean$Z.mean
+      else plot.means<-FALSE
+      Z.var<-summ$pmean$Z.var
+    }
     Z.K<-summ$pmean$Z.K
     Z.pZK<-summ$pmean$Z.pZK
     summ<-summ$mkl
     if (missing(main)) 
       main <- paste("MKL Latent Positions of", 
-                    deparse(substitute(ergmm.fit)))
-    plot(matrix(c(ergmm.fit$samples$Z),ncol=2),pch=".")
+                    deparse(substitute(x)))
+    plot(matrix(c(x$samples$Z),ncol=2),pch=".")
     points(Z.pos,col=cluster.col[Z.K])
     points(Z.mean,col=cluster.col)
     invisible(NULL)
   }else if(is.numeric(which.par) && round(which.par)==which.par){
-    summ<-ergmm.fit$samples[[which.par]]
+    summ<-x$samples[[which.par]]
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
@@ -114,7 +126,7 @@
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (missing(main)) 
       main <- paste("Iteration #",which.par," Latent Positions of ", 
-                    deparse(substitute(ergmm.fit)),sep="")
+                    deparse(substitute(x)),sep="")
   }else stop("Invalid latent space position estimate type.")
   
   if(dim(Z.pos)[2]==1){
@@ -132,7 +144,7 @@
     }
   
   if(is.null(vertex.col)){
-    if(is.latent.cluster(ergmm.fit) && !pie)
+    if(is.latent.cluster(x) && !pie)
       vertex.col <- cluster.col[Z.K]
     else vertex.col<-cluster.col[1]
   }
@@ -143,7 +155,7 @@
     }
   }
   
-  if(!missing(rand.eff) && (rand.eff[1]=="total" || ergmm.fit$model[rand.eff[1]][[1]])){
+  if(!missing(rand.eff) && (rand.eff[1]=="total" || x$model[rand.eff[1]][[1]])){
     if(rand.eff=="total")
       rand.eff.mul<-exp((summ["sender"][[1]]+summ["receiver"][[1]])/2)
     else      
@@ -174,35 +186,37 @@
                jitter=FALSE,
                usecurve=curve1D,
                edge.curve=distances,
-               displaylabels=labels&&!(ergmm.fit$model$d==1 && curve1D==TRUE),
-               tick=!(ergmm.fit$model$d==1 && curve1D==TRUE),
+               displaylabels=labels&&!(x$model$d==1 && curve1D==TRUE),
+               tick=!(x$model$d==1 && curve1D==TRUE),
                edge.col=edge.col,
                ...)
   options(warn=old.warn)
   
   ## For 1D plots, only plot horizontal axis ticks.
-  if(ergmm.fit$model$d==1 && curve1D==TRUE) {
+  if(x$model$d==1 && curve1D==TRUE) {
     axis(1)
   }
   
   if(print.formula){
-    aaa <- ergmm.fit$model$formula   
-    xformula <- paste(aaa[2],aaa[1],aaa[-c(1:2)],collapse=" ")
+    fmla <- x$model$formula   
+    xformula <- paste(fmla[2],fmla[1],fmla[-c(1:2)],collapse=" ")
+    if(!is.null(x$model$response)) xformula<-paste(xformula,"   (",x$model$response,")",sep="")
     title(main = xformula, line = 1, cex.main = 0.7)
   }
   
   if(pie){
     piesize<-rep(ergmm.plotting.vertex.radius(vertex.cex,xylim,object.scale),length=n)
+    pie.order<-order(piesize,decreasing=TRUE)
     for(i in 1:n){
-      ergmm.drawpie(Z.pos[i,],piesize[i],Z.pZK[i,],n=50,cols=cluster.col)
+      ergmm.drawpie(Z.pos[pie.order[i],],piesize[pie.order[i]],Z.pZK[pie.order[i],],n=50,cols=cluster.col)
     }
   }
   if(!suppress.center)
     points(cbind(0,0),pch="+")
-  Z.mean<-if(ergmm.fit$model$G>0)Z.mean else cbind(0,0)
-  if(ergmm.fit$model$d==1)
+  Z.mean<-if(x$model$G>0)Z.mean else cbind(0,0)
+  if(x$model$d==1)
     Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
-  else if(ergmm.fit$model$d>2){
+  else if(x$model$d>2){
     Z.mean<-predict(prc,Z.mean)
   }
   if(plot.means)

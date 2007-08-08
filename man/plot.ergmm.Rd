@@ -45,6 +45,7 @@
       \item{integer}{Plots the configuration of \code{ergm.fit}'th
 	stored MCMC iteration.}
     }
+  }
   \item{pie}{For latent clustering models, each node is drawn as a pie
     chart representing the probabilities of cluster membership.}
   \item{rand.eff}{A character vector selecting "sender", "receiver",

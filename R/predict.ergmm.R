@@ -17,5 +17,5 @@ predict.ergmm<-function(ergmm.fit,which.par="post"){
     which.par<-ergmm.fit$samples[[which.par]]
   }else stop("Invalid parameter structure.")
 
-  ergmm.EY.L(ergmm.fit$model,which.par)
+  ergmm.EY(ergmm.fit$model,which.par)
 }

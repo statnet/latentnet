@@ -7,7 +7,7 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
   d<-model$d
   p<-model$p
   G<-model$G
-  n<-model$Yg$gal$n
+  n<-network.size(model$Yg)
   samplesize<-control$samplesize
   
 
@@ -20,7 +20,7 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
         warning("Fitting random effects as fixed effects.")
       if(se){
         ## Refit the MLE (mostly for the Hessian)
-        mle<-find.mpe.L(model,ergmm.fit$mle,control=control,fit.vars=FIT_MLE,opt="lpY",hessian=TRUE)
+        mle<-find.mle(model,ergmm.fit$mle,control=control,hessian=TRUE)
       }
       else mle<-ergmm.fit$mle
 
@@ -90,25 +90,20 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
   ## Compute the posterior mean point estimates.
   if("pmean" %in% point.est){
     if(is.null(ergmm.fit$pmean)){
-      pmean<-with(samples,
-                  list(
-                       llk=mean(llk),
-                       beta=if(p>0) apply(beta,2,mean),
-                       beta.rate=if(p>0) mean(beta.rate),
-                       Z.K=if(G>0) apply(Z.K,2,function(x)which.max(tabulate(x,G))),
-                       Z.pZK=if(G>0) t(apply(Z.K,2,function(x)tabulate(x,G)/length(x))),
-                       Z.mean=if(G>0) apply(Z.mean,2:3,mean),
-                       Z.var=if(d>0) apply(Z.var,2,mean),
-                       Z=if(d>0) apply(Z,2:3,mean),
-                       Z.rate=if(d>0)mean(Z.rate),
-                       sender=if(model$sender) apply(sender,2,mean),
-                       sender.var=if(model$sender) mean(sender.var),
-                       receiver=if(model$receiver) apply(receiver,2,mean),
-                       receiver.var=if(model$receiver) mean(receiver.var),
-                       sociality=if(model$sociality) apply(sociality,2,mean),
-                       sociality.var=if(model$sociality) mean(sociality.var)
-                       )
-                  )
+      pmean<-list()
+      for(name in names(samples)){
+        if(is.null(samples[[name]])) next
+        name.dim<-length(dim(samples[[name]]))
+        pmean[[name]]<-{
+          if(name.dim<2) mean(samples[[name]])
+          else if(name.dim==2) apply(samples[[name]],2,mean)
+          else if(name.dim==3) apply(samples[[name]],2:3,mean)
+        }
+      }
+      if(G>0){
+        pmean$Z.pZK<-t(apply(samples$Z.K,2,tabulate,G))/samplesize
+        pmean$Z.K<-apply(pmean$Z.pZK,1,which.max)
+      }
     
       beta.cov<-cov(samples$beta)
       colnames(beta.cov) <- rownames(beta.cov) <- model$coef.names

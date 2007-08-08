@@ -22,13 +22,13 @@ double ERGMM_MCMC_logp_REV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_M
 double ERGMM_MCMC_logp_REV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior);
 
 void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
-			   int *dir, int *vY,
-			   int *family, int *iconsts, double *dconsts,
-			   double *vX, double *vZ,
-			   double *coef,
-			   double *sender, double *receiver, int *lock_RE,
-			   int *vobserved_ties,
-			   double *llk);
+			int *dir, int *viY, double *vdY,
+			int *family, int *iconsts, double *dconsts,
+			double *vX, double *vZ,
+			double *coef,
+			double *sender, double *receiver, int *lock_RE,
+			int *vobserved_ties,
+			double *llk);
 
 
 #endif /* ERGMM_PROBS_H */
