@@ -1,5 +1,10 @@
 # Utilities for dealing with MCMC output produced by *.MCMC.C functions.
 
+ERGMM.PAR_VAR_NAMES<-c("beta","Z","sender","receiver","sociality",
+                       "Z.var","Z.mean","Z.K",
+                       "sender.var","receiver.var","sociality.var")
+ERGMM.PAR_LLK_NAMES<-c("beta","Z","sender","receiver","sociality")
+
 del.iteration<-function(mcmcsamples,i){
   for(name in names(mcmcsamples)){
     if(length(mcmcsamples[[name]])>0){
@@ -15,15 +20,27 @@ seldrop<-function(x,i){
   array(c(x),dim=dim(x)[-i])
 }
 
+ergmm.par.blank<-function(){
+  x<-list()
+  class(x)<-"ergmm.par"
+  x
+}
+
+as.ergmm.par.list<-function(x){
+  class(x)<-"ergmm.par"
+  x
+}
+
 "[.ergmm.par.list"<-function(x,i){
   if(!is.numeric(i)) stop("Index vector to the '[' operator of an ergmm.par.list must be of mode numeric or integer.")
   l<-list()
   
   for(name in names(x)){
     if(length(x[[name]])>0){
-      if(length(dim(x[[name]]))<=1) l[[name]]<-x[[name]][i]
-      else if(length(dim(x[[name]]))==2) l[[name]]<-x[[name]][i,,drop=FALSE]
-      else if(length(dim(x[[name]]))==3) l[[name]]<-x[[name]][i,,,drop=FALSE]
+      d<-dim(x[[name]])
+      if(length(d)<=1) l[[name]]<-x[[name]][i]
+      else if(length(d)==2) l[[name]]<-x[[name]][i,,drop=FALSE]
+      else if(length(d)==3) l[[name]]<-x[[name]][i,,,drop=FALSE]
     }
   }
   class(l)<-"ergmm.par.list"

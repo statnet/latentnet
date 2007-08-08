@@ -1,13 +1,13 @@
-if(!exists("rergm", mode="function")){
-  rergm <- function(object, ...)
-    UseMethod("rergm")
+if(!exists("simulate", mode="function")){
+  simulate <- function(object, ...)
+    UseMethod("simulate")
 }
 
-rergm.ergmm<-function(ergmm.fit,n=1){
+simulate.ergmm<-function(ergmm.fit,n=1){
   l<-list()
   for(i in 1:n){
     iter<-floor(runif(1,1,ergmm.fit$control$samplesize+1))
-    l[[i]]<-rergm.1(ergmm.fit$model,ergmm.fit$samples[[iter]],ergmm.fit$prior)
+    l[[i]]<-simulate.ergmm.1(ergmm.fit$model,ergmm.fit$samples[[iter]],ergmm.fit$prior)
   }
   if(n==1) return(l[[1]])
   else{
@@ -16,10 +16,10 @@ rergm.ergmm<-function(ergmm.fit,n=1){
   }
 }
 
-rergm.list<-function(model,par,prior=ergmm.prior(),n=1){
+simulate.ergmm.model<-function(model,par,prior=list(),n=1){
   l<-list()
   for(i in 1:n){
-    l[[i]]<-rergm.1(model,par,prior)
+    l[[i]]<-simulate.ergmm.1(model,par,prior)
   }
   if(n==1) return(l[[1]])
   else{
@@ -28,8 +28,8 @@ rergm.list<-function(model,par,prior=ergmm.prior(),n=1){
   }
 }
   
-rergm.1<-function(model,par,prior=ergmm.prior()){
-  nv<-model$Yg$gal$n
+simulate.ergmm.1<-function(model,par,prior=list()){
+  nv<-network.size(model$Yg)
   mypar<-par
   
   if(length(model$X)>0 && is.null(mypar$beta))
@@ -70,15 +70,9 @@ rergm.1<-function(model,par,prior=ergmm.prior()){
     mypar$receiver<-rnorm(nv,0,sqrt(mypar$receiver.var))
   }
 
-  eta<-ergmm.eta(model$Yg,
-                 beta=mypar$beta,
-                 X=model$X,
-                 Z=mypar$Z,
-                 sender=mypar$sender,
-                 receiver=mypar$receiver,
-                 sociality=mypar$sociality)
+  eta<-ergmm.eta(model,mypar)
 
-  sm<-mk.rsm.f(model$family)(eta,model$fam.par)
+  sm<-rsm.fs[[model$familyID]](eta,model$fam.par)
   if(!has.loops(model$Yg))
     diag(sm)<-0
   net<-with(model,as.network.matrix(sm,matrix.type="adjacency",

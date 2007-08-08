@@ -13,10 +13,6 @@
 #include "matrix_utils.h"
 #include "ergmm_utils.h"
 
-
-#define FOUND 0
-#define NOTFOUND 1
-
 // Computes distance between every pair of points and puts the result into dist.
 void pairwise_dist(double **A,unsigned int n,unsigned int dim, double **dist){
   unsigned int i,j;

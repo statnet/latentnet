@@ -23,8 +23,8 @@
   An object of class \code{\link[=summary.ergmm.object]{summary.ergmm}}.
 }
 \author{ Pavel N. Krivitsky \name{pavel@stat.washington.edu} }
-\seealso{ \code{\link{ergmm.object},
-\code{\link{ergmm}}
+\seealso{ \code{\link{ergmm.object}},
+  \code{\link{ergmm}}
 }
 \examples{
 }

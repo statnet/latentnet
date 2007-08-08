@@ -1,7 +1,7 @@
-ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
+ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                   control=ergmm.control(),
-                  user.start=NULL,
-                  prior=list(),
+                  user.start=ergmm.par.blank(),
+                  prior=ergmm.par.blank(),
                   Z.ref=NULL,
                   Z.K.ref=NULL,
                   randseed=NULL,
@@ -11,20 +11,35 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
 #    options(warn=0)
 
     if(control$threads>1) require(snowFT)
-    if(!is.null(randseed))
-      set.seed(as.integer(randseed))
 
-    tmp <- ergmm.build.model(formula, response, family, fam.par, orthogonalize, prior)
-    model<-tmp$model
-    prior<-tmp$prior
 
-    mle1<-state<-ergmm.initvals(model,user.start,prior,control)
+    ## If the random seed has been specified, save the old seed, to
+    ## pick up where it left off. If not, don't.
+    if(!is.null(randseed)){
+      old.seed<-.Random.seed
+      .Random.seed<-randseed
+    }else runif(1) # This is needed to initialize .Random.seed if it isn't already.
+    start.seed<-.Random.seed
+    
+    if(class(formula)=="ergmm.model"){
+      if(length(prior)){
+        model<-formula
+        prior<-prior
+      }
+      stop("If an ergmm.model is specified in place of a formula, prior must also be specified")
+    }
+    else{
+      tmp <- ergmm.get.model(formula, response, family, fam.par, orthogonalize, prior)
+      model<-tmp$model
+      prior<-tmp$prior
+    }
+    burnin.start<-ergmm.initvals(model,user.start,prior,control)
 
     if(!control$skip.MCMC){
       if(control$burnin>0){
         if(control$tune){
           if(control$verbose) cat("Tuning parameters for burnin...\n")
-          tuning<-ergmm.tuner(model,state,prior,control)
+          tuning<-ergmm.tuner(model,burnin.start,prior,control)
           if(control$verbose) cat("Finished.\n")
           for(name in names(tuning)){
             control[[name]]<-tuning[[name]]
@@ -36,22 +51,22 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
         if(control$threads<=1){
           # Burn in one thread.
           if(control$store.burnin){
-            burnin.samples<-ergmm.MCMC.C(model,state,prior,control,
+            burnin.samples<-ergmm.MCMC.C(model,burnin.start,prior,control,
                                          samplesize=control$burnin/control$interval)$samples
-            state<-burnin.samples[[length(burnin.samples$llk)]]
+            sampling.start<-burnin.samples[[length(burnin.samples$llk)]]
           }
           else
-            state<-ergmm.MCMC.C(model,state,prior,control,
+            sampling.start<-ergmm.MCMC.C(model,burnin.start,prior,control,
                                 samplesize=1,interval=control$burnin)$samples[[1]]
         }
         else{
           burnin.samples<-ergmm.MCMC.snowFT(control$threads,control$threads,
                                             model.l=list(model),
-                                            start.l=list(state),
+                                            start.l=list(burnin.start),
                                             prior.l=list(prior),
                                             control.l=list(control),
                                             samplesize.l=list(control$burnin/control$interval))$samples
-          state<-sapply(1:control$threads,
+          sampling.start<-sapply(1:control$threads,
                         function(thread) burnin.samples[[thread]][[length(burnin.samples[[thread]]$llk)]],
                         simplify=FALSE)
         }
@@ -59,11 +74,11 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
         if(control$verbose) cat("Finished.\n")
       }
       else
-        state<-mle1
+        sampling.start<-burnin.start
 
       if(control$tune){
         if(control$verbose) cat("Tuning parameters for sampling run...\n ")
-        tuning<-ergmm.tuner(model,state,prior,control,control$burnin>0 && control$threads>1)
+        tuning<-ergmm.tuner(model,sampling.start,prior,control,control$burnin>0 && control$threads>1)
         if(control$verbose) cat("Finished.\n")
         for(name in names(tuning)){
           control[[name]]<-tuning[[name]]
@@ -72,11 +87,11 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
       
       if(control$verbose) cat("Starting sampling run... ")
       if(control$threads<=1)
-        mcmc.out <-  ergmm.MCMC.C(model,state,prior,control)
+        mcmc.out <-  ergmm.MCMC.C(model,sampling.start,prior,control)
       else{
         mcmc.out <- ergmm.MCMC.snowFT(control$threads,if(control$burnin) 1 else control$threads,
                                       model.l=list(model),
-                                      start.l=if(control$burnin) state else list(state),
+                                      start.l=if(control$burnin) sampling.start else list(sampling.start),
                                       prior.l=list(prior),
                                       control.l=list(control),
                                       samplesize.l=list(ceiling(control$samplesize/control$threads)))
@@ -86,15 +101,18 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
     }
     else mcmc.out<-NULL
     
-    v<-ergmm.statseval(mcmc.out, model, mle1,  prior, control,
+    v<-ergmm.statseval(mcmc.out, model, burnin.start,  prior, control,
                        Z.ref, Z.K.ref)
 
     if(!control$skip.MCMC){
-      v$burnin.start<-mle1
-      v$main.start<-state
+      v$burnin.start<-burnin.start
+      v$sampling.start<-sampling.start
       if(control$store.burnin)
         v$burnin.samples<-burnin.samples
     }
+
+    v$starting.seed<-start.seed
+    if(!is.null(randseed)) .Random.seed<-old.seed
     
 #    options(warn=current.warn)
     v

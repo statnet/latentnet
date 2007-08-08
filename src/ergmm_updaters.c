@@ -356,7 +356,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   for(i=0;i<model->verts;i++)
     cur->n[par->Z_K[i] - 1]++;
   
-  //rdirichlet for epsilon
+  // Dirichlet for epsilon
   for(i=0;i<model->clusters;i++){
     par->Z_pK[i] = (double)(cur->n[i]+prior->Z_pK);
   }

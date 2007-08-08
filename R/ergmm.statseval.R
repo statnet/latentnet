@@ -1,4 +1,6 @@
 ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z.K.ref=NULL){
+  if(control$verbose) cat("Post-processing the MCMC output:\n")
+   
   Yg<- model$Yg
   G <- model$G
   d <- model$d
@@ -53,62 +55,21 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   x
 }
 
-find.mkl.L.C<-function(model,start,samples,control){
-  if(control$verbose>1) cat("Evaluating matrix of predicted dyad values... ")
-  EYm<-post.predict.C(model,samples,control)
-  if(control$verbose>1) cat("Finished.\nMaximizing...")
-
-  mkl<-start
-  for(i in 1:control$mle.maxit){
-    if(control$verbose>1) cat(" ",i," ")
-    mkl.old<-mkl
-    mkl<-find.mle.L(model,start=mkl,control=control,mllk=FALSE,Ym=EYm)
-    if(isTRUE(all.equal(mkl.old,mkl))) break
-  }
-  mkl
-}
-
-find.mkl.L<-function(model,mcmc.out,control){
-  if(control$verbose>1) cat("Evaluating matrix of predicted dyad values... ")
-  EY.f<-mk.EY.f(model$family)
-  EYm<-matrix(0,network.size(model$Yg),network.size(model$Yg))
-  for(i in 1:control$samplesize){
-    state<-mcmc.out$samples[[i]]
-    eta<-ergmm.eta(model$Yg,
-                   state$beta,
-                   model$X,
-                   state$Z,
-                   state$sender,
-                   state$receiver,
-                   state$sociality)
-    EYm<-EYm+EY.f(eta,model$fam.par)
-  }
-  EYm<-EYm/control$samplesize
-  if(control$verbose>1) cat("Finished.\nFinding the iteration closest to predicted...")
-  min.mkl<-control$samplesize
-  min.SSY<-sum((EYm-EY.f(eta,model$fam.par))^2)
-  for(i in (control$samplesize-1):1){
-    state<-mcmc.out$samples[[i]]
-    eta<-ergmm.eta(model$Yg,
-                   state$beta,
-                   model$X,
-                   state$Z,
-                   state$sender,
-                   state$receiver,
-                   state$sociality)
-    SSY<-sum((EYm-EY.f(eta,model$fam.par))^2)
-    if(SSY<min.SSY){
-      min.SSY<-SSY
-      min.mkl<-i
-    }
+find.mkl<-function(model,samples,control,C=TRUE){
+  if(control$verbose>1) cat("Evaluating matrix of predicted dyad values and finding initial value... ")
+  EY<-{
+    if(C) post.predict.C(model,samples,control,TRUE)
+    else post.predict.R(model,samples,control,TRUE)
   }
   if(control$verbose>1) cat("Finished.\nMaximizing...")
 
-  mkl<-mcmc.out$samples[[min.mkl]]
+  mkl<-samples[[attr(EY,"s.MKL")]]
+  model$Ym<-EY
   for(i in 1:control$mle.maxit){
-    if(control$verbose>1) cat(" ",i," ")
+    if(control$verbose>1) cat(i,"")
     mkl.old<-mkl
-    mkl<-find.mle.L(model,start=mkl,control=control,mllk=FALSE,Ym=EYm)
+    mkl<-find.mle(model,start=mkl,control=control,mllk=FALSE)
+    if(is.null(mkl)) stop("MKL failed!")
     if(isTRUE(all.equal(mkl.old,mkl))) break
   }
   mkl
@@ -121,31 +82,34 @@ nullapply<-function(X,margin,FUN,...){
 
 add.mkl.mbc.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x),force=FALSE){
   if(is.null(x$mkl)){
-    warning("Using best.avail.Z.ref.ergmm in place of MKL.")
-    Z<-best.avail.Z.ref.ergmm(x)
+    warning("MKL is not available. MKL MBC will not be fitted.")
+    return(x)
   }else Z<-x$mkl$Z
-  
+
+  if(x$control$verbose) cat("Fitting MBC conditional on MKL locations... ")
   if(x$model$d>0 && x$model$G>0 && (!x$control$skip.MBC || force)){
-    if(x$control$verbose) cat("Fitting MKL clusters:\n")
     x$mkl$mbc<-bayesmbc(x$model$G,Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
   }
+  if(x$control$verbose) cat("Finished.\n")
   x
 }
 
 add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
-  
   if((!x$control$skip.mle && is.null(x$mle))||force){
+    if(x$control$verbose) cat("Using the conditional posterior mode to seed an MLE fit... ")
     mle1<-find.mle.loop(x$model,x$start,control=x$control)
+    if(x$control$verbose) cat(" Finished.\n")
+
   }else{
     mle1<-x$start
-    mle1$llk<-ergmm.loglike.L(x$model,x$start)
+    mle1$llk<-ergmm.loglike(x$model,x$start)
   }
   
   if(!is.null(x$mcmc.mle) && ((!x$control$skip.mle && is.null(x$mle)) || force)){
     ## Use the iteration with the highest probability to seed another
     ## shot at the MLE.
     
-    if(x$control$verbose) cat("Using the highest-likelihood iteration to seed another MLE fit.\n")
+    if(x$control$verbose) cat("Using the highest-likelihood iteration to seed another MLE fit...")
     mle2 <- find.mle.loop(x$model,x$mcmc.mle,control=x$control)
     if(x$model$d>0)
       mle2$Z<-scale(mle2$Z,scale=FALSE)
@@ -172,7 +136,7 @@ find.mle.loop<-function(model,start,control){
   mle<-start
   for(i in 1:control$mle.maxit){
     mle.old<-mle
-    mle<-find.mle.L(model,start,control=control,flyapart.penalty=control$flyapart.penalty)
+    mle<-find.mle(model,mle,control=control)
     if(all.equal(mle.old,mle)[1]==TRUE) break
   }
   mle
@@ -181,14 +145,14 @@ find.mle.loop<-function(model,start,control){
 
 add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   if((!x$control$skip.pmode && is.null(x$pmode)) || force){
+    if(x$control$verbose) cat("Double-checking conditional posterior mode estimate... ")
     pmode2<-find.pmode.loop(x$model,x$start,prior=x$prior,control=x$control)
-    if(!is.null(x$mcmc.pmode)){
-      if(x$control$verbose) cat("Fitting another posterior mode estimate... ")
+    if(x$control$verbose) cat("Finished.\n")
+   if(!is.null(x$mcmc.pmode)){
+      if(x$control$verbose) cat("Using MCMC posterior mode to seed another conditional posterior mode fit... ")
       x$pmode<-find.pmode.loop(x$model,x$mcmc.pmode,prior=x$prior,control=x$control)
       if(x$control$verbose) cat("Finished.\n")
-      if(!require(shapes,quietly=TRUE)){
-        stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-      }
+
       if(pmode2$mlp<x$pmode$mlp) x$pmode->pmode2
     }
 
@@ -211,8 +175,9 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),force=FAL
 find.pmode.loop<-function(model,start,prior,control){
   pmode<-start
   for(i in 1:control$mle.maxit){
+    if(control$verbose>1) cat(i,"")
     pmode.old<-pmode
-    pmode<-find.mpe.L(model,pmode,prior=prior,control=control,flyapart.penalty=control$flyapart.penalty)
+    pmode<-find.mpe(model,pmode,prior=prior,given=as.ergmm.par.list(list(Z.K=pmode$Z.K)),control=control)
     if(model$G>1) pmode$Z.K<-find.clusters(model$G,pmode$Z)$Z.K
     if(all.equal(pmode.old,pmode)[1]==TRUE) break
   }
@@ -222,13 +187,13 @@ find.pmode.loop<-function(model,start,prior,control){
 add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x),force=FALSE){
   if(!is.null(x$samples) && x$model$d>0 && ((!x$control$skip.mkl && is.null(x$mkl)) || force)){
     if(x$control$verbose) cat("Fitting the MKL locations... ")
-    x$mkl<-find.mkl.L.C(x$model,if(!is.null(x$pmode)) x$pmode else x$mcmc.pmode,x$samples,x$control)
-    x$mkl$Z<-scale(x$mkl$Z,scale=FALSE)
+    x$mkl<-find.mkl(x$model,x$samples,x$control,C=FALSE)
     if(!require(shapes,quietly=TRUE)){
       stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
     }
   }
-  if(!is.null(x$mkl)) x$mkl$Z<-procOPA(Z.ref,x$mkl$Z,scale=FALSE,reflect=TRUE)$Bhat
+  if(!is.null(x$mkl$Z)) x$mkl$Z<-scale(x$mkl$Z,scale=FALSE)
+  if(!is.null(x$mkl$Z)) x$mkl$Z<-procOPA(Z.ref,x$mkl$Z,scale=FALSE,reflect=TRUE)$Bhat
   if(x$control$verbose) cat("Finished.\n")
   x
 }
@@ -257,12 +222,12 @@ best.avail.Z.ref.ergmm<-function(x){
   if(x$model$d==0) return(NULL)
   
   if(!is.null(x$control$Z.ref)) return(x$control$Z.ref)
-  if(!is.null(x$mkl)) return(x$mkl$Z)
-  if(!is.null(x$pmode)) return(x$pmode$Z)
-  if(!is.null(x$mcmc.pmode)) return(x$mcmc.pmode$Z)
-  if(!is.null(x$mle)) return(x$mle$Z)
-  if(!is.null(x$mcmc.mle)) return(x$mcmc.mle$Z)
-  if(!is.null(x$start)) return(x$start$Z)
+  if(!is.null(x$mkl$Z)) return(x$mkl$Z)
+  if(!is.null(x$pmode$Z)) return(x$pmode$Z)
+  if(!is.null(x$mcmc.pmode$Z)) return(x$mcmc.pmode$Z)
+  if(!is.null(x$mle$Z)) return(x$mle$Z)
+  if(!is.null(x$mcmc.mle$Z)) return(x$mcmc.mle$Z)
+  if(!is.null(x$start$Z)) return(x$start$Z)
 }
 
 best.avail.Z.K.ref.ergmm<-function(x){
@@ -270,10 +235,10 @@ best.avail.Z.K.ref.ergmm<-function(x){
   
   if(!is.null(x$control$Z.K.ref)) return(x$control$Z.K.ref)
   if(!is.null(attr(x$samples,"Q"))) return(apply(attr(x$samples,"Q"),1,which.max))
-  if(!is.null(x$pmode)) return(x$pmode$Z.K)
-  if(!is.null(x$mkl$mbc)) return(x$mkl$mbc$Z.K)
-  if(!is.null(x$mcmc.pmode)) return(x$mcmc.pmode$Z.K)
-  if(!is.null(x$start)) return(x$start$Z.K)
+  if(!is.null(x$pmode$Z.K)) return(x$pmode$Z.K)
+  if(!is.null(x$mkl$mbc$Z.K)) return(x$mkl$mbc$Z.K)
+  if(!is.null(x$mcmc.pmode$Z.K)) return(x$mcmc.pmode$Z.K)
+  if(!is.null(x$start$Z.K)) return(x$start$Z.K)
   
   return(find.clusters(x$model$G,best.avial.Z.ref.ergmm(x))$Z.K)
 }

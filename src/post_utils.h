@@ -32,6 +32,7 @@ void post_pred_wrapper(int *S,
 		       int *sociality,
 		       int *vobserved_ties,
 		       double *vEY,
+		       int *s_MKL,
 		       int *verbose);
 void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 		      double *vZ_mcmc, int *Z_ref, double *vZ_mu_mcmc, double *vZ_var_mcmc,

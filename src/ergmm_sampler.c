@@ -36,7 +36,8 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 			int *G,
 			  
 			int *dir,
-			int *vY,
+			int *viY,
+			double *vdY,
 			int *family,
 			int *iconsts,
 			double *dconsts,
@@ -98,7 +99,8 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
   int i=0,j=0,k=0;
   double **Z_start = vZ_start ? Runpack_dmatrix(vZ_start,*n,*d, NULL) : NULL;
   double **Z_mean_start = vZ_mean_start ? Runpack_dmatrix(vZ_mean_start,*G,*d,NULL) : NULL;
-  int **Y = Runpack_imatrix(vY, *n, *n, NULL);
+  int **iY = viY ? Runpack_imatrix(viY, *n, *n, NULL):NULL;
+  double **dY = vdY ? Runpack_dmatrix(vdY, *n, *n, NULL):NULL;
   unsigned int **observed_ties = vobserved_ties ? (unsigned int **) Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL;
   double ***X = d3array(*p,*n,*n);
 
@@ -126,8 +128,8 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 		  d ? *d : 0,
 		  *G,
 		 
-		  *dir,Y,
-		  family ? *family : 0,iconsts,dconsts,
+		  *dir,iY,dY,
+		  family ? *family-1 : 0,iconsts,dconsts,
 		  X,
 
 		  llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
@@ -166,10 +168,10 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 /* Initializes the MCMC sampler and allocates memory. */
 void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval, 
 
-		     unsigned int n, 
+		     unsigned int n,
 		     unsigned int p, unsigned int d, unsigned int G,
 
-		     unsigned int dir, int **Y,
+		     unsigned int dir, int **iY, double **dY,
 
 		     unsigned int family, int *iconsts, double *dconsts,
 
@@ -207,10 +209,12 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 
   // Packing constants into structs.
   ERGMM_MCMC_Model model = {dir,
-			    Y, // Y
+			    iY, // iY
+			    dY, // dY
 			    X, // X
 			    (unsigned int **)observed_ties,
-			    NULL,
+			    ERGMM_MCMC_lp_edge[family],
+			    ERGMM_MCMC_E_edge[family],
 			    0,
 			    iconsts,
 			    dconsts,
@@ -219,22 +223,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 			    p, // coef
 			    G, // clusters
 			    sociality};
-
-  // Set the p(Y_ij|eta_ij) function and compute the term constant in eta.
-  switch(family){
-  case 0:
-    model.lp_edge=ERGMM_MCMC_lp_edge_Bernoulli_logit;
-    ERGMM_MCMC_set_lp_Yconst_Bernoulli_logit(&model);
-    break;
-  case 1:
-    model.lp_edge=ERGMM_MCMC_lp_edge_binomial_logit;
-    ERGMM_MCMC_set_lp_Yconst_binomial_logit(&model);
-    break;
-  case 2:
-    model.lp_edge=ERGMM_MCMC_lp_edge_Poisson_log;
-    ERGMM_MCMC_set_lp_Yconst_Poisson_log(&model);
-    break;
-  }
+  ERGMM_MCMC_set_lp_Yconst[family](&model);
 
   ERGMM_MCMC_MCMCSettings setting = {Z_delta,Z_tr_delta,Z_scl_delta,
 				     RE_delta,RE_shift_delta,coef_delta,
@@ -337,7 +326,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
       start.n[state.Z_K[i] - 1]++;
 
   // Initialize the log-probabilities.
-  state.llk = ERGMM_MCMC_lp_Y(&model, &state,0);
+  state.llk = ERGMM_MCMC_lp_Y(&model, &state, TRUE);
   if(model.latent) ERGMM_MCMC_logp_Z(&model, &state);
   if(state.sender || state.receiver) ERGMM_MCMC_logp_RE(&model, &state);
   if(state.coef) ERGMM_MCMC_logp_coef(&model, &state, &prior);

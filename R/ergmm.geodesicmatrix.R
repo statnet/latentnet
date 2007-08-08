@@ -1,6 +1,12 @@
-ergmm.geodesicmatrix<-function(g, directed=is.directed(g)){
- ergmm.geodesicmatrix.edgelist(edgelist=as.matrix.network(g,matrix.type="edgelist"),
-               n=g$gal$n, directed=directed)
+ergmm.geodesicmatrix<-function(model){
+  Yg<-model$Yg
+  Ym<-model$Ym
+  # For the purpose of geodesic distance, dichotomize the network about its mean.
+  Ym<-Ym>mean(Ym)
+  mode(Ym)<-"numeric"
+  Ymg<-network(Ym,matrix.type="adjacency",directed=is.directed(Yg))
+  ergmm.geodesicmatrix.edgelist(edgelist=as.matrix.network(Ymg,matrix.type="edgelist"),
+                                n=network.size(Yg), directed=is.directed(Yg))
 }
 
 ergmm.geodesicmatrix.edgelist <- function(edgelist, n=max(edgelist), directed=FALSE) {

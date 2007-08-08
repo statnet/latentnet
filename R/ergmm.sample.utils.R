@@ -1,6 +1,7 @@
 proc.Z.mean.C<-function(samples,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]
   G<-dim(samples$Z.mean)[2]
+  if(is.null(G)) G<-0
   d<-dim(Z.ref)[2]
   S<-dim(samples$Z)[1]
   ## Center Z.ref.
@@ -54,7 +55,7 @@ klswitch.C <- function(Q.start,samples,Z=NULL,maxit=100,verbose=0)
   samples$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))
   samples$Z.var<-matrix(Cret$Z.var,S,G)
   samples$Z.K<-matrix(Cret$Z.K,S,n)
-  samples$Z.pK<-matrix(Cret$Z.K,S,G)
+  samples$Z.pK<-matrix(Cret$Z.pK,S,G)
   attr(samples,"Q")<-array(Cret$Q,dim=c(1,n,G))[1,,]
 
   samples
@@ -77,7 +78,7 @@ switch.Q.K<-function(K,G,smooth=1/G){
   t(apply(Q,1,function(x) x/sum(x)))
 }
 
-post.predict.C<-function(model,samples,control){
+post.predict.C<-function(model,samples,control,MKL=FALSE){
   n<-network.size(model$Yg)
   d<-model$d
   p<-model$p
@@ -89,34 +90,62 @@ post.predict.C<-function(model,samples,control){
      (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
     observed<-NULL
 
-  familyID<-switch(model$family,
-                   Bernoulli=0,
-                   binomial=1,
-                   Poisson=2)
+  ret<-.C("post_pred_wrapper",
+                S = as.integer(control$samplesize),
+                
+                n = as.integer(n),
+                p = as.integer(p),
+                d = as.integer(d),
+                
+                dir=is.directed(model$Yg),
+                family=as.integer(model$familyID),
+                iconsts=as.integer(model$iconsts),
+                dconsts=as.double(model$dconsts),
+                
+                X=as.double(unlist(model$X)),
+                
+                Z = as.double(samples$Z),
+                beta = as.double(samples$beta), # coef
+                sender = as.double(samples$sender),
+                receiver = as.double(samples$receiver),
+                sociality = as.double(model$sociality),
+                observed=as.integer(observed),
+                
+                EY=double(n*n),
+                s.MKL=if(MKL) integer(1),
+                verbose=as.integer(control$verbose),
+                PACKAGE="latentnet")
+  EY<-array(ret$EY,dim=c(1,n,n))[1,,] 
+  EY[!observed.dyads(model$Yg)]<-NA
+  if(MKL) attr(EY,"s.MKL")<-ret$s.MKL+1 # C counts from 0; R counts from 1
+  EY
+}
+
+post.predict.R<-function(model,samples,control,MKL=FALSE){
+  EY.f<-EY.fs[[model$familyID]]
+  EY<-matrix(0,network.size(model$Yg),network.size(model$Yg))
+  for(i in 1:control$samplesize){
+    state<-samples[[i]]
+    eta<-ergmm.eta(model,state)
+    EY<-EY+EY.f(eta,model$fam.par)
+  }
+  EY<-EY/control$samplesize
+  #EY[!observed.dyads(model$Yg)]<-NA
+
+  if(MKL){
+    min.MKL<-NA
+    min.dev<-Inf
+    model$Ym<-EY
+    for(i in 1:control$samplesize){
+      state<-samples[[i]]
+      dev<--ergmm.loglike(model,state,up.to.const=TRUE)
+      if(dev<min.dev){
+        min.dev<-dev
+        min.MKL<-i
+      }
+    }
+    attr(EY,"s.MKL")<-min.MKL
+  }
   
-  array(.C("post_pred_wrapper",
-           S = as.integer(control$samplesize),
-           
-           n = as.integer(n),
-           p = as.integer(p),
-           d = as.integer(d),
-           
-           dir=is.directed(model$Yg),
-           family=as.integer(familyID),
-           iconsts=as.integer(model$iconsts),
-           dconsts=as.double(model$dconsts),
-           
-           X=as.double(unlist(model$X)),
-           
-           Z = as.double(samples$Z),
-           beta = as.double(samples$beta), # coef
-           sender = as.double(samples$sender),
-           receiver = as.integer(samples$receiver),
-           sociality = as.integer(model$sociality),
-           observed=as.integer(observed),
-           
-           EY=double(n*n),
-           
-           verbose=as.integer(control$verbose),
-           PACKAGE="latentnet")$EY,dim=c(1,n,n))[1,,] 
+  EY
 }

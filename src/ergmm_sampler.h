@@ -37,7 +37,7 @@ void ERGMM_MCMC_wrapper(int *samples_stored, int *interval,
 			   
 			int *n, int *p, int *d, int *G,
 			  
-			int *dir, int *vY,
+			int *dir, int *viY, double *vdY,
 			int *family, int *iconsts, double *dconsts,
 
 			double *vX,
@@ -78,7 +78,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 		     unsigned int n, 
 		     unsigned int p, unsigned int d, unsigned int G,
 
-		     unsigned int dir, int **Y,
+		     unsigned int dir, int **iY, double **dY,
 
 		     unsigned int family, int *iconsts, double *dconsts,
 

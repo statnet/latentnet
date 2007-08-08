@@ -125,7 +125,7 @@ gmmajump<-function(model,samples){
     ## random effects. The scale of latent space positions and their centroid
     ## are also separated from individual latent space positions.
 
-    etas<-ergmm.eta.L(model,l)[obs]
+    etas<-ergmm.eta(model,l)[obs]
     dens<-mean(etas)
     vdens<-var(etas)
 
@@ -146,7 +146,7 @@ gmmajump<-function(model,samples){
     o<-c(l$llk,
          dens,
          vdens,
-         pack.optim.L(l),
+         pack.optim(l),
          if(model$sender) sender.shift,
          if(model$receiver) receiver.shift,
          if(model$sociality) sociality.shift,

@@ -92,8 +92,10 @@ void MBC_MCMC_init(unsigned int samples_stored,
 
   // Packing constants into structs.
   ERGMM_MCMC_Model model = {0,
-			    NULL, // Y
+			    NULL, // iY
+			    NULL, // dY
 			    NULL, // X
+			    NULL,
 			    NULL,
 			    NULL,
 			    0,
