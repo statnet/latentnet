@@ -69,8 +69,8 @@ data(sampson)
 # Get the group labels
 samp.labs <- substr(get.vertex.attribute(samplike,"group"),1,1)
 #
-samp.fit <- ergmm(samplike ~ latent(k=2), burnin=10000,
-                 MCMCsamplesize=2000, interval=30)
+samp.fit <- ergmm(samplike ~ latent(d=2), control=ergmm.control(burnin=10000,
+                 samplesize=2000, interval=10))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)

@@ -106,7 +106,7 @@ data(sampson)
 #
 
 samp.fit <- ergmm(samplike ~ latent(d=2), control=ergmm.control(burnin=10000,
-                 samplesize=2000, interval=10)
+                 samplesize=2000, interval=10))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
