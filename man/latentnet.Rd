@@ -60,6 +60,7 @@
 }
 \examples{
 %\dontshow{require(statnet)}
+%library(latentnet)
 #
 # Using Sampson's Monk data, lets fit a 
 # simple latent position model
@@ -80,10 +81,7 @@ mcmc.diagnostics(samp.fit)
 plot(samp.fit,label=samp.labs, vertex.col="group")
 #
 # Using Sampson's Monk data, lets fit a latent clustering model
-#
-samp.fit <- ergmm(samplike ~ latentcluster(k=2, ngroups=3), burnin=10000,
-                 MCMCsamplesize=2000, interval=30)
-#
+samp.fit <- ergmm(samplike ~ latent(d=2, G=3), control=ergmm.control(burnin=10000, samplesize=2000, interval=10))
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
 #
@@ -94,7 +92,6 @@ plot(samp.fit,pie=TRUE,label=samp.labs)
 plot(samp.fit,density=c(2,2))
 plot(samp.fit,contours=5,contour.color="red")
 plot(samp.fit,density=TRUE,drawarrows=TRUE)
-ergmm.add.contours(samp.fit,nlevels=8,lwd=2)
-points(samp.fit$Z.mkl,pch=19,col=samp.fit$class)
+plot(samp.fit,density=TRUE,drawarrows=TRUE,only.subdens=TRUE)
 }
 \keyword{graphs}
