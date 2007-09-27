@@ -12,8 +12,7 @@
   values. It can be accessed in much the same way a list can, but no
   partial matching is performed.
   
-  The structure of \code{ergmm.par} is a list with some subset of
-  the following:
+  The structure of \code{ergmm.par} is a list which may include some of the following:
   \tabular{ll}{
     \code{beta}\tab Numeric vector of covariate coefficients. \cr
     \code{Z.K}\tab Integer vector of cluster assignments. \cr

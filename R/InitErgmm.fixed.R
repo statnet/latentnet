@@ -10,7 +10,7 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
     xm<-as.matrix.network(x,matrix.type="adjacency",attrname)
     cn<-attrname
   }else if(is.character(x)){
-    xm<-as.matrix.network(g,matrix.type="adjacency",x)
+    xm<-as.matrix.network(model$Yg,matrix.type="adjacency",x)
     cn<-x
   }else{
     xm<-as.matrix(x)

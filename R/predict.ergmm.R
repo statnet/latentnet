@@ -1,4 +1,4 @@
-predict.ergmm<-function(ergmm.fit,which.par="post"){
+predict.ergmm<-function(object,...,which.par="post"){
   if(class(which.par)=="ergmm.par"){
     which.par<-which.par
   }else if(which.par=="start"){

@@ -83,34 +83,34 @@ length.ergmm.par.list<-function(x){
   x[i][[1]]
 }
 
-stack.ergmm.par.list.list<-function(mcmcList){
+stack.ergmm.par.list.list<-function(x,...){
   require(abind)
   mcmcsamples<-list()
 
-  for(name in names(mcmcList[[1]]))
-    mcmcsamples[[name]]<-abind(sapply(1:length(mcmcList),
-                                      function(i) mcmcList[[i]][[name]],
+  for(name in names(x[[1]]))
+    mcmcsamples[[name]]<-abind(sapply(1:length(x),
+                                      function(i) x[[i]][[name]],
                                       simplify=FALSE),along=1)
 
-  attr(mcmcsamples,"breaks")<-cumsum(c(sapply(1:(length(mcmcList)
+  attr(mcmcsamples,"breaks")<-cumsum(c(sapply(1:(length(x)
                                                  ),
-                                              function(i) length(mcmcList[[i]]),
+                                              function(i) length(x[[i]]),
                                               simplify=FALSE)))
   class(mcmcsamples)<-"ergmm.par.list"
   mcmcsamples
 }
 
-unstack.ergmm.par.list<-function(mcmcsamples){
+unstack.ergmm.par.list<-function(x){
   mcmcList<-list()
 
-  if(is.null(attr(mcmcsamples,"breaks"))){
-    mcmcList[[1]]<-mcmcsamples
+  if(is.null(attr(x,"breaks"))){
+    mcmcList[[1]]<-x
   }
   else{  
-    breaks<-c(0,attr(mcmcsamples,"breaks"))
+    breaks<-c(0,attr(x,"breaks"))
     
     for(i in 1:length(breaks[-1])){
-      mcmcList[[i]]<-mcmcsamples[(breaks[i]+1):breaks[i+1]]
+      mcmcList[[i]]<-x[(breaks[i]+1):breaks[i+1]]
     }
   }
   mcmcList

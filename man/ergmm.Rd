@@ -11,11 +11,12 @@
   or the two-stage MLE.
 }
 \usage{
-ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
-      control=ergmm.control(), user.start=NULL, prior=list(),
-      skipMCMC=FALSE, skipProcrustes=FALSE, skipMBC=FALSE,
-      Z.ref=NULL, Z.K.ref=NULL, store.burnin=FALSE, randseed=NULL,
-      verbose=FALSE, orthogonalize=FALSE)
+ergmm(formula, response=NULL, family="Bernoulli.logit",fam.par=NULL,
+      control=ergmm.control(), user.start=ergmm.par.blank(), prior=ergmm.par.blank(),
+      tofit=c("pmode", "mcmc", "mkl", "mkl.mbc", "mle","procrustes",
+      "klswitch"), Z.ref=NULL, Z.K.ref=NULL, randseed=NULL,
+      orthogonalize=FALSE,
+      verbose=FALSE)
 }
 \arguments{
   \item{formula}{An \R formula object, of the form
@@ -46,49 +47,52 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
     configuration. If this is done, the remaining paramters are fitted
     conditional on those supplied.}
   \item{prior}{The prior parameters for the model being fitted in the
-    form of a named list. See \link{terms.ergmm} for the names to use.
+    form of a named list or an \link[=ergmm.par.object]{ergmm.par}. See \link{terms.ergmm} for the names to use.
     If given, will override those given in the
     formula terms, making it useful as a convenient way to store and reproduce a
     prior distribution. The list or prior parameters can also be
     extracted from an \link[=ergmm.object]{ERGMM fit object}. Defaults to an empty list (that is, all prior
     parameters are set in the formula terms).}
-  \item{skipMCMC}{Skip the MCMC sampling and return only the approximate
-    posterior mode. Defaults to \code{FALSE}.}
-  \item{skipProcrustes}{Skip the Procrustes and label-switching of the
-    MCMC sample. Defaults to \code{FALSE}.}
-  \item{skipMBC}{Skip the Bayesian model-based clustering run to find
-    posterior cluster means and variances consistent with MKL positional estimates. Defaults to \code{FALSE}.}
+  \item{tofit}{A character vector listing some subset of "pmode",
+      "mcmc", "mkl", "mkl.mbc", "mle","procrustes", and "klswitch",
+      defaulting to all of the above, instructing \code{\link{ergmm}}
+      what should be returned as a part of the
+      \link[=ergmm.object]{ERGMM fit object}. Omiting can be used to
+      skip particular steps in the fitting process. If the requested
+      procedure or output depends on some other procedure or output not
+      explictly listed, the dependency will be resolved automatically.}
   \item{Z.ref}{If given, used as a reference for Procrustes analysis.}
   \item{Z.K.ref}{If given, used as a reference for label-switching.}
-  \item{store.burnin}{If \code{TRUE}, the MCMC samples from the burnin
-    period are stored (though not used in the inference). This option is
-    mainly useful for diagnosing slow convergence. Defaults to
-    \code{FALSE}.}
- \item{randseed}{If supplied, random number integer seed.}
- \item{verbose}{If this is \code{TRUE}, causes information to be
-   printed out about the progress of the fitting, particularly initial
-   value generation. Higher values lead to more verbosity.}
- \item{orthogonalize}{\emph{EXPERIMENTAL.} Performs Gramm-Schmidt
-   orthogonalization on covariates passed to the model to reduce
-   dependence. This capacity may be obsoleted in the future by the use
-   of correlated proposals.}
+  \item{randseed}{If supplied, random number seed.}
+  \item{verbose}{If this is \code{TRUE}, causes information to be
+    printed out about the progress of the fitting, particularly initial
+    value generation. Higher values lead to more verbosity.}
+  \item{orthogonalize}{\emph{EXPERIMENTAL.} Performs Gramm-Schmidt
+    orthogonalization on covariates passed to the model to reduce
+    dependence. This capacity may be obsoleted in the future by the use
+    of correlated proposals.}
 }
 \value{
   \code{\link{ergmm}} returns an object of class \code{\link[=ergmm.object]{ergmm}}
   containing the information about the posterior.
 }
 \seealso{network, set.vertex.attributes, set.network.attributes,
-         summary.ergmm, print.ergmm,\link{terms.ergmm}}
+  summary.ergmm, print.ergmm,\link{terms.ergmm}}
 \references{
- Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock.
- \emph{Latent space approaches to social network analysis.} 
- Journal of the American Statistical Association, Dec 2002, Vol.97, 
- Iss. 460;  pg. 1090-1098.
-
- Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
- \emph{Model-Based Clustering for Social Networks.} 
- Working Paper Number 46, Center for Statistics and the Social Sciences,
- University of Washington, April 2005.
+  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock.
+  \emph{Latent space approaches to social network analysis.} 
+  Journal of the American Statistical Association, Dec 2002, Vol.97, 
+  Iss. 460; pp. 1090-1098.
+  
+  Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
+  \emph{Model-Based Clustering for Social Networks.} Journal of the Royal
+  Statistical Society: Series A, 2007, Vol. 170, Iss. 2; pp. 301-354.
+  
+  Pavel N. Krivitsky, Mark S. Handcock, Adrian E. Raftery, and Peter
+  D. Hoff. \emph{Representing Degree Distributions, Clustering, and
+  Homophily in Social Networks With Latent Cluster Random Effects
+  Models.} Center for Statistics and Social Sciences Working Paper
+  no. 77, Aug 2007. 
 }
 \examples{
 
