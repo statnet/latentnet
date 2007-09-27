@@ -3,24 +3,46 @@ if(!exists("simulate", mode="function")){
     UseMethod("simulate")
 }
 
-simulate.ergmm<-function(ergmm.fit,n=1){
+simulate.ergmm<-function(object, nsim=1, seed=NULL, ...){
+  ## If the random seed has been specified, save the old seed, to
+  ## pick up where it left off. If not, don't.
+  if(!is.null(seed)){
+    old.seed<-.Random.seed
+    .Random.seed<-seed
+  }else runif(1) # This is needed to initialize .Random.seed if it isn't already.
+  start.seed<-.Random.seed
+  
   l<-list()
-  for(i in 1:n){
-    iter<-floor(runif(1,1,ergmm.fit$control$samplesize+1))
-    l[[i]]<-simulate.ergmm.1(ergmm.fit$model,ergmm.fit$samples[[iter]],ergmm.fit$prior)
+  for(i in 1:nsim){
+    iter<-floor(runif(1,1,object$control$samplesize+1))
+    l[[i]]<-simulate.ergmm.1(object$model,object$samples[[iter]],object$prior)
   }
-  if(n==1) return(l[[1]])
+  
+  if(!is.null(seed)) .Random.seed<-old.seed
+
+  if(nsim==1) return(l[[1]])
   else{
     attr(l,"class")<-"network.series"
     return(l)
   }
 }
 
-simulate.ergmm.model<-function(model,par,prior=list(),n=1){
+simulate.ergmm.model<-function(object,par,prior=list(),nsim=1,seed=NULL,...){
+  ## If the random seed has been specified, save the old seed, to
+  ## pick up where it left off. If not, don't.
+  if(!is.null(seed)){
+    old.seed<-.Random.seed
+    .Random.seed<-seed
+  }else runif(1) # This is needed to initialize .Random.seed if it isn't already.
+  start.seed<-.Random.seed
+
   l<-list()
   for(i in 1:n){
-    l[[i]]<-simulate.ergmm.1(model,par,prior)
+    l[[i]]<-simulate.ergmm.1(object,par,prior)
   }
+  
+  if(!is.null(seed)) .Random.seed<-old.seed
+
   if(n==1) return(l[[1]])
   else{
     attr(l,"class")<-"network.series"

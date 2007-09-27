@@ -1,5 +1,6 @@
 \name{as.mcmc.list.ergmm}
 \alias{as.mcmc.list.ergmm}
+\alias{as.mcmc.ergmm}
 \title{Convert an ERGMM Object to an MCMC list object for Diagnostics.}
 \description{
   A function to extract a subset of MCMC samples from an object of class
@@ -7,6 +8,7 @@
 }
 \usage{
 \method{as.mcmc}{ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1))
+\method{as.mcmc.list}{ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1))
 }
 \arguments{
   \item{x}{ An object of class \code{\link[=ergmm.object]{ergmm}}. }

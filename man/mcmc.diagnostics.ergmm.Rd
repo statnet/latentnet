@@ -9,7 +9,10 @@
   and suggests the run length required.
 }
 \usage{
-\method{mcmc.diagnostics}{ergmm}(x, burnin = FALSE, which.vars=NULL,vertex.i=c(1))
+\method{mcmc.diagnostics}{ergmm}(x,which.diags=c("acf","trace","raftery"),
+                                 burnin=FALSE,
+                                 which.vars=NULL,
+                                 vertex.i=c(1))
 }
 \arguments{
   \item{x}{ An object of class \code{\link[=ergmm.object]{ergmm}}. }
@@ -28,26 +31,26 @@ and a density estimate for each variable in the chain.
 
 Autocorrelation with lags 0 and 1 and a Raftery-Lewis diagnostic is prited.
 }
-\value{\code{mcmc.diagnostics.ergmm} returns a table of Raftery-Lewis diagnostics.
-      }
-
+\value{
+  \code{mcmc.diagnostics.ergmm} returns a table of Raftery-Lewis diagnostics.
 }
+
 \seealso{\code{\link{ergmm}}, \code{\link{ergmm.object}},
   \code{\link[coda]{raftery.diag}},
   \code{\link[coda]{autocorr}},
-  \code{\link[coda]{plot.mcmc.list}} }
+  \code{\link[coda]{plot.mcmc.list}}
+}
 \examples{
 #
 data(sampson)
 #
 # test the mcmc.diagnostics function
 #
-gest <- ergmm(samplike ~ latent(k=2))
+gest <- ergmm(samplike ~ latent(d=2))
 summary(gest)
 #
 # Plot the traces and densities
 #
 mcmc.diagnostics(gest)
-}
 }
 \keyword{graphs}

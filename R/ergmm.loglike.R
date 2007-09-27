@@ -62,7 +62,7 @@ ergmm.loglike<-function(model,theta,given=ergmm.par.blank(),up.to.const=FALSE){
   n<-network.size(Yg)
   eta<-ergmm.eta(model,theta)
   obs<-observed.dyads(Yg)
-  lpY<-if(up.to.const) lpYc.fs[[model$familyID]](Ym[obs],eta[obs],fam.par) else lpY.fs[[model$familyID]](Ym[obs],eta[obs],fam.par)
+  lpY<-if(up.to.const) lpYc.fs[[model$familyID]](Ym[obs],eta[obs],model$fam.par) else lpY.fs[[model$familyID]](Ym[obs],eta[obs],model$fam.par)
   return(sum(lpY))
 }
 
@@ -111,15 +111,15 @@ ergmm.loglike.C<-function(model,theta){
   ## Figure out the design matrix.
   observed<-observed.dyads(model$Yg)
 
-  if((observed==(diag(n)==0) && is.directed(Yg)) ||
-     (observed==lower.tri(diag(n)) && !is.directed(Yg)))
+  if((observed==(diag(n)==0) && is.directed(model$Yg)) ||
+     (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
     observed<-NULL
   
   ## Sanity checks: the following block of code checks that all dimensionalities and
   ## dimensions are correct, and those optional parameters that are required by the presence
   ## of other optional parameters are present.
   
-  for(i in 1:p)
+  for(i in 1:model$p)
     if(!all(dim(model$X[[i]])==c(n,n))) stop("Incorrect size for covariate matrices.")
 
   if(!is.null(theta$Z)){
@@ -145,7 +145,7 @@ ergmm.loglike.C<-function(model,theta){
             dir=as.integer(is.directed(model$Yg)),
             viY=as.integer(Y),
             vdY=as.double(Y),
-            family=as.integer(familyID),iconsts=as.integer(model$iconsts),dconsts=as.integer(model$dconsts),
+            family=as.integer(model$familyID),iconsts=as.integer(model$iconsts),dconsts=as.integer(model$dconsts),
             
             vX=as.double(unlist(model$X)),
             
@@ -225,75 +225,73 @@ unpack.optim<-function(v,fit.vars,model){
   n<-network.size(model$Yg)
   G<-model$G
   d<-model$d
-  attach(fit.vars)
-  v.must.be<-(beta*p +
-              Z*n*d +
-              sender*n +
-              receiver*n +
-              sociality*n +
-              Z.var*(d>0)*max(1,G) +
-              Z.mean*G*d +
-              sender.var +
-              receiver.var +
-              sociality.var)
+  v.must.be<-with(fit.vars,
+                  beta*p +
+                  Z*n*d +
+                  sender*n +
+                  receiver*n +
+                  sociality*n +
+                  Z.var*(d>0)*max(1,G) +
+                  Z.mean*G*d +
+                  sender.var +
+                  receiver.var +
+                  sociality.var)
   if(length(v)!=v.must.be){
-    detach(fit.vars)
     stop(paste("Input vector wrong length: ", length(v),
                " but should be ",v.must.be,".",
                sep=""))
   }
   pos<-0
   ret<-list()
-  if(beta && p>0){
+  if(fit.vars$beta && p>0){
     ret$beta<-v[pos+1:p]
     pos<-pos+p
   }
 
-  if(Z && d>0){
+  if(fit.vars$Z && d>0){
     ret$Z<-matrix(v[pos+1:(n*d)],nrow=n,ncol=d)
     pos<-pos+n*d
   }
 
-  if(sender){
+  if(fit.vars$sender){
     ret$sender<-v[pos+1:n]
     pos<-pos+n
   }
 
-  if(receiver){
+  if(fit.vars$receiver){
     ret$receiver<-v[pos+1:n]
     pos<-pos+n
   }
 
-  if(sociality){
+  if(fit.vars$sociality){
     ret$sociality<-v[pos+1:n]
     pos<-pos+n
   }
 
-  if(Z.var && d>0){
+  if(fit.vars$Z.var && d>0){
     ret$Z.var<-v[pos+1:max(1,G)]
     pos<-pos+max(1,G)
   }
   
-  if(Z.mean && d>0 && G>0){
+  if(fit.vars$Z.mean && d>0 && G>0){
     ret$Z.mean<-matrix(v[pos+1:(G*d)],nrow=G,ncol=d)
     pos<-pos+G*d
   }
   
-  if(sender.var){
+  if(fit.vars$sender.var){
     ret$sender.var<-v[pos+1]
     pos<-pos+1
   }
   
-  if(receiver.var){
+  if(fit.vars$receiver.var){
     ret$receiver.var<-v[pos+1]
     pos<-pos+1
   }
 
-  if(sociality.var){
+  if(fit.vars$sociality.var){
     ret$sociality.var<-v[pos+1]
     pos<-pos+1
   }
-  detach(fit.vars)
 
   class(ret)<-"ergmm.par"
   
@@ -479,7 +477,7 @@ ergmm.lp.grad<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","l
   grad
 }
 
-ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
   which.vars$Z.K<-FALSE
   which.vars<-reg.fit.vars(which.vars)
 

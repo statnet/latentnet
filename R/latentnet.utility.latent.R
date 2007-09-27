@@ -63,7 +63,7 @@ mvimode <- function(x, fix=NULL, maxit=10, theta0=NULL, simple=TRUE)
  ntheta <- theta[!fix]
  if(ncolx==1){
 #  1 variable
-   x.den <- locfit.raw(x=x, alpha=0.7, maxk=1000, scale=T)
+   x.den <- locfit.raw(x=x, alpha=0.7, maxk=1000, scale=TRUE)
    ntheta <- x[which.max(predict(x.den, newdata=x))]
    loglik <- log(predict(x.den, newdata=ntheta, what="coef"))
    if(!is.null(theta0)){

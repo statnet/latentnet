@@ -66,9 +66,9 @@
   \item{cluster.col}{A vector of colors used to distinguish clusters in
     a latent cluster model.}
   \item{vertex.cex, vertex.col, etc.}{See
-    \code{\link{plot.network}}.}
+    \code{\link[pkg:network]{plot.network}}.}
   
-  \item{\dots}{Other optional arguments passed to the \code{\link{plot.network}} function.}
+  \item{\dots}{Other optional arguments passed to the \code{\link[pkg:network]{plot.network}} function.}
 }
 
 \details{

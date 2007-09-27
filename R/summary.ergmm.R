@@ -1,9 +1,9 @@
-summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.025,.975),se=TRUE)
+summary.ergmm <- function (object, ..., point.est=c("pmean","mkl"), quantiles=c(.025,.975),se=TRUE)
 {
   ## Just for convenience.
-  samples<-ergmm.fit$samples
-  model<-ergmm.fit$model
-  control<-ergmm.fit$control
+  samples<-object$samples
+  model<-object$model
+  control<-object$control
   d<-model$d
   p<-model$p
   G<-model$G
@@ -11,18 +11,18 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
   samplesize<-control$samplesize
   
 
-  summ<-list(ergmm=ergmm.fit,model=model)
+  summ<-list(ergmm=object,model=model)
 
   ## Compute the two-stage MLE point estimates.
   if("mle" %in% point.est){
-    if(is.null(ergmm.fit$mle$cov)){
+    if(is.null(object$mle$cov)){
       if(model$sender || model$receiver || model$sociality)
         warning("Fitting random effects as fixed effects.")
       if(se){
         ## Refit the MLE (mostly for the Hessian)
-        mle<-find.mle(model,ergmm.fit$mle,control=control,hessian=TRUE)
+        mle<-find.mle(model,object$mle,control=control,hessian=TRUE)
       }
-      else mle<-ergmm.fit$mle
+      else mle<-object$mle
 
       if(d>0) mle$Z<-scale(mle$Z,scale=FALSE)
       if(p>0){
@@ -82,14 +82,14 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
         mle$sociality.var<-mean(mle$sociality^2)
       }
 
-      ergmm.fit$mle<-mle
+      object$mle<-mle
     }
-    summ$mle<-ergmm.fit$mle
+    summ$mle<-object$mle
   }
 
   ## Compute the posterior mean point estimates.
   if("pmean" %in% point.est){
-    if(is.null(ergmm.fit$pmean)){
+    if(is.null(object$pmean)){
       pmean<-list()
       for(name in names(samples)){
         if(is.null(samples[[name]])) next
@@ -119,13 +119,13 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
                            row.names=model$coef.names)
       colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"Quantile of 0")
       pmean$coef.table<-coef.table
-      ergmm.fit$pmean<-pmean
+      object$pmean<-pmean
     }
-    summ$pmean<-ergmm.fit$pmean
+    summ$pmean<-object$pmean
   }
   ## Compute the MKL point estimates.
   if("mkl" %in% point.est){
-    mkl<-summ$mkl<-ergmm.fit$mkl
+    mkl<-summ$mkl<-object$mkl
     coef.table<-data.frame(mkl$beta,
                            row.names=model$coef.names)
     colnames(coef.table)<-c("Estimate")
@@ -133,14 +133,14 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
   }
 
   if("pmode" %in% point.est){
-    summ$pmode<-ergmm.fit$pmode
+    summ$pmode<-object$pmode
   }
 
   class(summ)<-'summary.ergmm'
   summ
 }
 
-print.summary.ergmm<-function(summ,...){
+print.summary.ergmm<-function(x,...){
   ## For convenience
   model<-summ$model
   control<-summ$control

@@ -17,15 +17,7 @@ ergmm.control<-function(samplesize=2000,
                         RE.delta=0.3,
                         RE.shift.delta=0.4,
                         beta.delta=0.4,
-                        skip.MCMC=FALSE,
-                        skip.Procrustes=FALSE,
-                        skip.MBC=FALSE,
-                        skip.KLswitch=FALSE,
-                        skip.pmode=FALSE,
-                        skip.mle=TRUE,
-                        skip.mkl=FALSE,
-                        store.burnin=FALSE,
-                        verbose=FALSE){
+                        store.burnin=FALSE){
   list(samplesize=samplesize,
        burnin=burnin,interval=interval,
        threads=threads,
@@ -39,14 +31,37 @@ ergmm.control<-function(samplesize=2000,
        RE.delta=RE.delta,
        RE.shift.delta=RE.shift.delta,
        beta.delta=beta.delta,
-       skip.MCMC=skip.MCMC,
-       skip.Procrustes=skip.Procrustes,
-       skip.MBC=skip.MBC,
-       skip.KLswitch=skip.KLswitch,
-       skip.pmode=skip.pmode,
-       skip.mle=skip.mle,
-       skip.mkl=skip.mkl,
-       store.burnin=store.burnin,
-       verbose=verbose)
+       store.burnin=store.burnin)
 }
 
+ergmm.fit.deps<-list(pmode=character(0),
+                     mcmc=c("pmode"),
+                     mkl=c("mcmc"),
+                     mkl.mbc=c("mkl"),
+                     mle=c("pmode"),
+                     klswitch=c("mcmc"),
+                     procrustes=c("mcmc"))
+
+ergmm.tofit.resolve<-function(tofit){
+  if(class(tofit)=="list"){
+    tofit.c<-c()
+    for(fit in names(tofit))
+      if(tofit[[fit]])
+        tofit.c<-c(tofit.c,fit)
+    tofit<-tofit.c
+  }
+  
+  oldlen<-length(tofit)-1
+  while(length(tofit)!=oldlen){
+    oldlen<-length(tofit)
+    for(fit in tofit)
+      tofit<-c(tofit,ergmm.fit.deps[[fit]])
+    tofit<-unique(tolower(tofit))
+  }
+  
+  tofit.l<-list()
+  for(fit in names(ergmm.fit.deps))
+    tofit.l[[fit]] <- fit %in% tofit
+  
+  tofit.l
+}

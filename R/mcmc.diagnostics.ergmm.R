@@ -1,8 +1,8 @@
 if(!exists("mcmc.diagnostics", mode="function")){
-  mcmc.diagnostics <- function(object, ...)
+  mcmc.diagnostics <- function(x, ...)
     UseMethod("mcmc.diagnostics")
   
-  mcmc.diagnostics.default <- function(object,...){
+  mcmc.diagnostics.default <- function(x,...){
     stop("An object must be given as an argument ")
   }
 }
@@ -11,7 +11,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("acf","trace","raftery"),
                                    burnin=FALSE,
                                    which.vars=NULL,
                                    vertex.i=c(1)){
-  x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i,vertex.i)
+  x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
 
   if("acf" %in% which.diags)
     autocorr.plot(x)
@@ -32,8 +32,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("acf","trace","raftery"),
 
 as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,
-                             Z.i=c(1),
-                             randeff.i=c(1)){
+                             vertex.i=c(1)){
   n<-network.size(x$model$Yg)
   G<-x$model$G
   d<-x$model$d
@@ -44,9 +43,9 @@ as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
   as.mcmc.list.ergmm.par.list(if(burnin) x$burnin else x$samples,
                               if(is.null(which.vars)) list(llk=1,
                                                            beta=1:p,
-                                                           Z=cbind(rep(Z.i,each=d),rep(1:d,length(Z.i))),
-                                                           sender=randeff.i,
-                                                           receiver=randeff.i,
-                                                           sociality=randeff.i) else which.vars,
+                                                           Z=cbind(rep(vertex.i,each=d),rep(1:d,length(vertex.i))),
+                                                           sender=vertex.i,
+                                                           receiver=vertex.i,
+                                                           sociality=vertex.i) else which.vars,
                               start,thin)
 }
