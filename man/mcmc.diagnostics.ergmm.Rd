@@ -9,13 +9,16 @@
   and suggests the run length required.
 }
 \usage{
-\method{mcmc.diagnostics}{ergmm}(x,which.diags=c("acf","trace","raftery"),
+\method{mcmc.diagnostics}{ergmm}(x,which.diags=c("cor","acf","trace","raftery"),
                                  burnin=FALSE,
                                  which.vars=NULL,
                                  vertex.i=c(1))
 }
 \arguments{
   \item{x}{ An object of class \code{\link[=ergmm.object]{ergmm}}. }
+  \item{which.diags}{A list of diagnostics to produce. "cor" is the correlation
+matrix of the statistics, "acf" plots the autocorrelation functions, "trace"
+produces trace plots, and "raftery" produces the Raftery-Lewis statistics.} 
   \item{burnin}{ If \code{TRUE}, generates an
     \code{\link[coda]{mcmc.list}} object for the burnin (if stored)
     instead of the main sampling run. }
