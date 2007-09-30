@@ -20,11 +20,14 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL, ...){
   
   if(!is.null(seed)) .Random.seed<-old.seed
 
-  if(nsim==1) return(l[[1]])
-  else{
+  if(nsim > 1){
+    l <- list(formula = object$model$formula, networks = l,
+                     stats = NULL, coef=NULL)
     attr(l,"class")<-"network.series"
-    return(l)
+  }else{
+    l <- l[[1]]
   }
+  return(l)
 }
 
 simulate.ergmm.model<-function(object,par,prior=list(),nsim=1,seed=NULL,...){
