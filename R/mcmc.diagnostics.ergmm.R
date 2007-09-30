@@ -7,11 +7,25 @@ if(!exists("mcmc.diagnostics", mode="function")){
   }
 }
 
-mcmc.diagnostics.ergmm <- function(x,which.diags=c("acf","trace","raftery"),
+mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"),
                                    burnin=FALSE,
                                    which.vars=NULL,
                                    vertex.i=c(1)){
   x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
+
+  if("cor" %in% which.diags)
+   novar <- apply(x,2,var)<1e-6
+   if(all(novar)){
+     warning("All the statistics are the same.\n")
+     return(invisible())
+   }else{
+    colnames.x <- colnames(x)[!novar]
+    x <- as.matrix(x[,!novar])
+    colnames(x) <- colnames.x
+
+    cat("\nCorrelations of sample statistics:\n")
+    print(ergmm.MCMCacf(x))
+  }
 
   if("acf" %in% which.diags)
     autocorr.plot(x)
