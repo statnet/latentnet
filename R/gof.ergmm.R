@@ -3,13 +3,13 @@ gof <- function(object, ...){
 }
 
 gof.ergmm <- function (object, ..., nsim=100,
-                      GOF=~degree+espartners+distance, 
+                      GOF=~idegree+odegree+distance, 
 		      verbose=FALSE) {
 
   require(ergm,quiet=TRUE)
   formula <- object$model$formula
 
-  trms <- ergm.getterms.latent(formula)
+  trms <- ergm.getterms(formula)
   if(length(trms)>2){
     nw <- eval(trms[[2]], sys.parent())
   }else{
