@@ -9,7 +9,7 @@ gof.ergmm <- function (object, ..., nsim=100,
   require(ergm,quiet=TRUE)
   formula <- object$model$formula
 
-  trms <- ergmm.getterms.latent(formula)
+  trms <- ergm.getterms.latent(formula)
   if(length(trms)>2){
     nw <- eval(trms[[2]], sys.parent())
   }else{
