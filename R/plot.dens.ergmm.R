@@ -123,9 +123,9 @@
       }
 
       if(density[1]>1){
-        Z.Z.K.v <- as.vector(t(ergmm.fit$Z.K))
+        Z.Z.K.v <- as.vector(t(ergmm.fit$samples$Z.K))
         Z.proc.mean <- cbind(as.vector(ergmm.fit$samples$Z[,,1]),as.vector(ergmm.fit$samples$Z[,,2]))
-        for(i in 1:ergmm.fit$ngroups){
+        for(i in 1:ergmm.fit$model$G){
           plot(Z.proc.mean,
                xlim=range(Z.proc.mean),ylim=range(Z.proc.mean),
                main=paste("Class",i),
