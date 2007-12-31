@@ -3,7 +3,7 @@ if(!exists("simulate", mode="function")){
     UseMethod("simulate")
 }
 
-simulate.ergmm<-function(object, nsim=1, seed=NULL, ...){
+simulate.ergmm<-function(object, nsim=1, seed=NULL){
   ## If the random seed has been specified, save the old seed, to
   ## pick up where it left off. If not, don't.
   if(!is.null(seed)){
@@ -30,7 +30,7 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL, ...){
   return(l)
 }
 
-simulate.ergmm.model<-function(object,par,prior=list(),nsim=1,seed=NULL,...){
+simulate.ergmm.model<-function(object,par,prior=ergmm.par.blank(),nsim=1,seed=NULL){
   ## If the random seed has been specified, save the old seed, to
   ## pick up where it left off. If not, don't.
   if(!is.null(seed)){
