@@ -167,14 +167,12 @@ R_INLINE void ergmm_par_pred(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
   if(model->dir){
     for(unsigned i=0;i<model->verts;i++)
       for(unsigned j=0;j<model->verts;j++)
-	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->dY[i][j]+=model->E_edge(model,par,i,j);
+	model->dY[i][j]+=model->E_edge(model,par,i,j);
   }
   else{
     for(unsigned i=0;i<model->verts;i++)
       for(unsigned j=0;j<=i;j++)
-	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->dY[i][j]+=model->E_edge(model,par,i,j);
+	model->dY[i][j]+=model->E_edge(model,par,i,j);
   }
 }
 
@@ -219,8 +217,8 @@ void post_pred_wrapper(int *S,
 			    dmatrix(*n,*n), // dY
 			    X, // X
 			    observed_ties,
-			    ERGMM_MCMC_lp_edge[*family-1],
-			    ERGMM_MCMC_E_edge[*family-1],			    
+			    ERGMM_MCMC_lp_edge[ERGMM_MCMC_to_cont[*family-1]],
+			    ERGMM_MCMC_E_edge[ERGMM_MCMC_to_cont[*family-1]],			    
 			    0,
 			    iconsts,
 			    dconsts,

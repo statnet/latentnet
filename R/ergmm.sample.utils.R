@@ -112,11 +112,10 @@ post.predict.C<-function(model,samples,control,MKL=FALSE){
                 observed=as.integer(observed),
                 
                 EY=double(n*n),
-                s.MKL=if(MKL) integer(1),
+                s.MKL=if(MKL) integer(1) else integer(0),
                 verbose=as.integer(control$verbose),
                 PACKAGE="latentnet")
   EY<-array(ret$EY,dim=c(1,n,n))[1,,] 
-  EY[!observed.dyads(model$Yg)]<-NA
   if(MKL) attr(EY,"s.MKL")<-ret$s.MKL+1 # C counts from 0; R counts from 1
   EY
 }
