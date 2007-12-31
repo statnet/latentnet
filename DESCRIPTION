@@ -4,7 +4,7 @@ Date: September 26, 2007
 Title:  Latent position and cluster models for statistical networks
 Author: Pavel N. Krivitsky <pavel@stat.washington.edu>,
         Mark S. Handcock <handcock@stat.washington.edu>, 
-        based on original code from "latentnet".
+        based on original code from "latentnetHRT".
 Maintainer: Pavel N. Krivitsky <pavel@stat.washington.edu>
 Description: Latent position and cluster models for statistical networks. 
 Depends: network, locfit, mvtnorm, shapes, abind
