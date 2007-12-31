@@ -54,12 +54,10 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   x
 }
 
-find.mkl<-function(model,samples,control,C=TRUE){
+find.mkl<-function(model,samples,control){
   if(control$verbose>1) cat("Evaluating matrix of predicted dyad values and finding initial value... ")
-  EY<-{
-    if(C) post.predict.C(model,samples,control,TRUE)
-    else post.predict.R(model,samples,control,TRUE)
-  }
+  EY<-post.predict.C(model,samples,control,TRUE)
+  EY[!observed.dyads(model$Yg)]<-NA
   if(control$verbose>1) cat("Finished.\nMaximizing...")
 
   mkl<-samples[[attr(EY,"s.MKL")]]
@@ -179,7 +177,7 @@ find.pmode.loop<-function(model,start,prior,control){
 add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
   if(!is.null(x$samples) && x$model$d>0){
     if(x$control$verbose) cat("Fitting the MKL locations... ")
-    x$mkl<-find.mkl(x$model,x$samples,x$control,C=FALSE)
+    x$mkl<-find.mkl(x$model,x$samples,x$control)
     if(!require(shapes,quietly=TRUE)){
       stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
     }
