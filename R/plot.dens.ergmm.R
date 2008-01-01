@@ -1,4 +1,4 @@
-"plot.dens.ergmm" <- function (ergmm.fit, ..., mle=FALSE, comp.mat = NULL,
+"plot.dens.ergmm" <- function (x, ..., mle=FALSE, comp.mat = NULL,
                                label = NULL, label.col = "black",
                                xlab, ylab, main, label.cex = 0.8, edge.lwd = 1,
                                edge.col="gray", al = 0.1,
@@ -11,6 +11,7 @@
                                mypch=15:19,mycex=2:10)
 {
 
+  ergmm.fit<-x
   Yg<-ergmm.fit$model$Yg
   Ym <- sociomatrix(Yg)
   n<-network.size(Yg)

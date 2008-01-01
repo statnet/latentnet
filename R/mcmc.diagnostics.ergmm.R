@@ -10,7 +10,8 @@ if(!exists("mcmc.diagnostics", mode="function")){
 mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"),
                                    burnin=FALSE,
                                    which.vars=NULL,
-                                   vertex.i=c(1)){
+                                   vertex.i=c(1),...){
+  extraneous.argcheck(...)
   x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
 
   if("cor" %in% which.diags){

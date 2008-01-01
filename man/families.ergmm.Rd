@@ -8,10 +8,10 @@
 \section{Family-link combinations}{
   \tabular{rlll}{
     ID \tab C name          \tab Family    \tab Link  \cr
-     0 \tab Bernoulli_logit \tab Bernoulli \tab logit \cr
-     1 \tab binomial_logit  \tab binomial  \tab logit \cr
-     2 \tab Poisson_log     \tab Possion   \tab log   \cr
-     3 \tab Bernoulli_logit \tab Bernoulli \tab logit \cr
-     4 \tab Bernoulli_logit \tab Bernoulli \tab logit
+     0 \tab Bernoulli\_logit \tab Bernoulli \tab logit \cr
+     1 \tab binomial\_logit  \tab binomial  \tab logit \cr
+     2 \tab Poisson\_log     \tab Possion   \tab log   \cr
+     3 \tab Bernoulli\_logit \tab Bernoulli \tab logit \cr
+     4 \tab Bernoulli\_logit \tab Bernoulli \tab logit
   }
 }

@@ -84,6 +84,7 @@ length.ergmm.par.list<-function(x){
 }
 
 stack.ergmm.par.list.list<-function(x,...){
+  extraneous.argcheck(...)
   require(abind)
   mcmcsamples<-list()
 
@@ -100,7 +101,8 @@ stack.ergmm.par.list.list<-function(x,...){
   mcmcsamples
 }
 
-unstack.ergmm.par.list<-function(x){
+unstack.ergmm.par.list<-function(x,...){
+  extraneous.argcheck(...)
   mcmcList<-list()
 
   if(is.null(attr(x,"breaks"))){
