@@ -59,7 +59,7 @@ plot(g.sim)
 #
 # Draw from the first draw from the posterior
 #
-g.sim <- with(gest,simulate(model,samples[[1]],prior)
+g.sim <- with(gest,simulate(model,samples[[1]],prior))
 plot(g.sim)
 }
 \keyword{graphs}

@@ -31,7 +31,7 @@
     See documentation for \code{\link{ergmm}}.}
 
   \item{use.par}{Character vector, integer, or an object of class
-    \code{\link[=ergmm.parobject]{ergmm.par}} that specifies
+    \code{\link[=ergmm.par.object]{ergmm.par}} that specifies
     the point estimates to be used. Can be one of the follwoing:
     \describe{
       \item{"mkl"}{This is the defult. Plots the Minimum Kulblack-Leibler
@@ -41,7 +41,7 @@
 	are treated as fixed.}
       \item{"pmean"}{Plots the posterior means.}
       \item{"pmode"}{Plots the conditional posterior mode.}
-      \item{\code{\link[=ergmm.parobject]{ergmm.par}}}{Plots the configuration contained in \code{ergmm.fit}.}
+      \item{\code{\link[=ergmm.par.object]{ergmm.par}}}{Plots the configuration contained in \code{ergmm.fit}.}
       \item{integer}{Plots the configuration of \code{ergm.fit}'th
 	stored MCMC iteration.}
     }

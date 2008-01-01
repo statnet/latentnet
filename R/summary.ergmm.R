@@ -1,9 +1,10 @@
-summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.025,.975),se=TRUE)
+summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,.975),se=TRUE,...)
 {
+  extraneous.argcheck(...)
   ## Just for convenience.
-  samples<-ergmm.fit$samples
-  model<-ergmm.fit$model
-  control<-ergmm.fit$control
+  samples<-object$samples
+  model<-object$model
+  control<-object$control
   d<-model$d
   p<-model$p
   G<-model$G
@@ -11,18 +12,18 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
   samplesize<-control$samplesize
   
 
-  summ<-list(ergmm=ergmm.fit,model=model)
+  summ<-list(ergmm=object,model=model)
 
   ## Compute the two-stage MLE point estimates.
   if("mle" %in% point.est){
-    if(is.null(ergmm.fit$mle$cov)){
+    if(is.null(object$mle$cov)){
       if(model$sender || model$receiver || model$sociality)
         warning("Fitting random effects as fixed effects.")
       if(se){
         ## Refit the MLE (mostly for the Hessian)
-        mle<-find.mle(model,ergmm.fit$mle,control=control,hessian=TRUE)
+        mle<-find.mle(model,object$mle,control=control,hessian=TRUE)
       }
-      else mle<-ergmm.fit$mle
+      else mle<-object$mle
 
       if(d>0) mle$Z<-scale(mle$Z,scale=FALSE)
       if(p>0){
@@ -82,14 +83,14 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
         mle$sociality.var<-mean(mle$sociality^2)
       }
 
-      ergmm.fit$mle<-mle
+      object$mle<-mle
     }
-    summ$mle<-ergmm.fit$mle
+    summ$mle<-object$mle
   }
 
   ## Compute the posterior mean point estimates.
   if("pmean" %in% point.est){
-    if(is.null(ergmm.fit$pmean)){
+    if(is.null(object$pmean)){
       pmean<-list()
       for(name in names(samples)){
         if(is.null(samples[[name]])) next
@@ -119,13 +120,13 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
                            row.names=model$coef.names)
       colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"Quantile of 0")
       pmean$coef.table<-coef.table
-      ergmm.fit$pmean<-pmean
+      object$pmean<-pmean
     }
-    summ$pmean<-ergmm.fit$pmean
+    summ$pmean<-object$pmean
   }
   ## Compute the MKL point estimates.
   if("mkl" %in% point.est){
-    mkl<-summ$mkl<-ergmm.fit$mkl
+    mkl<-summ$mkl<-object$mkl
     coef.table<-data.frame(mkl$beta,
                            row.names=model$coef.names)
     colnames(coef.table)<-c("Estimate")
@@ -133,17 +134,17 @@ summary.ergmm <- function (ergmm.fit, point.est=c("pmean","mkl"), quantiles=c(.0
   }
 
   if("pmode" %in% point.est){
-    summ$pmode<-ergmm.fit$pmode
+    summ$pmode<-object$pmode
   }
 
   class(summ)<-'summary.ergmm'
   summ
 }
 
-print.summary.ergmm<-function(summ,...){
+print.summary.ergmm<-function(x,...){
   ## For convenience
-  model<-summ$model
-  control<-summ$control
+  model<-x$model
+  control<-x$control
   
   cat("\n==========================\n")
   cat("Summary of model fit\n")
@@ -161,43 +162,43 @@ print.summary.ergmm<-function(summ,...){
   cat ("MCMC sample of size ", control$samplesize, ", samples are ",
        control$interval," iterations apart, after burnin of ",control$burnin, " iterations.\n",sep="")
        
-  if(!is.null(summ$pmean)){
+  if(!is.null(x$pmean)){
     cat("Covariate coefficients posterior means:\n")
-    print(summ$pmean$coef.table)
+    print(x$pmean$coef.table)
     cat("\n")
-    if(!is.null(summ$pmean$sender.var))
-      cat("Sender effect variance: ",summ$pmean$sender.var,".\n", sep="")
-    if(!is.null(summ$pmean$receiver.var))
-      cat("Receiver effect variance: ",summ$pmean$receiver.var,".\n", sep="")
-    if(!is.null(summ$pmean$sociality.var))
-      cat("Sociality effect variance: ",summ$pmean$sociality.var,".\n", sep="")
+    if(!is.null(x$pmean$sender.var))
+      cat("Sender effect variance: ",x$pmean$sender.var,".\n", sep="")
+    if(!is.null(x$pmean$receiver.var))
+      cat("Receiver effect variance: ",x$pmean$receiver.var,".\n", sep="")
+    if(!is.null(x$pmean$sociality.var))
+      cat("Sociality effect variance: ",x$pmean$sociality.var,".\n", sep="")
   }
 
-  if(!is.null(summ$mle)){
+  if(!is.null(x$mle)){
     cat("Covariate coefficients MLE:\n")
-    print(summ$mle$coef.table)
+    print(x$mle$coef.table)
     cat("\n")
 
-    cat("Overall BIC:       ", summ$mle$bic,"\n")
+    cat("Overall BIC:       ", x$mle$bic,"\n")
     if(model$G>0){
-      cat("Likelihood BIC:    ", summ$mle$llk.bic,"\n")
-      cat("Clustering BIC:    ", summ$mle$mbc.bic,"\n")
+      cat("Likelihood BIC:    ", x$mle$llk.bic,"\n")
+      cat("Clustering BIC:    ", x$mle$mbc.bic,"\n")
     }
     cat("\n")
   }
-  if(!is.null(summ$pmean)){
+  if(!is.null(x$pmean)){
     cat("Covariate coefficients posterior mean:\n")
-    print(summ$pmean$coef.table)
+    print(x$pmean$coef.table)
     cat("\n\n")
   }
-  if(!is.null(summ$mkl)){
+  if(!is.null(x$mkl)){
     cat("Covariate coefficients MKL:\n")
-    print(summ$mkl$coef.table)
+    print(x$mkl$coef.table)
     cat("\n\n")
   }
-  if(!is.null(summ$pmode)){
+  if(!is.null(x$pmode)){
     cat("Covariate coefficients posterior mode:\n")
-    print(summ$pmode$coef.table)
+    print(x$pmode$coef.table)
     cat("\n\n")
   }
 }
