@@ -100,10 +100,11 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     ## Use the iteration with the highest probability to seed another
     ## shot at the MLE.
     
-    if(x$control$verbose) cat("Using the highest-likelihood iteration to seed another MLE fit...")
+    if(x$control$verbose) cat("Using the highest-likelihood iteration to seed another MLE fit... ")
     mle2 <- find.mle.loop(x$model,x$mcmc.mle,control=x$control)
     if(x$model$d>0)
       mle2$Z<-scale(mle2$Z,scale=FALSE)
+    if(x$control$verbose) cat("Finished.\n")
   }
   else mle2<-list(llk=-Inf)
   if(is.null(mle2)) mle2<-list(llk=-Inf)
