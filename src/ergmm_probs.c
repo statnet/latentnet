@@ -33,8 +33,8 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			double *llk){
   unsigned int i,j,k;
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
-  int **iY = iY ? Runpack_imatrix(viY, *n, *n, NULL) : NULL;
-  double **dY = dY ? Runpack_dmatrix(vdY, *n, *n, NULL) : NULL;
+  int **iY = viY ? Runpack_imatrix(viY, *n, *n, NULL) : NULL;
+  double **dY = vdY ? Runpack_dmatrix(vdY, *n, *n, NULL) : NULL;
   unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
   double ***X = d3array(*p,*n,*n);
   
