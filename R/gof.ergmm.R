@@ -122,7 +122,7 @@ gof.ergmm <- function (object, ..., nsim=100,
  
   # Simulate an exponential family random graph model
 
-  SimNetworkSeriesObj <- simulate(object,mkl=FALSE,n=nsim)
+  SimNetworkSeriesObj <- simulate(object,n=nsim)
 
   if(verbose){cat("\nCollating simulations\n")}
 
