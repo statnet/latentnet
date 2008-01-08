@@ -1,5 +1,5 @@
 "plot.ergmm" <- function (x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
-                          which.par="mkl",
+                          what="mkl",
                           main = NULL, xlab=NULL, ylab=NULL, xlim=NULL,ylim=NULL,
                           object.scale=formals(plot.network.default)$object.scale,
                           pad=formals(plot.network.default)$pad,
@@ -11,41 +11,61 @@
                           rand.eff=NULL,
                           plot.means=TRUE,plot.vars=TRUE,
                           suppress.axes=FALSE,
-                          jitter1D=1,curve1D=TRUE,suppress.center=FALSE)
+                          jitter1D=1,curve1D=TRUE,suppress.center=FALSE,
+                          density.par=list())
 {
 
+  ## For convenience...
   Yg<-x$model$Yg
   distances<-NULL
-
   n<-network.size(Yg)
-  if(x$model$G<1) pie<-FALSE
-  
-  if (missing(xlab)) 
-    xlab <- ""
-  if (missing(ylab)) 
-    ylab <- ""
-  
-  if(class(which.par)=="ergmm.par"){
-    summ<-which.par
+  d<-x$model$d
+  G<-x$model$G
+  if(G<1) pie<-FALSE
+
+  ## Set default axis labels.
+  if(d==1){
+    if (is.null(xlab)) 
+      xlab <- ""
+    if (is.null(ylab)) 
+      ylab <- ""
+  }else if(d==2){    
+    if (is.null(xlab)) 
+      xlab <- expression(Z[1])
+    if (is.null(ylab)) 
+      ylab <- expression(Z[2])
+  }else if(d>2){
+    if (is.null(xlab)) 
+      xlab <- "First principal component of Z"
+    if (is.null(ylab)) 
+      ylab <- "Second principal component of Z"
+  }
+
+  ## Find the requested plotting coordinates.
+  ## Some "requests" require a substantially different code path, unfortunately.
+  if(class(what)=="ergmm.par"){
+    summ<-what
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
     Z.pZK<-summ$Z.pZK
-    if (missing(main)) 
-      main <- paste(deparse(substitute(which.par))," Latent Positions of ", 
+    if (is.null(main)) 
+      main <- paste(deparse(substitute(what))," Latent Positions of ", 
                     deparse(substitute(x)),sep="")
-  }else if(which.par=="start"){
+
+  }else if(what=="start"){
     summ<-x$start
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
-    if (missing(main)) 
+    if (is.null(main)) 
       main <- paste("Initial Latent Positions of ", 
                     deparse(substitute(x)),sep="")
-  }else if(which.par=="mle"){
+
+  }else if(what=="mle"){
     summ<-summary(x,point.est=c("mle"),se=FALSE)
     Z.pos <- summ$mle$Z
     summ<-summ$mle
@@ -54,10 +74,11 @@
     Z.K<-summ$Z.K
     plot.means<-plot.vars<-FALSE
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
-    if (missing(main)) 
+    if (is.null(main)) 
       main <- paste("Multistage MLEs of Latent Positions of", 
                     deparse(substitute(x)))
-  }else if(which.par=="pmean"){
+
+  }else if(what=="pmean"){
     summ<-summary(x,point.est=c("pmean"))
     Z.pos <- summ$pmean$Z
     summ<-summ$pmean
@@ -65,10 +86,11 @@
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
     Z.pZK<-summ$Z.pZK
-    if (missing(main)) 
+    if (is.null(main)) 
       main <- paste("Posterior Mean Positions of", 
                     deparse(substitute(x)))
-  }else if(which.par=="mkl"){
+
+  }else if(what=="mkl"){
     summ<-summary(x,point.est=c("pmean","mkl"))
     Z.pos <- summ$mkl$Z
     if(!is.null(x$mkl$mbc)){
@@ -82,10 +104,11 @@
     Z.K<-summ$pmean$Z.K
     Z.pZK<-summ$pmean$Z.pZK
     summ<-summ$mkl
-    if (missing(main)) 
+    if (is.null(main)) 
       main <- paste("MKL Latent Positions of", 
                     deparse(substitute(x)))
-  }else if(which.par=="pmode"){
+
+  }else if(what=="pmode"){
     summ<-summary(x,point.est=c("pmode"))
     Z.pos <- summ$pmode$Z
     summ<-summ$pmode
@@ -93,12 +116,15 @@
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
-    if (missing(main)) 
+    if (is.null(main)) 
       main <- paste("Posterior Mode Latent Positions of", 
                     deparse(substitute(x)))
-  }else if(which.par=="cloud"){
+
+  }else if(what=="cloud"){
     summ<-summary(x,point.est=c("pmean","mkl"))
     Z.pos <- summ$mkl$Z
+    if(d!=2) stop("Cloud plots are only available for 2D latent space models.")
+    
     if(!is.null(x$mkl$mbc)){
       Z.mean<-summ$mkl$mbc$Z.mean
       Z.var<-summ$mkl$mbc$Z.var
@@ -110,39 +136,90 @@
     Z.K<-summ$pmean$Z.K
     Z.pZK<-summ$pmean$Z.pZK
     summ<-summ$mkl
-    if (missing(main)) 
+    if (is.null(main)) 
       main <- paste("MKL Latent Positions of", 
                     deparse(substitute(x)))
     plot(matrix(c(x$samples$Z),ncol=2),pch=".")
     points(Z.pos,col=cluster.col[Z.K])
     points(Z.mean,col=cluster.col)
-    invisible(NULL)
-  }else if(is.numeric(which.par) && round(which.par)==which.par){
-    summ<-x$samples[[which.par]]
+    
+    return(invisible(NULL))
+
+  }else if(what=="density"){
+    if(is.null(density.par$totaldens)) density.par$totaldens <- TRUE
+    if(is.null(density.par$subdens)) density.par$subdens <- TRUE
+    if(is.null(density.par$mfrow)){
+      wanted<-density.par$totaldens+density.par$subdens*G
+      density.par$mfrow<-rep(min(ceiling(sqrt(wanted)),4),2)
+    }
+    
+    summ<-summary(x,point.est=c("pmean","mkl"))
+    Z.pos <- summ$mkl$Z
+    if(d!=2) stop("Density plots are only available for 2D latent space models.")
+
+    if(!require(KernSmooth,quietly=TRUE)){
+      stop("The 'density' option requires the 'KernSmooth' package.")
+    }
+
+    old.par<-par(mfrow=density.par$mfrow,mar=c(2.5,2.5,1,1))
+
+    Z.all<-matrix(c(aperm(x$samples$Z,c(2,1,3))),ncol=2)
+
+    if(density.par$totaldens){
+      plot(Z.all,type='n',xlab=xlab,ylab=ylab,...)
+      title(main=paste("Posterior density of",deparse(substitute(x))), cex.main=0.7, ...)
+      Z.bkde <- bkde2D(Z.all,0.2,c(201,201))
+      image(Z.bkde$x1,Z.bkde$x2,Z.bkde$fhat,col=grey(seq(1,0,length=255)),add=TRUE)
+      box()
+    }
+    
+    if(G>1 && density.par$subdens){
+      Z.K.all <- c(t(x$samples$Z.K))
+      for(i in 1:G){
+        plot(Z.all,main=paste("Class",i),type="n",...)
+        Z.bkde <- bkde2D(Z.all[Z.K.all==i,],0.2,c(101,101))
+        col<-c(col2rgb(cluster.col[i])/255)
+        image(Z.bkde$x1,Z.bkde$x2,Z.bkde$fhat,add=TRUE,
+              col=rgb(seq(1,col[1],length=255),
+                seq(1,col[2],length=255),
+                seq(1,col[3],length=255)))
+        contour(Z.bkde$x1,Z.bkde$x2,Z.bkde$fhat,add=TRUE, nlevels=4,
+                drawlabels=FALSE,
+                col="white")
+        box()
+      }
+    }
+    
+    par(old.par)
+
+    return(invisible(NULL))
+    
+  }else if(is.numeric(what) && round(what)==what){
+    summ<-x$samples[[what]]
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var
     Z.K<-summ$Z.K
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
-    if (missing(main)) 
-      main <- paste("Iteration #",which.par," Latent Positions of ", 
+    if (is.null(main)) 
+      main <- paste("Iteration #",what," Latent Positions of ", 
                     deparse(substitute(x)),sep="")
   }else stop("Invalid latent space position estimate type.")
-  
-  if(dim(Z.pos)[2]==1){
+
+  ## Transform coordinates for dimensions other than 2.
+  if(d==1){    
     Z.pos<-coords.1D(Z.pos,curve1D,jitter1D)
     if(curve1D){
       distances<-as.matrix(dist(Z.pos))
       distances<-distances/max(distances)
     }
+  } else if(d>2){ ## I.e. high latent dimension.
+    ## Plot the first two principal components.
+    prc<-prcomp(Z.pos)
+    Z.pos<-predict(prc,Z.pos)[,1:2]
   }
-  else
-    if(dim(Z.pos)[2]>2){ ## I.e. high latent dimension.
-      ## Plot the first two principal components.
-      prc<-prcomp(Z.pos)
-      Z.pos<-predict(prc,Z.pos)[,1:2]
-    }
-  
+
+  ## Set default vertex color.
   if(is.null(vertex.col)){
     if(is.latent.cluster(x) && !pie)
       vertex.col <- cluster.col[Z.K]
@@ -154,8 +231,9 @@
       vertex.col <- cluster.col[trycol]
     }
   }
-  
-  if(!missing(rand.eff) && (rand.eff[1]=="total" || x$model[rand.eff[1]][[1]])){
+
+  ## Set vertex sizes to correspond to random effect values.
+  if(!is.null(rand.eff) && (rand.eff[1]=="total" || x$model[rand.eff[1]][[1]])){
     if(rand.eff=="total")
       rand.eff.mul<-exp((summ["sender"][[1]]+summ["receiver"][[1]])/2)
     else      
@@ -163,11 +241,13 @@
     rand.eff.mul<-rand.eff.mul/mean(rand.eff.mul)
     vertex.cex<-vertex.cex*rand.eff.mul
   }
-  
+
+  ## Find the bounds of the plotting region.
   xylim<-ergmm.plotting.region(Z.pos,if(plot.means) Z.mean,if(plot.vars) Z.var,!suppress.center,pad)
   if(is.null(xlim)) xlim<-xylim$xlim else xylim$xlim<-xlim
   if(is.null(ylim)) ylim<-xylim$ylim else xylim$ylim<-ylim
     
+  ## Go forth, and plot the network.
   old.warn<-options()$warn
   options(warn=-1)
   
@@ -190,20 +270,23 @@
                tick=!(x$model$d==1 && curve1D==TRUE),
                edge.col=edge.col,
                ...)
+  
   options(warn=old.warn)
   
   ## For 1D plots, only plot horizontal axis ticks.
   if(x$model$d==1 && curve1D==TRUE) {
     axis(1)
   }
-  
+
+  ## Add the model formula as a subtitle.
   if(print.formula){
     fmla <- x$model$formula   
     xformula <- paste(fmla[2],fmla[1],fmla[-c(1:2)],collapse=" ")
     if(!is.null(x$model$response)) xformula<-paste(xformula,"   (",x$model$response,")",sep="")
     title(main = xformula, line = 1, cex.main = 0.7)
   }
-  
+
+  ## Plot pie charts.
   if(pie){
     piesize<-rep(ergmm.plotting.vertex.radius(vertex.cex,xylim,object.scale),length=n)
     pie.order<-order(piesize,decreasing=TRUE)
@@ -211,20 +294,26 @@
       ergmm.drawpie(Z.pos[pie.order[i],],piesize[pie.order[i]],Z.pZK[pie.order[i],],n=50,cols=cluster.col)
     }
   }
+
+  ## Mark the center.
   if(!suppress.center)
     points(cbind(0,0),pch="+")
-  Z.mean<-if(x$model$G>0)Z.mean else cbind(0,0)
+  Z.mean<-if(G>0)Z.mean else cbind(0,0)
   if(x$model$d==1)
     Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
   else if(x$model$d>2){
     Z.mean<-predict(prc,Z.mean)
   }
+
+  ## Mark the cluster means.
   if(plot.means)
     points(Z.mean,pch="+",col=cluster.col)
+
+  ## Plot the cluster standard deviations.
   if(plot.vars)
       symbols(Z.mean,circles=sqrt(Z.var),fg=cluster.col,inches=FALSE,add=TRUE,asp=1)
   
-  invisible(NULL)
+  invisible(Z.pos)
 }
 
 coords.1D<-function(Z,curve1D,jitter1D){
