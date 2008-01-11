@@ -148,7 +148,7 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     if(x$control$verbose) cat("Finished.\n")
     
   }
-  if(pmode2$mlp>x$pmode$mlp) x$pmode<-pmode2
+  if(is.null(x$pmode) || pmode2$mlp>x$pmode$mlp) x$pmode<-pmode2
     
   if(x$model$d>0 && !is.null(x$pmode)){
     Z<-scale(x$pmode$Z,scale=FALSE)
