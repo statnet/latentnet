@@ -4,8 +4,8 @@
 \alias{simulate.ergmm}
 \title{Draw from the distribution of an Exponential Random Graph Mixed Model}
 \usage{
-\method{simulate}{ergmm}(object, nsim = 1, seed = NULL)
-\method{simulate}{ergmm.model}(object,par,prior=ergmm.par.blank(),nsim=1,seed=NULL)
+\method{simulate}{ergmm}(object, nsim = 1, seed = NULL,\dots)
+\method{simulate}{ergmm.model}(object,nsim=1,seed=NULL,par,prior=ergmm.par.blank(),\dots)
 }
 \description{
   If passed a \code{\link[=ergmm.object]{ergmm}} fit object, \code{simulate} is used to simulate networks from the posterior of an exponetial random graph mixed model fit. Alternatively, a \code{\link[=ergmm.model.object]{ergmm.model}} object can be passed to simulate based on a particular parametr configuration.
@@ -59,7 +59,7 @@ plot(g.sim)
 #
 # Draw from the first draw from the posterior
 #
-g.sim <- with(gest,simulate(model,samples[[1]],prior))
+g.sim <- with(gest,simulate(model,par=samples[[1]],prior=prior))
 plot(g.sim)
 }
 \keyword{graphs}

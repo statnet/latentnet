@@ -2,19 +2,19 @@
 \alias{plot.ergmm}
 \title{Plotting Method for class ERGMM}
 \usage{
-\method{plot}{ergmm}(ergmm.fit, \dots, vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
-                          use.par="mkl",
+\method{plot}{ergmm}(x, \dots, vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
+                          what="mkl",
                           main = NULL, xlab=NULL, ylab=NULL, xlim=NULL,ylim=NULL,
                           object.scale=formals(plot.network.default)$object.scale,
                           pad=formals(plot.network.default)$pad,
                           cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
-                          vertex.col=cluster.col[1], print.formula=TRUE,
+                          vertex.col=NULL, print.formula=TRUE,
                           edge.col=8,
                           pie = FALSE,
-                          
+                          labels=FALSE,
                           rand.eff=NULL,
-                          plot.means=TRUE,plot.vars=TRUE,
-                          jitter1D=1,curve1D=TRUE,suppress.center=FALSE)
+                          plot.means=TRUE,plot.vars=TRUE,suppress.axes=FALSE,
+                          jitter1D=1,curve1D=TRUE,suppress.center=FALSE,density.par=list())
 
 }
 \description{
@@ -27,7 +27,7 @@
   models.
 }
 \arguments{
-  \item{ergmm.fit}{an R object of class \code{\link[=ergmm.object]{ergmm}}.
+  \item{x}{an R object of class \code{\link[=ergmm.object]{ergmm}}.
     See documentation for \code{\link{ergmm}}.}
 
   \item{use.par}{Character vector, integer, or an object of class
@@ -41,6 +41,10 @@
 	are treated as fixed.}
       \item{"pmean"}{Plots the posterior means.}
       \item{"pmode"}{Plots the conditional posterior mode.}
+      \item{"cloud"}{Plots the ``cloud'' of latent space position draws,
+    with their cluster colors.}
+      \item{"density"}{Plots density and contours of the posterior
+	latent positions, and, in cluster models, each cluster.}
       \item{\code{\link[=ergmm.par.object]{ergmm.par}}}{Plots the configuration contained in \code{ergmm.fit}.}
       \item{integer}{Plots the configuration of \code{ergm.fit}'th
 	stored MCMC iteration.}
@@ -56,6 +60,8 @@
   \item{plot.vars}{Whether circles with radius equal to the square root
     of posterior latent or intracluster variance estimates are
     plotted. Defaults to \code{TRUE}.}
+  \item{suppress.axes}{Whether axes should \emph{not} be drawn. Defaults
+    to \code{FALSE}. (Axes are drawn.)}
   \item{jitter1D}{For 1D latent space fits, it often helps to jitter the
     positions for visualization. This option controls the amount of
     jitter.}
@@ -67,6 +73,17 @@
     a latent cluster model.}
   \item{vertex.cex, vertex.col, etc.}{See
     \code{\link[pkg:network]{plot.network}}.}
+  \item{density.par}{A list of optional parameters for density plots:
+    \describe{
+      \item{\code{totaldens}}{Whether the overal density of latent space
+	positions should be plotted. Defaults to \code{TRUE}.}
+      \item{\code{subdens}}{Whether the densities of latent space
+	positions broken down by cluster should be plotted. Defaults to
+	\code{TRUE}.}
+      \item{\code{mfrow}}{When plotting multiple clusters' densities,
+	passed to \code{\link{par}}}
+    }
+  }
   
   \item{\dots}{Other optional arguments passed to the \code{\link[pkg:network]{plot.network}} function.}
 }

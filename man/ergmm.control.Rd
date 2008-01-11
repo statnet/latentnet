@@ -7,9 +7,21 @@
   set parameters that affect the sampling but do not affect the posterior distribution.
 }
 \usage{
-ergmm.control(samplesize = 2000, burnin = 1000, interval = 10, threads =
-1, mle.maxit = 400, tune = FALSE, tuning.runs = 100, tuning.runsize = 8,
-Z.delta = 0.4, beta.delta = 0.4, Z.tr.delta=0.4, Z.scl.delta = 0.02, RE.delta = 0.3, RE.shift.delta=0.4)
+ergmm.control<-function(samplesize=2000,
+                        burnin=1000,
+                        interval=10,
+                        threads=1,
+                        mle.maxit=400,
+                        tune=FALSE,
+                        tuning.runs=100,
+                        tuning.runsize=8,
+                        Z.delta=0.4,
+                        Z.tr.delta=0.4,
+                        Z.scl.delta=0.02,
+                        RE.delta=0.3,
+                        RE.shift.delta=0.4,
+                        beta.delta=0.4,
+                        store.burnin=FALSE)
 }
 \arguments{
   \item{samplesize}{The number of draws to be taken from the posterior distribution.}

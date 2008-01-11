@@ -14,7 +14,7 @@
 ergmm(formula, response=NULL, family="Bernoulli.logit",fam.par=NULL,
       control=ergmm.control(), user.start=ergmm.par.blank(), prior=ergmm.par.blank(),
       tofit=c("pmode", "mcmc", "mkl", "mkl.mbc", "mle","procrustes",
-      "klswitch"), Z.ref=NULL, Z.K.ref=NULL, randseed=NULL,
+      "klswitch"), Z.ref=NULL, Z.K.ref=NULL, seed=NULL,
       orthogonalize=FALSE,
       verbose=FALSE)
 }
@@ -63,10 +63,10 @@ ergmm(formula, response=NULL, family="Bernoulli.logit",fam.par=NULL,
       explictly listed, the dependency will be resolved automatically.}
   \item{Z.ref}{If given, used as a reference for Procrustes analysis.}
   \item{Z.K.ref}{If given, used as a reference for label-switching.}
-  \item{randseed}{If supplied, random number seed.}
-  \item{verbose}{If this is \code{TRUE}, causes information to be
+  \item{seed}{If supplied, random number seed.}
+  \item{verbose}{If this is \code{TRUE} (or \code{1}), causes information to be
     printed out about the progress of the fitting, particularly initial
-    value generation. Higher values lead to more verbosity.}
+    value generation. Higher values lead to greater verbosity.}
   \item{orthogonalize}{\emph{EXPERIMENTAL.} Performs Gramm-Schmidt
     orthogonalization on covariates passed to the model to reduce
     dependence. This capacity may be obsoleted in the future by the use
