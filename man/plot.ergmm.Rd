@@ -30,7 +30,7 @@
   \item{x}{an R object of class \code{\link[=ergmm.object]{ergmm}}.
     See documentation for \code{\link{ergmm}}.}
 
-  \item{use.par}{Character vector, integer, or an object of class
+  \item{what}{Character vector, integer, or an object of class
     \code{\link[=ergmm.par.object]{ergmm.par}} that specifies
     the point estimates to be used. Can be one of the follwoing:
     \describe{
@@ -71,8 +71,15 @@
     origin. Defaults to \code{FALSE}.}
   \item{cluster.col}{A vector of colors used to distinguish clusters in
     a latent cluster model.}
-  \item{vertex.cex, vertex.col, etc.}{See
-    \code{\link[pkg:network]{plot.network}}.}
+  \item{main,vertex.cex, vertex.col,
+    xlim,ylim,vertex.sides,object.scale,pad,
+    edge.col,xlab,ylab}{Arguments passed to
+    \code{\link[pkg:network]{plot.network}}, whose defaults differ from
+    those of \code{\link[pkg:network]{plot.network}}.}
+  \item{labels}{Whether vertex labels should be displayed. Defaults to
+    \code{FALSE}.}
+  \item{print.formula}{Whether the formula based on which the \code{x}
+    was fitted should be printed under the main title. Defaults to \code{TRUE}.}
   \item{density.par}{A list of optional parameters for density plots:
     \describe{
       \item{\code{totaldens}}{Whether the overal density of latent space

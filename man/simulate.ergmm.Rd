@@ -29,6 +29,8 @@
  \item{prior}{an object of class
    \code{\link[=ergmm.par.object]{ergmm.par}} with the prior distribution
    parameters that deviate from their defaults}
+
+ \item{\dots}{Additional arguments. Currently unused.}
  
 }
 
