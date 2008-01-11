@@ -1,6 +1,7 @@
 \name{mcmc.diagnostics.ergmm}
 \alias{mcmc.diagnostics.ergmm}
 \alias{mcmc.diagnostics}
+\alias{mcmc.diagnostics.default} 
 \title{Conduct MCMC diagnostics on an ERGMM fit}
 \description{
   This function creates simple diagnostic plots for the MCMC sampled

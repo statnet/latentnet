@@ -1,5 +1,6 @@
 \name{summary.ergmm}
 \alias{summary.ergmm}
+\alias{print.summary.ergmm}
 \title{ ERGMM Fit Summaries }
 \description{
   \code{summary.ergmm} prodcues a summary of an \code{\link[=ergmm.object]{ergmm}} object, including
@@ -18,7 +19,8 @@
   \item{\dots}{Additional arguments. Currently unused.}
 }
 \value{
-  An object of class \code{\link[=summary.ergmm.object]{summary.ergmm}}.
+  An object of class
+  \code{\link[=summary.ergmm.object]{summary.ergmm}}. A print method is available.
 }
 \author{ Pavel N. Krivitsky \email{pavel@stat.washington.edu} }
 \seealso{ \code{\link{ergmm.object}},
