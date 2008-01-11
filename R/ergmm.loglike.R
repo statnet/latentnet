@@ -49,9 +49,9 @@ ergmm.eta<-function(model,theta){
   return(eta)
 }
 
-ergmm.EY<-function(model,theta){
+ergmm.EY<-function(model,theta,NA.unobserved=TRUE){
   eta<-ergmm.eta(model,theta)
-  eta[!observed.dyads(model$Yg)]<-NA
+  if(NA.unobserved) eta[!observed.dyads(model$Yg)]<-NA
   EY.fs[[model$familyID]](eta,fam.par=model$fam.par)
 }
 

@@ -1,21 +1,21 @@
-predict.ergmm<-function(object,...,which.par="post"){
-  if(class(which.par)=="ergmm.par"){
-    which.par<-which.par
-  }else if(which.par=="start"){
-    which.par<-object$start
-  }else if(which.par=="mle"){
-    which.par<-object$mle
-  }else if(which.par=="pmean"){
-    which.par<-summary(object,point.est=c("pmean"))$pmean
-  }else if(which.par=="mkl"){
-    which.par<-object$mkl
-  }else if(which.par=="pmode"){
-    which.par<-object$pmode
-  }else if(which.par=="post"){
+predict.ergmm<-function(object,...,type="post"){
+  if(class(type)=="ergmm.par"){
+    type<-type
+  }else if(type=="start"){
+    type<-object$start
+  }else if(type=="mle"){
+    type<-object$mle
+  }else if(type=="pmean"){
+    type<-summary(object,point.est=c("pmean"))$pmean
+  }else if(type=="mkl"){
+    type<-object$mkl
+  }else if(type=="pmode"){
+    type<-object$pmode
+  }else if(type=="post"){
     return(with(object,post.predict.C(model,samples,control)))
-  }else if(is.numeric(which.par) && round(which.par)==which.par){
-    which.par<-object$samples[[which.par]]
+  }else if(is.numeric(type) && round(type)==type){
+    type<-object$samples[[type]]
   }else stop("Invalid parameter structure.")
 
-  ergmm.EY(object$model,which.par)
+  ergmm.EY(object$model,type,NA.unobserved=FALSE)
 }
