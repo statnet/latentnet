@@ -6,11 +6,11 @@
   point estimates and standard errors.
 }
 \usage{
-\method{summary}{ergmm}(ergmm.fit, point.est = c("pmean", "mkl"), quantiles = c(0.025, 0.975), se = TRUE)
+\method{summary}{ergmm}(object, point.est = c("pmean", "mkl"), quantiles = c(0.025, 0.975), se = TRUE,\dots)
 }
 
 \arguments{
-  \item{ergmm.fit}{ An \code{\link[=ergmm.object]{ergmm}} object to be summarized.}
+  \item{object}{ An \code{\link[=ergmm.object]{ergmm}} object to be summarized.}
   \item{point.est}{ Point estimates to compute: a character vector with
     some subset of the following: "mle", "pmean","mkl","pmode". }
   \item{quantiles}{ Posterior quantiles (credible intervals) to compute. }

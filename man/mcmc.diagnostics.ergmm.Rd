@@ -12,7 +12,7 @@
 \method{mcmc.diagnostics}{ergmm}(x,which.diags=c("cor","acf","trace","raftery"),
                                  burnin=FALSE,
                                  which.vars=NULL,
-                                 vertex.i=c(1))
+                                 vertex.i=c(1),\dots)
 }
 \arguments{
   \item{x}{ An object of class \code{\link[=ergmm.object]{ergmm}}. }
@@ -26,6 +26,7 @@ produces trace plots, and "raftery" produces the Raftery-Lewis statistics.}
     to include. If given, overrides the defaults and all arguments that follow.}
   \item{vertex.i}{ A numeric vector of vertices whose latent space
     coordinates and random effects to include. }
+  \item{\dots}{Additional arguments. None are supported at the moment.}
 }
 
 \details{
