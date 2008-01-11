@@ -7,7 +7,7 @@
   set parameters that affect the sampling but do not affect the posterior distribution.
 }
 \usage{
-ergmm.control<-function(samplesize=2000,
+ergmm.control(samplesize=2000,
                         burnin=1000,
                         interval=10,
                         threads=1,

@@ -14,6 +14,7 @@
     \code{\link{ergmm.par}} object, for the configuration of parameters based on
     which the prediction is made. An exception is "post", which computes
     the expected dyad values integrated over the posterior. }
+  \item{\dots}{Additional arguments. Currently unused.}
 }
 \value{
   A sociomatrix of predicted values. Note that predictions are made for

@@ -15,9 +15,7 @@
     some subset of the following: "mle", "pmean","mkl","pmode". }
   \item{quantiles}{ Posterior quantiles (credible intervals) to compute. }
   \item{se}{ Whether to compute standard errors. }
-}
-\details{
-  ~~ If necessary, more details than the description above ~~
+  \item{\dots}{Additional arguments. Currently unused.}
 }
 \value{
   An object of class \code{\link[=summary.ergmm.object]{summary.ergmm}}.
