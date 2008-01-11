@@ -1,6 +1,9 @@
 \name{ergmm.par.object}
 \alias{ergmm.par}
 \alias{ergmm.par.object}
+\alias{[[.ergmm.par}
+\alias{$.ergmm.par}
+\alias{ergmm.par.blank}
 \title{An ERGMM Parameter Configuration}
 \description{
   A class \code{\link[=ergmm.par.object]{ergmm.par}} to represent a
