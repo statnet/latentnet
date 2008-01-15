@@ -56,3 +56,6 @@
 }
 \author{Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \keyword{graphs}
+\keyword{utilities}
+\keyword{methods}
+\keyword{manip}

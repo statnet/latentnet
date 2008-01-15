@@ -176,3 +176,8 @@
   \code{\link{ergmm}}
 }
 \keyword{graphs}
+\keyword{models}
+\keyword{regression}
+\keyword{nonlinear}
+\keyword{nonparametric}
+\keyword{cluster}

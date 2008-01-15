@@ -106,6 +106,10 @@
 % These might be worth documenting
 %
 
+\alias{print.ergmm.model}
+\alias{ergmm.model}
+\alias{ergmm.model.object}
+
 \alias{getYm}
 
 \alias{observed.dyads}
@@ -149,8 +153,6 @@
 
 \alias{gof}
 \alias{gof.ergmm}
-\alias{print.ergmm.model}
-
 
 
 \description{

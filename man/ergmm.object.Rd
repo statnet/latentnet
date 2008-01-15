@@ -61,3 +61,5 @@
 }
 \author{Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \keyword{graphs}
+\keyword{regression}
+\keyword{models}

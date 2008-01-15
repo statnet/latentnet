@@ -44,5 +44,8 @@ monks.fit.mcmc<-as.mcmc(monks.fit)
 plot(monks.fit.mcmc)
 raftery.diag(monks.fit.mcmc)
 }
-\keyword{ graphs }
+\keyword{graphs}
+\keyword{debugging}
+\keyword{manip}
+
 

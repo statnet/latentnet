@@ -63,5 +63,5 @@ data(sampson)
 ## Longer run than default.
 ergmm(samplike~latent(d=2,G=3)+rreceiver,control=ergmm.control(samplesize = 20000))
 }
-\keyword{ graphs }
-
+\keyword{graphs}
+\keyword{misc}

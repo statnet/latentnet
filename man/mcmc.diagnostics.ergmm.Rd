@@ -59,3 +59,5 @@ summary(gest)
 mcmc.diagnostics(gest)
 }
 \keyword{graphs}
+\keyword{hplot}
+\keyword{debugging}
