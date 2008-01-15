@@ -29,3 +29,4 @@ data(sampson)
 sociomatrix(samplike)
 }
 \keyword{graphs}
+\keyword{internal}

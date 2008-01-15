@@ -140,3 +140,4 @@ plot(samp.fit,pie=TRUE,label=samp.labs)
 }
 }
 \keyword{graphs}
+\keyword{hplot}

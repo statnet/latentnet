@@ -2,37 +2,27 @@
 \alias{latentnet}
 \title{Latent position and cluster models for networks}
 \description{
-  The package \code{statnet} is used to fit linear exponential random network
-  models, in which the probability of a given network, \eqn{g},
-  on a set of nodes is \eqn{\exp(\theta^{T}S(g))/c(\theta)},
-  where \eqn{S(g)} is a vector of network statistics, \eqn{\theta}
-  is a parameter vector of the same length and \eqn{c(\theta)}
-  is the normalizing constant for the distribution.  \code{\link{ergmm}}
-  can return either a maximum pseudo-likelihood estimate or
-  an approximate MLE based on a Monte Carlo scheme.
-
-  The package \code{\link{latentnet}} adds latent variable models to the traditional 
-  exponential random network models. These latent models are
-  fit using the \code{\link{ergmm}} function that is also used
-  by \code{statnet}. See \url{http://www.csde.washington.edu/statnet}.
+  The package \code{latentnet} is used to fit latent cluster random effect
+  models, where the probability of a network \eqn{g},
+  on a set of nodes is a product of dyad probabilities, each of which is
+  a GLM with linear component
+  \eqn{\eta_{i,j}=\sum_{k=1}^p \beta_k X_{i,j,k}+||Z_i-Z_j||+\delta_i+\gamma_j},
+  where \eqn{X} is an array of dyad covariates, \eqn{\beta} is a vector
+  of covariate coefficients, \eqn{Z_i} is the latent space position of
+  node \eqn{i}, and \eqn{\delta} and \eqn{\gamma} are vectors of sender
+  and receiver effects.
 
   The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>}
   where \code{g} is a \code{network} object
   For the list of possible \code{<model terms>}, see 
-% the \code{Details} section below.
-  the \code{Model Terms} section of the \code{\link{ergmm}} function.
-}
-\usage{
-}
-\arguments{
-\item{\dots}{Specific to the latent variable model terms.}
+  \code{\link{terms.ergmm}}.
 }
 
 \details{
 
     The arguments in the \code{\link{ergmm}} function specific to latent 
     variable models
-    are \code{latent.control}. See the help page for \code{\link{ergmm}} for the 
+    are \code{ergmm.control}. See the help page for \code{\link{ergmm}} for the 
     details.
 
     The result of a latent variable model fit is an \code{\link{ergmm}} object.
@@ -59,8 +49,6 @@
  University of Washington, April 2005.
 }
 \examples{
-%\dontshow{require(statnet)}
-%library(latentnet)
 #
 # Using Sampson's Monk data, lets fit a 
 # simple latent position model
@@ -95,3 +83,8 @@ plot(samp.fit,density=TRUE,drawarrows=TRUE)
 plot(samp.fit,density=TRUE,drawarrows=TRUE,only.subdens=TRUE)
 }
 \keyword{graphs}
+\keyword{package}
+\keyword{models}
+\keyword{regression}
+\keyword{nonlinear}
+\keyword{nonparametric}

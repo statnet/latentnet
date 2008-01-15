@@ -42,7 +42,7 @@
 
 \value{
   If \code{nsim = 1}, \code{simulate} returns an object of class
-  \code{\link{network}}. Otherwise, a \code{\link{network.series}} that is a list
+  \code{\link[network]{network}}. Otherwise, a \code{\link[network]{network.series}} that is a list
   consisting of the following elements:
   \item{\$formula}{The formula used to generate the sample.}
   \item{\$networks}{A list of the generated networks.}
@@ -65,3 +65,8 @@ g.sim <- with(gest,simulate(model,par=samples[[1]],prior=prior))
 plot(g.sim)
 }
 \keyword{graphs}
+\keyword{models}
+\keyword{nonlinear}
+\keyword{nonparametric}
+\keyword{cluster}
+\keyword{datagen}

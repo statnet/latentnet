@@ -27,5 +27,6 @@ data(sampson)
 monks.fit<-ergmm(samplike~latent(d=2,G=3))
 heatmap(predict(monks.fit))
 }
-\keyword{ graphs}
-
+\keyword{graphs}
+\keyword{models}
+\keyword{distribution}

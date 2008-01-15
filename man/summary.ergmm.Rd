@@ -1,6 +1,7 @@
 \name{summary.ergmm}
 \alias{summary.ergmm}
 \alias{print.summary.ergmm}
+\alias{summary.ergmm.object}
 \title{ ERGMM Fit Summaries }
 \description{
   \code{summary.ergmm} prodcues a summary of an \code{\link[=ergmm.object]{ergmm}} object, including
@@ -28,4 +29,6 @@
 }
 \examples{
 }
-\keyword{ graphs }
+\keyword{graphs}
+\keyword{models}
+\keyword{print}
