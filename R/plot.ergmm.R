@@ -54,7 +54,7 @@
       main <- paste(deparse(substitute(what))," Latent Positions of ", 
                     deparse(substitute(x)),sep="")
 
-  }else if(what=="start" || what="burnin.start"){
+  }else if(what=="start" || what=="burnin.start"){
     summ<-x$start
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
@@ -65,7 +65,7 @@
       main <- paste("Initial Latent Positions of ", 
                     deparse(substitute(x)),sep="")
 
-  }else if(what="sampling.start"){
+  }else if(what=="sampling.start"){
     summ<-x$sampling.start
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
