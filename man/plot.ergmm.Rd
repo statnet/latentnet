@@ -34,16 +34,19 @@
     \code{\link[=ergmm.par.object]{ergmm.par}} that specifies
     the point estimates to be used. Can be one of the follwoing:
     \describe{
-      \item{"mkl"}{This is the defult. Plots the Minimum Kulblack-Leibler
+      \item{\code{"mkl"}}{This is the defult. Plots the Minimum Kulblack-Leibler
 	divergence values.}
-      \item{"start"}{Plots the starting configuration.}
-      \item{"mle"}{Plots the maximum likelihood estimates. Random effects
+      \item{\code{"start"},\code{"burnin.start"}}{Plots the starting
+	configuration.}
+      \item{\code{"sampling.start"}}{Plots the starting configuration of
+	the sampling phase (the last burnin configuration).}
+      \item{\code{"mle"}}{Plots the maximum likelihood estimates. Random effects
 	are treated as fixed.}
-      \item{"pmean"}{Plots the posterior means.}
-      \item{"pmode"}{Plots the conditional posterior mode.}
-      \item{"cloud"}{Plots the ``cloud'' of latent space position draws,
+      \item{\code{"pmean"}}{Plots the posterior means.}
+      \item{\code{"pmode"}}{Plots the conditional posterior mode.}
+      \item{\code{"cloud"}}{Plots the ``cloud'' of latent space position draws,
     with their cluster colors.}
-      \item{"density"}{Plots density and contours of the posterior
+      \item{\code{"density"}}{Plots density and contours of the posterior
 	latent positions, and, in cluster models, each cluster.}
       \item{\code{\link[=ergmm.par.object]{ergmm.par}}}{Plots the configuration contained in \code{ergmm.fit}.}
       \item{integer}{Plots the configuration of \code{ergm.fit}'th
