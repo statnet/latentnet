@@ -54,7 +54,7 @@
       main <- paste(deparse(substitute(what))," Latent Positions of ", 
                     deparse(substitute(x)),sep="")
 
-  }else if(what=="start"){
+  }else if(what=="start" || what="burnin.start"){
     summ<-x$start
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
@@ -63,6 +63,17 @@
     if(pie) stop("Cannot make pie charts with the specified parameter type.")
     if (is.null(main)) 
       main <- paste("Initial Latent Positions of ", 
+                    deparse(substitute(x)),sep="")
+
+  }else if(what="sampling.start"){
+    summ<-x$sampling.start
+    Z.pos <- summ$Z
+    Z.mean<-summ$Z.mean
+    Z.var<-summ$Z.var
+    Z.K<-summ$Z.K
+    if(pie) stop("Cannot make pie charts with the specified parameter type.")
+    if (is.null(main)) 
+      main <- paste("Post-Burn-In Latent Positions of ", 
                     deparse(substitute(x)),sep="")
 
   }else if(what=="mle"){
