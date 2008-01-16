@@ -36,8 +36,8 @@ ergmm.eta<-function(model,theta){
       eta<-eta+theta$beta[k]*model$X[[k]]
 
   if(!is.null(theta$sociality)){
-    eta<-eta+theta$sender
-    eta<-t(t(eta)+theta$receiver)
+    eta<-eta+theta$sociality
+    eta<-t(t(eta)+theta$sociality)
   }
   
   if(!is.null(theta$sender))
@@ -168,7 +168,7 @@ ergmm.loglike.C<-function(model,theta){
 observed.dyads<-function(Yg){
   observed.dyads<-get.network.attribute(Yg,"design")
   if(is.null(observed.dyads))
-    observed.dyads<-matrix(TRUE,Yg$gal$n,Yg$gal$n)
+    observed.dyads<-matrix(TRUE,network.size(Yg),network.size(Yg))
   else
     observed.dyads<-as.matrix.network(observed.dyads,matrix.type="adjacency")==0
       
