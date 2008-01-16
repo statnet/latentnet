@@ -12,7 +12,8 @@
   
   \emph{Random Effects}\cr
   \describe{
-    \item{\code{latent(d, G=0, var.mul=1/30, var=NULL, var.df=3, mean.var.mul=1/5, mean.var=NULL, pK=3)}}{\emph{Latent position model term, with
+    \item{\code{latent(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+  mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)}}{\emph{Latent position model term, with
 	optional clustering.}
       Adds a term to the model equal to the negative Eucledean distance
       \eqn{-||Z_i-Z_j||}{-dist(Z[i],Z[j])}, where \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]}
@@ -23,24 +24,34 @@
       \describe{
 	\item{\code{d}}{The dimension of the latent space.}
 	\item{\code{G}}{The number of groups (0 for no clustering).}
-	\item{\code{var.mul}}{In the absence of \code{var}, this argument,
-	  multiplied by the size of the network, will be the scale
-	  parameter for the scale-inverse-chi-squared prior distribution of the within-cluster
-	  variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.var.mul}.}
+	\item{\code{var.mul}}{In the absence of \code{var}, this
+	  argument will be used as a scaling factor for a
+	  function of average cluster size and latent space dimension to
+	  set \code{var}. To set it in the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.var.mul}.}
 	\item{\code{var}}{If given, the scale
 	  parameter for the scale-inverse-chi-squared prior distribution of the within-cluster
 	  variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
 	  \code{Z.var}.}
+	\item{\code{var.df.mul}}{In the absence of \code{var.df}, this
+	  argument is the multiplier for the square root of average
+	  cluster size, which serves in place of \code{var.df}. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
+	  \code{Z.var.df.mul}.}
 	\item{\code{var.df}}{The degrees of freedom
 	  parameter for the scale-inverse-chi-squared prior distribution of the within-cluster
 	  variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
 	  \code{Z.var.df}.}
-	\item{\code{mean.var.mul}}{In the absence of \code{mean.var}, multiplied by the size of the network, the variance of
-	  the spherical Gaussian prior distribution of the cluster means. To set it in the
+	\item{\code{mean.var.mul}}{In the absence of \code{mean.var},
+	  the multiplier for a function of number of vertices and latent space
+	  dimension to set \code{mean.var}. To set it in the
 	  \code{prior} argument to \code{\link{ergmm}}, use \code{Z.mean.var.mul}.}
 	\item{\code{mean.var}}{The variance of
 	  the spherical Gaussian prior distribution of the cluster means. To set it in the
-	  \code{prior} argument to \code{\link{ergmm}}, use \code{Z.mean.var}.}
+	  \code{prior} argument to \code{\link{ergmm}}, use
+	  \code{Z.mean.var}.}
+	\item{\code{pK.mul}}{In the absence of \code{pK}, this argument
+	  is the multiplier for the square root of the average cluster size,
+	  which is used as \code{pK}. To set it in
+	  the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.pK}.}
 	\item{\code{pK}}{The parameter of the Dirichilet prior
 	  distribution of cluster assignment probabilities. To set it in
 	  the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.pK}.}
