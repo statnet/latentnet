@@ -9,5 +9,5 @@ Maintainer: Pavel N. Krivitsky <pavel@stat.washington.edu>
 Description: Latent position and cluster models for statistical networks. 
 Depends: network, abind, shapes, tools
 Suggests: coda, mclust, KernSmooth, snowFT, ergm
-License: GPL version 2 (June, 1991)
-URL: http://csde.washington.edu/statnet
+License: GPL-3, with Section 7 attribution requirements (see LICENSE)
+URL: http://statnetproject.org
