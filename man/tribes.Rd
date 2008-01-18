@@ -3,8 +3,9 @@
 \docType{data}
 \title{Read Highland Tribes}
 \description{
-  A network of political alliances and enmities among the 16 tribes of
-  Eastern Central Highlands of New Guinea, documented by Read (1954).
+  A network of political alliances (``gama'') and enmities (``rova'')
+  among the 16 tribes of Eastern Central Highlands of New Guinea,
+  documented by Read (1954).
 }
 \usage{data(tribes)}
 \format{
@@ -36,8 +37,8 @@
 }
 \examples{
 data(tribes)
-tribes.fit<-ergmm(tribes~latent(d=2,G=3),response="sign.012",family="binomial.logit",fam.par=list(trials=2))
-plot(tribes.fit)
+tribes.fit<-ergmm(tribes~latent(d=2),response="sign.012",family="binomial.logit",fam.par=list(trials=2))
+plot(tribes.fit,edge.col=as.matrix(tribes,"gama",m="a")*3+as.matrix(tribes,"rova",m="a")*2,pie=TRUE)
 }
 \keyword{datasets}
 \keyword{multivariate}
