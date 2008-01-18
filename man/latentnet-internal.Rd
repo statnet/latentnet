@@ -147,14 +147,6 @@
 \alias{add.mkl.mbc.ergmm}
 \alias{add.mkl.pos.ergmm}
 
-%
-% These need to be documented!
-%
-
-\alias{gof}
-\alias{gof.ergmm}
-
-
 \description{
   Internal latentnet functions.
 }
