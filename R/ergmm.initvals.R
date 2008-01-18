@@ -20,7 +20,11 @@ ergmm.initvals <- function(model,user.start,prior,control){
   d <- model$d
   G <- model$G
 
-  Yam<-as.matrix.network(Yg,matrix.type="adjacency")
+  Ym<-getYm(Yg,model$response)
+  
+  Ym01<-Ym>mean(Ym)
+  mode(Ym01)<-"numeric"
+  
   pm<-user.start
   
   if(need.to.fit$Z){
@@ -64,22 +68,22 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if(need.to.fit$beta){
     if(model$intercept)
-      pm$beta<-logit(mean(Yam))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z)))
+      pm$beta<-logit(mean(Ym01))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z)))
     pm$beta<-c(pm$beta,rep(0,p-model$intercept))
   }
 
   bayes.prop<-function(x) (sum(x)+1)/(length(x)+2)
   
   if(need.to.fit$sociality){
-    pm$sociality<-logit((apply(Yam,1,bayes.prop)+apply(Yam,2,bayes.prop))/2)
+    pm$sociality<-logit((apply(Ym01,1,bayes.prop)+apply(Ym01,2,bayes.prop))/2)
     pm$sociality<-pm$sociality-mean(pm$sociality)
   } else{
     if(need.to.fit$sender){
-      pm$sender<-logit(apply(Yam,1,bayes.prop))
+      pm$sender<-logit(apply(Ym01,1,bayes.prop))
       pm$sender<-pm$sender-mean(pm$sender)
     }
     if(need.to.fit$receiver){
-      pm$receiver<-logit(apply(Yam,2,bayes.prop))
+      pm$receiver<-logit(apply(Ym01,2,bayes.prop))
       pm$receiver<-pm$receiver-mean(pm$receiver)
     }
   }
