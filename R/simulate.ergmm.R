@@ -72,7 +72,7 @@ sim.1.ergmm<-function(model,par,prior=list()){
 
     mypar$Z<-matrix(rnorm(nv*model$d,
                             if(model$G>0) mypar$Z.mean[mypar$Z.K,] else 0,
-                            if(model$G>0) mypar$Z.var[mypar$Z.K,] else mypar$Z.var
+                            if(model$G>0) mypar$Z.var[mypar$Z.K] else mypar$Z.var
                             ),nrow=nv)
   }
 
