@@ -40,13 +40,13 @@
 \references{
  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock.
  \emph{Latent space approaches to social network analysis.} 
- Journal of the American Statistical Association, Dec 2002, Vol.97, 
+ Journal of the American Statistical Association, Dec 2002, Vol. 97, 
  Iss. 460;  pg. 1090-1098.
 
  Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
  \emph{Model-Based Clustering for Social Networks.} 
- Working Paper Number 46, Center for Statistics and the Social Sciences,
- University of Washington, April 2005.
+ Journal of the Royal Statistical Society: Series A (Statistics in
+ Society), 2007, Vol. 170, Iss. 2; pg. 301-354.
 }
 \examples{
 #
