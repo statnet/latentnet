@@ -1,15 +1,5 @@
 #ifndef ERGMM_SAMPLER_H
-#define ERGMM_SAMPLER_H 1
-
-/****************************************************************************/
-/*  Original Author: Susan Shortreed, susanms@stat.washington.edu           */
-/*  Updated by: Jeremy Tantrum, tantrum@stat.washington.edu                 */
-/*  Rewritten by: Pavel Krivitsky, pavel@stat.washington.edu                */
-/*  Purpose: main functions for parameter estimation model 2                */
-/*           All of this code is for an R function which is incorporated    */
-/*           into the R ERGM package.                                       */
-/****************************************************************************/
-
+#define ERGMM_SAMPLER_H
 
 #include "ergmm_structs.h"
 #define FALSE 0

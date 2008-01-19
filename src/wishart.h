@@ -1,5 +1,5 @@
 #ifndef WISHART_H
-#define WISHART_H 1
+#define WISHART_H
 
 void rdirich(unsigned int n, double *epsilon);
 

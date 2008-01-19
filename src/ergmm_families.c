@@ -1,9 +1,17 @@
+/****************************************************************/
+/* Families of dyad weight distributions supported by latentnet */
+/****************************************************************/
+
 #include "ergmm_families.h"
 #include "ergmm_probs.h"
 #include <R.h>
 #include <Rmath.h>
 #include <math.h>
 
+
+/* ERGMM_MCMC_lp_edge = unnormalized log-probability of a dyad. */
+/* ERGMM_MCMC_set_lp_Yconst = (one-time) setting of the network's normalization constant. */
+/* ERGMM_MCMC_E_edge = expected value of a dyad. */
 
 /* Define "lookup tables" for families. */
 

@@ -1,3 +1,7 @@
+/*********************************************/
+/* Bayesian model-based clustering routines. */
+/*********************************************/
+
 #include "mbc_sampler.h"
 #include "ergmm_structs.h"
 #include "matrix_utils.h"

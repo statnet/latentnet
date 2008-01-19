@@ -1,9 +1,8 @@
-/****************************************************************************/
-/*  Original Author: Susan Shortreed, susanms@stat.washington.edu           */
-/*  Updated by: Jeremy Tantrum, tantrum@stat.washington.edu                 */
-/*  Rewritten by: Pavel Krivitsky, pavel@stat.washington.edu                */
-/*  Purpose: Functions to compute probabilities.                            */
-/****************************************************************************/
+/******************************************************/
+/* Functions to compute probabilities and likelihoods */
+/******************************************************/
+
+
 
 #include <R.h>
 #include <Rmath.h>

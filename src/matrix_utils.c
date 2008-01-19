@@ -1,12 +1,6 @@
-/****************************************************************************/
-/*  Author: Susan Shortreed, susanms@stat.washington.edu                    */
-/*  Purpose: support functions for parameter estimation for the latent      */
-/*           space model proposed by  Peter D. Hoff, Adrian E. Raftery      */
-/*           and Mark S. Handcock in                                        */
-/*           "Latent Space Approaches to Social Network Analysis"           */
-/*           All of this code is for an R function to be incorporated       */
-/*           into the R ERGM package.                                       */
-/****************************************************************************/
+/****************************************/
+/* Matrix, vector, and memory utilities */
+/****************************************/
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,11 +8,6 @@
 #include <Rmath.h>
 #include "matrix_utils.h"
 
-
-/*  General Notes
-    n: number of rows in a matrix or length of a vector
-    m: number of colums in a matrix
-*/
 
 /*  Allocates memory for a vector of doubles of length n */
 double *dvector(unsigned int n){

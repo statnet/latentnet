@@ -1,5 +1,5 @@
 #ifndef ERGMM_UPDATERS_H
-#define ERGMM_UPDATERS_H 1
+#define ERGMM_UPDATERS_H
 
 #include "ergmm_structs.h"
 void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsigned int Z, unsigned int RE, unsigned int coef, unsigned int LV, unsigned int REV);

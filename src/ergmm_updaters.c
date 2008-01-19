@@ -1,16 +1,6 @@
-/****************************************************************************/
-/*  Original Author: Susan Shortreed, susanms@stat.washington.edu           */
-/*  Updated by: Jeremy Tantrum, tantrum@stat.washington.edu                 */
-/*  Purpose: support functions for parameter estimation model 2             */
-/*           All of this code is for an R function which is incorporated    */
-/*           into the R ERGM package.                                       */
-/****************************************************************************/
-/*####                 General Notes good to know                      #####*/
-/*#  Z is the matrix of positions                                           */
-/*#  k is the  dimension of the latent space                                */
-/*#  g is the number of actors/nodes in the graph                           */
-/*#                                                                         */
-/****************************************************************************/
+/***********************************************************************/
+/* Functions to update individual ERGMM parameters from the posterior. */
+/***********************************************************************/
 
 #include <R.h>
 #include <Rmath.h>
@@ -75,7 +65,11 @@ void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsi
     cur->prop_RE=cur->prop_Z = PROP_ALL;
 }
 
-
+/*
+  Finalizes and cleans up after an MH proposal, copying and overwriting as needed.
+  Usually not called directly, but through macros ERGMM_MCMC_accept and 
+  ERGMM_MCMC_reject.
+*/
 
 void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
 	      ERGMM_MCMC_Par *new, ERGMM_MCMC_Par *old, unsigned int copy_lpedge){
@@ -322,6 +316,10 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
     return(0);
   }
 }
+
+/*
+  Update "clustering variables" (mean, variance, and assignments).
+*/
 
 void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur){
   double S_hat, useSig,sum,temp;
