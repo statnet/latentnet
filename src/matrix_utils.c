@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <R.h>
 #include <Rmath.h>
+#include <R_ext/Applic.h>
 #include "matrix_utils.h"
 
 
