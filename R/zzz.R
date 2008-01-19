@@ -6,7 +6,7 @@
     assign("path.to.me",file_path_as_absolute(lib),pos="package:latentnet")
     assign("nlog.double.eps",-log(.Machine$double.eps),pos="package:latentnet")
 
-    ehelp <- library(help="ergm",lib.loc=lib,character.only=TRUE)$info[[1]]
+    ehelp <- library(help="latentnet",lib.loc=lib,character.only=TRUE)$info[[1]]
     cat(paste(substring(ehelp[4],first=16),"\n",
               "Version ",substring(ehelp[2],first=16),
               " created on ",
