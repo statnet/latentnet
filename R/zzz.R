@@ -19,8 +19,8 @@
 "                         contributors.\n"
               ,sep=""))
     cat('This package is part of statnet project (http://www.statnetproject.org).\n')
-    cat('For citation information type `citation("latentnet")\'.\n')
-    cat('Type `help(package="latentnet")\' to get started.\n')
+    cat('For citation information type 'citation("latentnet")\'.\n')
+    cat('Type 'help(package="latentnet")\' to get started.\n')
 }
 
 .Last.lib <- function(libpath){
