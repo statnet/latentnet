@@ -13,28 +13,26 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
                                    vertex.i=c(1),...){
   extraneous.argcheck(...)
   x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
+  oldask=par("ask")
+  on.exit(par(ask=oldask))
+  par(ask=dev.interactive())
 
   if("cor" %in% which.diags){
-   novar <- apply(x[[1]],2,var)<1e-6
-   if(all(novar)){
-     warning("All the statistics are the same.\n")
-     return(invisible())
-   }else{
-    colnames.x <- colnames(x[[1]])[!novar]
-    x <- as.matrix(x[[1]][,!novar])
-    colnames(x) <- colnames.x
-    cat("\nCorrelations of sample statistics:\n")
-    print(ergmm.MCMCacf(x))
-   }
+    x.ac<-autocorr(x,lag=0:1)
+    for(chain in seq(along=x.ac)){
+      cat(paste("Chain",chain,"\n"))
+      for(i in 1:2){
+        cat(paste(dimnames(x.ac[[chain]])[[1]][i],"\n"))
+        print(x.ac[[chain]][i,,])
+        cat("\n")
+      }
+    }
   }
 
   if("acf" %in% which.diags)
     autocorr.plot(x)
 
   if("trace" %in% which.diags){
-    oldask=par("ask")
-    on.exit(par(ask=oldask))
-    par(ask=dev.interactive())
     plot(x)
   }
 
