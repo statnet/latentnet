@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <R.h>
 #include <Rmath.h>
+#include <R_ext/Applic.h>
 #include "matrix_utils.h"
 
 
@@ -508,7 +509,6 @@ void dvector_scale_by(double *v, unsigned int n, double by){
     v[i]*=by;
 }
 
-/* Thanks to Raphael Gottardo */
 /* Inverts a matrix "in place".
    "workspace" must be an expendable block of memory of length (n*n*3+4*n)*sizeof(double)*/
 R_INLINE int inverse(double **x, int n, double **res, double *workspace)

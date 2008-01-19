@@ -81,8 +81,6 @@ void procr_alloc(int n, int d, int G,
   *workspace=dvector(d*d*3+d*4);
 }
 
-/* Procustes code due to Raphael Gottardo */
-
 int procr_transform(double **Z, double **Z_mean, double **Zo, int n, int d, int G,
 		    double **pZ, double **pZ_mean,
 		    double **A, double **tZ, double **tZo, double **Ahalf, 
