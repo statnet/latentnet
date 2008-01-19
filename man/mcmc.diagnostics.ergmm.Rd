@@ -26,7 +26,7 @@ produces trace plots, and "raftery" produces the Raftery-Lewis statistics.}
   \item{which.vars}{A named list mapping variable names to the indices
     to include. If given, overrides the defaults and all arguments that follow.}
   \item{vertex.i}{ A numeric vector of vertices whose latent space
-    coordinates and random effects to include. }
+    coordinates to include. }
   \item{\dots}{Additional arguments. None are supported at the moment.}
 }
 

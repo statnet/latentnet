@@ -27,7 +27,6 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			int *family, int *iconsts, double *dconsts,
 			double *vX, double *vZ,
 			double *coef,
-			double *sender, double *receiver, int *sociality,
 			int *vobserved_ties,
 			double *llk){
   unsigned int i,j,k;
@@ -62,8 +61,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			    *n, // verts
 			    *d, // latent
 			    *p, // coef
-			    0,
-			    *sociality};
+			    0};
   
   // Precompute the normalizing constant.
   ERGMM_MCMC_set_lp_Yconst[*family](&model);
@@ -73,17 +71,12 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			   NULL, // Z_mean
 			   NULL, // Z_var
 			   NULL, // Z_pK			  
-			   sender,
-			   0, // sender_var
-			   receiver,
-			   0, // receiver_var
 			   NULL, // Z_K
 			   0, // llk
 			   NULL, // lpedge
 			   0, // lpZ		  
 			   0, // lpLV
 			   0, // lpcoef
-			   0 // lpRE
   };
 
   *llk = ERGMM_MCMC_lp_Y(&model,&params,FALSE);
@@ -102,9 +95,6 @@ R_INLINE double ERGMM_MCMC_etaij(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par,un
   if(model->latent) eta-=dvector_dist(par->Z[i],par->Z[j],model->latent);
   
   for(k=0;k<model->coef;k++) eta+=par->coef[k]*model->X[k][i][j];
-  
-  if(par->sender) eta+=par->sender[i];
-  if(par->receiver) eta+=par->receiver[j];
   
   return(eta);
 }
@@ -139,8 +129,7 @@ double ERGMM_MCMC_lp_Y(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned in
 	}
   }
   
-  /* Do NOT add on log P(Z|means,vars,clusters) or log
-     P(sender,receiver|vars) here.  This is a _log-likelihood_, so
+  /* Do NOT add on log P(Z|means,vars,clusters) here.  This is a _log-likelihood_, so
      it's log P(Y|everything else), not log P(Y,Z|everything else).*/
 
   if(!update_lpedge) return(llk);
@@ -154,13 +143,9 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
   unsigned int i,j,prop_i=PROP_NONE,prop_j=PROP_NONE;
 
   ERGMM_MCMC_Par *new=cur->prop,*old=cur->state;
-  if(cur->prop_coef!=PROP_NONE || cur->prop_Z==PROP_ALL || cur->prop_RE==PROP_ALL)
+  if(cur->prop_coef!=PROP_NONE || cur->prop_Z==PROP_ALL)
     return(ERGMM_MCMC_lp_Y(model,new,TRUE)-old->llk);
   if(cur->prop_Z!=PROP_NONE) prop_i=prop_j=cur->prop_Z;
-  else if(cur->prop_RE!=PROP_NONE){
-    if(old->sender) prop_i=cur->prop_RE;
-    if(old->receiver || model->sociality) prop_j=cur->prop_RE;
-  }
   else{
     new->llk=old->llk;
     return(0);
@@ -214,7 +199,7 @@ double ERGMM_MCMC_lp_Y_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
   }
 
   new->llk=old->llk+llk_diff;
-  /* Do NOT add on log P(Z|means,vars,clusters) or log P(sender,receiver|vars) here.
+  /* Do NOT add on log P(Z|means,vars,clusters) here.
      This is a _log-likelihood_, so it's log P(Y|everything else), not log P(Y,Z|everything else).*/
 
   return(llk_diff);
@@ -264,51 +249,7 @@ double ERGMM_MCMC_logp_Z_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur
 }
 
 
-/* logp_RE gives log P(sender,receiver|sender_var,receiver_var)
- */
-double ERGMM_MCMC_logp_RE(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
-  unsigned int i;
-  par->lpRE=0;
-  for(i=0;i<model->verts;i++){
-    if(par->sender) par->lpRE += dnorm(par->sender[i],0,sqrt(par->sender_var),1);
-  }
-  // Don't add receiver probability if the sender and receiver are "locked".
-  if(par->receiver && !model->sociality)
-    for(i=0;i<model->verts;i++)
-      par->lpRE += dnorm(par->receiver[i],0,sqrt(par->receiver_var),1);
-
-  return(par->lpRE);
-}
-
-double ERGMM_MCMC_logp_RE_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur){
-  unsigned int i;
-  double lpRE_diff=0;
-  ERGMM_MCMC_Par *new=cur->prop,*old=cur->state;
-
-  if(cur->prop_RE==PROP_ALL){
-    return(ERGMM_MCMC_logp_RE(model,new)-old->lpRE);
-  }
-  else if(cur->prop_RE==PROP_NONE){
-    new->lpRE=old->lpRE;
-    return(0);
-  }
-  
-  i=cur->prop_RE;
-
-  if(new->sender) 
-    lpRE_diff += (dnorm(new->sender[i],0,sqrt(new->sender_var),1)-
-		  dnorm(old->sender[i],0,sqrt(old->sender_var),1));
-  
-  // Don't add receiver probability if the sender and receiver are "locked".
-  if(new->receiver && !model->sociality)
-    lpRE_diff += (dnorm(new->receiver[i],0,sqrt(new->receiver_var),1)-
-		  dnorm(old->receiver[i],0,sqrt(old->receiver_var),1));
-
-  new->lpRE=old->lpRE+lpRE_diff;
-  return(lpRE_diff);
-}
-
-/* logp_latentvars gives P(Z_mean,Z_var|priors)
+/* logp_LV gives P(Z_mean,Z_var|priors)
  * Note that it does NOT include probabilities involved in cluster assignments (might add later).
  */
 double ERGMM_MCMC_logp_LV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MCMC_Priors *prior){
@@ -343,16 +284,4 @@ double ERGMM_MCMC_logp_coef(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_
 double ERGMM_MCMC_logp_coef_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior){
   if(cur->prop_coef==PROP_NONE) return(0);
   return(ERGMM_MCMC_logp_coef(model,cur->prop,prior)-cur->state->lpcoef);
-}
-
-double ERGMM_MCMC_logp_REV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MCMC_Priors *prior){
-  par->lpREV=0;
-  if(par->sender) par->lpREV+=dsclinvchisq(par->sender_var,prior->sender_var_df,prior->sender_var,1);
-  if(par->receiver && !model->sociality) par->lpREV+=dsclinvchisq(par->receiver_var,prior->receiver_var_df,prior->receiver_var,1);
-  return(par->lpREV);
-}
-
-double ERGMM_MCMC_logp_REV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior){
-  if(cur->prop_REV==PROP_NONE) return(0);
-  return(ERGMM_MCMC_logp_REV(model,cur->prop,prior)-cur->state->lpREV);
 }

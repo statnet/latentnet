@@ -10,7 +10,7 @@
   dyad-independent terms. In the formula for the model, the model terms are various function-like
   calls, some of which require arguments, separated by \code{+} signs.
   
-  \emph{Random Effects}\cr
+  \emph{Latent position and cluster terms}\cr
   \describe{
     \item{\code{latent(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
   mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)}}{\emph{Latent position model term, with
@@ -55,54 +55,6 @@
 	\item{\code{pK}}{The parameter of the Dirichilet prior
 	  distribution of cluster assignment probabilities. To set it in
 	  the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.pK}.}
-      }
-    }
-    \item{\code{rsender(var=1, var.df=3)}}{\emph{Random sender effect.}
-      Adds a random sender effect to the model, with normal prior centered
-      around \eqn{0}{0} and a variance that is estimated.
-      Can only be used on directed networks.
-      The parameters are as follows:
-      \describe{
-	\item{\code{var}}{The scale
-	  parameter for the scale-inverse-chi-squared prior distribution
-	  of the sender effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{sender.var}.}
-	\item{\code{var.df}}{The degrees of freedom
-	  parameter for the scale-inverse-chi-squared prior distribution
-	  of the sender effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{sender.var.df}.}
-      }
-    }
-    \item{\code{rreceiver(var=1, var.df=3)}}{\emph{Random receiver effect.}
-      Adds a random receiver effect to the model, with normal prior centered
-      around \eqn{0}{0} and a variance that is estimated.
-      Can only be used on directed networks.
-      The parameters are as follows:
-      \describe{
-	\item{\code{var}}{The scale
-	  parameter for the scale-inverse-chi-squared prior distribution
-	  of the receiver effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{receiver.var}.}
-	\item{\code{var.df}}{The degrees of freedom
-	  parameter for the scale-inverse-chi-squared prior distribution
-	  of the receiver effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{receiver.var.df}.}
-      }
-    }
-    \item{\code{rsociality(var=1, var.df=3)}}{\emph{Random sociality effect.}
-      Adds a random sociality effect to the model, with normal prior centered
-      around \eqn{0}{0} and a variance that is estimated.
-      Can be used on either a directed or an undirected network.
-      The parameters are as follows:
-      \describe{
-	\item{\code{var}}{The scale
-	  parameter for the scale-inverse-chi-squared prior distribution
-	  of the sociality effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{sociality.var}.}
-	\item{\code{var.df}}{The degrees of freedom
-	  parameter for the scale-inverse-chi-squared prior distribution
-	  of the sociality effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{sociality.var.df}.}
       }
     }
   }

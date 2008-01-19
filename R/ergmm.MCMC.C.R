@@ -60,29 +60,6 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
   if(length(prior$beta.mean)!=p) stop("Incorrect length for the prior beta mean vector.")
   if(length(prior$beta.var)!=p) stop("Incorrect length for the prior beta standard deviation vector.")
 
-  if(model$sender || model$receiver || model$sociality){
-    if(is.null(control$RE.delta)) stop("Need random effect proposal sd.")
-  }
-
-  if(model$sender){
-    if(length(start$sender)!=n) stop("Incorrect length for the vector of starting sender effects.")
-    if(is.null(start$sender.var)) stop("Need starting sender variance.")
-    if(is.null(prior$sender.var)) stop("Need sender prior variance.")
-    if(is.null(prior$sender.var.df)) stop("Need sender prior variance df.")
-  }
-  if(model$receiver){
-    if(length(start$receiver)!=n) stop("Incorrect length for the vector of starting receiver effects.")
-    if(is.null(start$receiver.var)) stop("Need starting receiver variance.")
-    if(is.null(prior$receiver.var)) stop("Need receiver prior variance.")
-    if(is.null(prior$receiver.var.df)) stop("Need receiver prior variance df.")
-  }
-
-  if(model$sociality){
-    if(length(start$sociality)!=n) stop("Incorrect length for the vector of starting sociality effects.")
-    if(is.null(start$sociality.var)) stop("Need starting sociality variance.")
-    if(is.null(prior$sociality.var)) stop("Need sociality prior variance.")
-    if(is.null(prior$sociality.var.df)) stop("Need sociality prior variance df.")
-  }
   ## End Sanity checks.
 
   RESERVED<-2
@@ -110,9 +87,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
              llk.mcmc=double(samplesize+RESERVED),
              lpZ.mcmc=if(!is.null(start$Z))double(samplesize+RESERVED) else double(0),
              lpbeta.mcmc=if(p>0)double(samplesize+RESERVED) else double(0),
-             lpRE.mcmc=if(model$sender||model$sociality||model$receiver)double(samplesize+RESERVED) else double(0),
              lpLV.mcmc=if(!is.null(start$Z))double(samplesize+RESERVED) else double(0),
-             lpREV.mcmc=if(model$sender || model$sociality || model$receiver)double(samplesize+RESERVED) else double(0),
              
              Z=as.double(start$Z),
              
@@ -140,27 +115,10 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
              prior.beta.var=as.double(prior$beta.var),
              beta.mcmc=double((samplesize+RESERVED)*p),
              beta.rate=double((samplesize+RESERVED)),
-             
-             start.sender=if(model$sociality) as.double(start$sociality) else as.double(start$sender),
-             start.receiver=as.double(start$receiver),
-             sender.var=if(model$sociality) as.double(start$sociality.var) else as.double(start$sender.var),
-             receiver.var=as.double(start$receiver.var),
-             
-             prior.sender.var=as.double(prior$sender.var),
-             prior.sender.var.df=as.double(prior$sender.var.df),
-             prior.receiver.var=as.double(prior$receiver.var),
-             prior.receiver.var.df=as.double(prior$receiver.var.df),
-             
-             sender.mcmc=if(model$sender||model$sociality) double(n*(samplesize+RESERVED)) else double(0),
-             receiver.mcmc=if(model$receiver) double(n*(samplesize+RESERVED)) else double(0),
-             sender.var.mcmc=if(model$sender || model$sociality) double((samplesize+RESERVED)) else double(0),
-             receiver.var.mcmc=if(model$receiver) double((samplesize+RESERVED)) else double(0),
-             
-             lock.RE=model$sociality,
+                          
              observed=as.integer(observed),
 
              deltas=with(control,as.numeric(c(Z.delta,Z.tr.delta,Z.scl.delta,
-               RE.delta,RE.shift.delta,
                rep(beta.delta,length.out=p)))),
              
              PACKAGE="latentnet")
@@ -170,9 +128,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
                 llk=Cret$llk.mcmc,
                 lpZ=Cret$lpZ.mcmc,
                 lpbeta=Cret$lpbeta.mcmc,
-                lpRE=Cret$lpRE.mcmc,
                 lpLV=Cret$lpLV.mcmc,
-                lpREV=Cret$lpREV.mcmc,
                 beta=matrix(Cret$beta.mcmc,ncol=p),
                 beta.rate=Cret$beta.rate,
                 Z.K = if(G>0) matrix(Cret$K.mcmc,ncol=n),
@@ -180,13 +136,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
                 Z.var = if(d>0) matrix(Cret$Z.var.mcmc,ncol=max(G,1)),
                 Z.pK = if(G>0) matrix(Cret$Z.pK.mcmc,ncol=G),
                 Z=if(d>0)array(Cret$Z.mcmc,dim=c((samplesize+RESERVED),n,d)),
-                Z.rate=if(d>0) Cret$Z.rate, Z.rate.move.all=if(d>0) Cret$Z.rate.move.all,
-                sender=if(model$sender && !model$sociality) matrix(Cret$sender.mcmc,ncol=n),
-                receiver=if(model$receiver) matrix(Cret$receiver.mcmc,ncol=n),
-                sociality=if(model$sociality) matrix(Cret$sender.mcmc,ncol=n),
-                sender.var=if(model$sender && !model$sociality) Cret$sender.var.mcmc,
-                receiver.var=if(model$receiver) Cret$receiver.var.mcmc,
-                sociality.var=if(model$sociality) Cret$sender.var.mcmc
+                Z.rate=if(d>0) Cret$Z.rate, Z.rate.move.all=if(d>0) Cret$Z.rate.move.all
                 )
   class(samples)<-"ergmm.par.list"
   

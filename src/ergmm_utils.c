@@ -48,27 +48,6 @@ void latentpos_translate(double **A, unsigned int n, unsigned int m, double *by)
       A[i][j]+=by[j];
 }
 
-void randeff_translate(double *v, unsigned int n, double by){
-  unsigned int i;
-  for(i=0;i<n;i++) v[i]+=by;
-}
-
-void add_randeff(double *effect, unsigned int n, double **eta, unsigned int is_col){
-  unsigned int i,j;
-  if(is_col)
-    for(i=0;i<n;i++){
-      for(j=0;j<n;j++){
-	eta[i][j]+=effect[i];
-      }
-    }
-  else
-    for(i=0;i<n;i++){
-      for(j=0;j<n;j++){
-	eta[i][j]+=effect[j];
-      }
-    }
-}
-
 /* Generate a uniformly random permutation. */
 unsigned int *runifperm(unsigned int n, unsigned int *a){
   unsigned int i;
@@ -99,10 +78,6 @@ void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_P
   if(source->Z_mean && (source->Z_mean != dest->Z_mean)) copy_dmatrix(source->Z_mean,dest->Z_mean,model->clusters,model->latent);
   if(source->Z_var && (source->Z_var != dest->Z_var)) copy_dvector(source->Z_var,dest->Z_var,model->clusters?model->clusters:1);
   if(source->Z_pK && (source->Z_pK != dest->Z_pK)) copy_dvector(source->Z_pK,dest->Z_pK,model->clusters);
-  if(source->sender && (source->sender != dest->sender)) copy_dvector(source->sender,dest->sender,model->verts);
-  if(source->sender) dest->sender_var=source->sender_var;
-  if(source->receiver && (source->receiver != dest->receiver)) copy_dvector(source->receiver,dest->receiver,model->verts);
-  if(source->receiver) dest->receiver_var=source->receiver_var;
   if(source->Z_K && (source->Z_K != dest->Z_K)) copy_ivector((int *) source->Z_K,(int *) dest->Z_K,model->verts);
 
   dest->llk=source->llk;
@@ -110,6 +85,4 @@ void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_P
   dest->lpZ=source->lpZ;
   dest->lpLV=source->lpLV;
   dest->lpcoef=source->lpcoef;
-  dest->lpRE=source->lpRE;
-  dest->lpREV=source->lpREV;
 }

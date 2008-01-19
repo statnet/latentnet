@@ -14,8 +14,6 @@ ergmm.control<-function(samplesize=2000,
                         Z.delta=0.4,
                         Z.tr.delta=0.4,
                         Z.scl.delta=0.02,
-                        RE.delta=0.3,
-                        RE.shift.delta=0.4,
                         beta.delta=0.4,
                         store.burnin=FALSE){
   list(samplesize=samplesize,
@@ -28,8 +26,6 @@ ergmm.control<-function(samplesize=2000,
        Z.delta=Z.delta,
        Z.tr.delta=Z.tr.delta,
        Z.scl.delta=Z.scl.delta,
-       RE.delta=RE.delta,
-       RE.shift.delta=RE.shift.delta,
        beta.delta=beta.delta,
        store.burnin=store.burnin)
 }

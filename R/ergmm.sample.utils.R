@@ -106,9 +106,6 @@ post.predict.C<-function(model,samples,control,MKL=FALSE){
                 
                 Z = as.double(samples$Z),
                 beta = as.double(samples$beta), # coef
-                sender = as.double(samples$sender),
-                receiver = as.double(samples$receiver),
-                sociality = as.double(model$sociality),
                 observed=as.integer(observed),
                 
                 EY=double(n*n),

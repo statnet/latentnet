@@ -2,10 +2,7 @@ not.given<-function(name,theta,given){
   is.null(given[[name]]) && !is.null(theta[[name]])
 }
 
-PRIOR_NAMES<-list(sender=c("sender.var"),
-                  receiver=c("receiver.var"),
-                  sociality=c("sociality.var"),
-                  Z=c("Z.var"))
+PRIOR_NAMES<-list(Z=c("Z.var"))
 
 lp.works<-function(name,theta,given){
   not.given(name, theta, given) && all(PRIOR_NAMES[[name]]%in%names(merge.lists(theta,given)))
@@ -34,17 +31,6 @@ ergmm.eta<-function(model,theta){
   if(!is.null(theta$beta))
     for(k in 1:length(theta$beta))
       eta<-eta+theta$beta[k]*model$X[[k]]
-
-  if(!is.null(theta$sociality)){
-    eta<-eta+theta$sociality
-    eta<-t(t(eta)+theta$sociality)
-  }
-  
-  if(!is.null(theta$sender))
-    eta<-eta+theta$sender
-
-  if(!is.null(theta$receiver))
-    eta<-t(t(eta)+theta$receiver)
 
   return(eta)
 }
@@ -94,13 +80,6 @@ ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
     }
   }
 
-  if(not.given("sociality",theta,given))
-    grad$sociality <- sapply(1:n,function(i) sum(dlpY.deta[i,]*obs[i,])+sum(dlpY.deta[,i]*obs[,i]))
-  else{
-    if(not.given("sender",theta,given)) grad$sender <- sapply(1:n,function(i) sum(dlpY.deta[i,]*obs[i,]))
-    if(not.given("receiver",theta,given)) grad$receiver <-  sapply(1:n,function(i) sum(dlpY.deta[,i]*obs[,i]))
-  }
-  
   grad
 }
   
@@ -127,15 +106,6 @@ ergmm.loglike.C<-function(model,theta){
   }  
   if(length(theta$beta)!=model$p) stop("Incorrect length for the beta vector.")
 
-  if(!is.null(theta$sociality)){
-    if(length(theta$sender)!=n) stop("Incorrect length for the vector of sociality effects.")
-  }
-  if(!is.null(theta$sender)){
-    if(length(theta$sender)!=n) stop("Incorrect length for the vector of sender effects.")
-  }
-  if(!is.null(theta$receiver)){
-    if(length(theta$receiver)!=n) stop("Incorrect length for the vector of receiver effects.")
-  }
   ## End Sanity checks.
   
   ret <- .C("ERGMM_lp_Y_wrapper",
@@ -153,9 +123,6 @@ ergmm.loglike.C<-function(model,theta){
             
             beta=as.double(theta$beta),
 
-            sender=if(is.null(theta$sociality))as.double(theta$sender) else as.double(theta$sociality),
-            receiver=as.double(theta$receiver), lock.RE=!is.null(theta$sociality),
-            
             observed=as.integer(observed),
 
             llk=double(1),
@@ -182,23 +149,13 @@ observed.dyads<-function(Yg){
 pack.optim<-function(theta,fit.vars=NULL){
   if(is.null(fit.vars))
     return(c(theta$beta,theta$Z,
-             theta$sender,theta$receiver,theta$sociality,
-             theta$Z.var,theta$Z.mean,
-             theta$sender.var,theta$receiver.var,theta$sociality.var))
+             theta$Z.var,theta$Z.mean))
   else
     return(c(if(fit.vars$beta)theta$beta,
              if(fit.vars$Z)theta$Z,
              
-             if(fit.vars$sender)theta$sender,
-             if(fit.vars$receiver)theta$receiver,
-             if(fit.vars$sociality)theta$sociality,
-
              if(fit.vars$Z.var)theta$Z.var,
-             if(fit.vars$Z.mean)theta$Z.mean,
-             
-             if(fit.vars$sender.var)theta$sender.var,
-             if(fit.vars$receiver.var)theta$receiver.var,
-             if(fit.vars$sociality.var)theta$sociality.var))
+             if(fit.vars$Z.mean)theta$Z.mean))
 }
 
 reg.fit.vars<-function(fit.vars){
@@ -214,11 +171,10 @@ inv.fit.vars<-function(fit.vars){
   fit.vars
 }
 
-FIT_ALL<-list(beta=TRUE,Z=TRUE,sender=TRUE,receiver=TRUE,sociality=TRUE,
-              Z.var=TRUE,Z.mean=TRUE,
-              sender.var=TRUE,receiver.var=TRUE,sociality.var=TRUE)
+FIT_ALL<-list(beta=TRUE,Z=TRUE,
+              Z.var=TRUE,Z.mean=TRUE)
 
-FIT_MLE<-list(beta=TRUE,Z=TRUE,sender=TRUE,receiver=TRUE,sociality=TRUE)
+FIT_MLE<-list(beta=TRUE,Z=TRUE)
 
 unpack.optim<-function(v,fit.vars,model){
   p<-model$p
@@ -228,14 +184,8 @@ unpack.optim<-function(v,fit.vars,model){
   v.must.be<-with(fit.vars,
                   beta*p +
                   Z*n*d +
-                  sender*n +
-                  receiver*n +
-                  sociality*n +
                   Z.var*(d>0)*max(1,G) +
-                  Z.mean*G*d +
-                  sender.var +
-                  receiver.var +
-                  sociality.var)
+                  Z.mean*G*d)
   if(length(v)!=v.must.be){
     stop(paste("Input vector wrong length: ", length(v),
                " but should be ",v.must.be,".",
@@ -253,21 +203,6 @@ unpack.optim<-function(v,fit.vars,model){
     pos<-pos+n*d
   }
 
-  if(fit.vars$sender){
-    ret$sender<-v[pos+1:n]
-    pos<-pos+n
-  }
-
-  if(fit.vars$receiver){
-    ret$receiver<-v[pos+1:n]
-    pos<-pos+n
-  }
-
-  if(fit.vars$sociality){
-    ret$sociality<-v[pos+1:n]
-    pos<-pos+n
-  }
-
   if(fit.vars$Z.var && d>0){
     ret$Z.var<-v[pos+1:max(1,G)]
     pos<-pos+max(1,G)
@@ -278,27 +213,12 @@ unpack.optim<-function(v,fit.vars,model){
     pos<-pos+G*d
   }
   
-  if(fit.vars$sender.var){
-    ret$sender.var<-v[pos+1]
-    pos<-pos+1
-  }
-  
-  if(fit.vars$receiver.var){
-    ret$receiver.var<-v[pos+1]
-    pos<-pos+1
-  }
-
-  if(fit.vars$sociality.var){
-    ret$sociality.var<-v[pos+1]
-    pos<-pos+1
-  }
-
   class(ret)<-"ergmm.par"
   
   ret
 }
 
-mk.lp.optim.fs<-function(fit.vars,model,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+mk.lp.optim.fs<-function(fit.vars,model,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpLV")){
   fit.vars<-reg.fit.vars(fit.vars)
   return(list(
               f=function(v){
@@ -331,7 +251,7 @@ find.mle<-function(model,start,given=ergmm.par.blank(),control,
 
 
 
-find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.vars=NULL,opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV"),
+find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.vars=NULL,opt=c("lpY","lpZ","lpBeta","lpLV"),
                    hessian=FALSE,mlp=TRUE){
   if(is.null(fit.vars)){
     fit.vars<-list()
@@ -365,14 +285,8 @@ find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.
                     lower=pack.optim(list(
                       beta=rep(-Inf,p),
                       Z=rep(-Inf,n*d),
-                      sender=rep(-Inf,n),
-                      receiver=rep(-Inf,n),
-                      sociality=rep(-Inf,n),
                       Z.var=rep(sqrt(.Machine$double.eps),(d>0)*max(G,1)),
-                      Z.mean=rep(-Inf,d*G),
-                      sender.var=sqrt(.Machine$double.eps),
-                      receiver.var=sqrt(.Machine$double.eps),
-                      sociality.var=sqrt(.Machine$double.eps)),
+                      Z.mean=rep(-Inf,d*G)),
                       fit.vars=fit.vars),
                     control=control,hessian=hessian)
             ##  )
@@ -392,19 +306,17 @@ find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.
   mpe
 }
 
-ergmm.lp<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV"),up.to.const=FALSE){
+ergmm.lp<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpLV"),up.to.const=FALSE){
 
   lpY<-if("lpY" %in% opt) ergmm.loglike(model,theta,
                                         given=given,up.to.const=up.to.const) else 0
   
   lpZ<-if("lpZ" %in% opt) ergmm.lpZ(theta,given=given) else 0
-  lpRE<-if("lpRE" %in% opt) ergmm.lpRE(theta,given=given) else 0
   lpBeta<-if("lpBeta" %in% opt) ergmm.lpBeta(theta,prior,given=given) else 0
-  lpREV<-if("lpREV" %in% opt) ergmm.lpREV(theta,prior,given=given) else 0
   
   lpLV<-if("lpLV" %in% opt) ergmm.lpLV(theta,prior,given=given) else 0
   
-  lpAll<-lpY+lpZ+lpRE+lpBeta+lpREV+lpLV
+  lpAll<-lpY+lpZ+lpBeta+lpLV
                                                       
   return(lpAll)
 }
@@ -461,23 +373,18 @@ cmp.lists<-function(x,y){
   out
 }
 
-ergmm.lp.grad<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+ergmm.lp.grad<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpLV")){
   
   grad<-sum.lists(if("lpY" %in% opt) if(not.given("beta",theta,given)||
-                                        not.given("Z",theta,given)||
-                                        not.given("sender",theta,given)||
-                                        not.given("receiver",theta,given)||
-                                        not.given("sociality",theta,given)) ergmm.loglike.grad(model,theta,given=given),
+                                        not.given("Z",theta,given)) ergmm.loglike.grad(model,theta,given=given),
                   if("lpZ" %in% opt) ergmm.lpZ.grad(theta,given=given),
-                  if("lpRE" %in% opt) ergmm.lpRE.grad(theta,given=given),
                   if("lpBeta" %in% opt) ergmm.lpBeta.grad(theta,prior,given=given),
-                  if("lpREV" %in% opt) ergmm.lpREV.grad(theta,prior,given=given),
                   if("lpLV" %in% opt) ergmm.lpLV.grad(theta,prior,given=given))
   
   grad
 }
 
-ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpLV")){
   which.vars$Z.K<-FALSE
   which.vars<-reg.fit.vars(which.vars)
 
@@ -541,28 +448,6 @@ ergmm.lpZ.grad<-function(theta,given=ergmm.par.blank()){
   deriv
 }
 
-ergmm.lpRE<-function(theta, given=ergmm.par.blank()){
-  theta<-merge.lists(theta,given)
-  ({if(lp.works("sender",theta,given)) sum(dnorm(theta$sender,0,sqrt(theta$sender.var),TRUE)) else 0}+
-   {if(lp.works("receiver",theta,given)) sum(dnorm(theta$receiver,0,sqrt(theta$receiver.var),TRUE)) else 0}+
-   {if(lp.works("sociality",theta,given)) sum(dnorm(theta$sociality,0,sqrt(theta$sociality.var),TRUE)) else 0})
-}
-
-ergmm.lpRE.grad<-function(theta,given=ergmm.par.blank()){
-  theta<-merge.lists(theta,given)
-  deriv<-list()
-  if(lp.works("sender",theta,given)) deriv$sender<--theta$sender/theta$sender.var
-  if(not.given("sender.var",theta,given)) deriv$sender.var<-(sum(theta$sender^2)/theta$sender.var-length(theta$sender))/theta$sender.var/2
-
-  if(lp.works("receiver",theta,given)) deriv$receiver<--theta$receiver/theta$receiver.var
-  if(not.given("receiver.var",theta,given)) deriv$receiver.var<-(sum(theta$receiver^2)/theta$receiver.var-length(theta$receiver))/theta$receiver.var/2
-
-  if(lp.works("sociality",theta,given)) deriv$sociality<--theta$sociality/theta$sociality.var
-  if(not.given("sociality.var",theta,given)) deriv$sociality.var<-(sum(theta$sociality^2)/theta$sociality.var-length(theta$sociality))/theta$sociality.var/2
-  
-  deriv
-}
-
 ergmm.lpBeta<-function(theta,prior,given=ergmm.par.blank()){
   theta<-merge.lists(theta,given)
   return({if(not.given("beta",theta,given)) sum(dnorm(theta$beta,prior$beta.mean,sqrt(prior$beta.var),TRUE)) else 0})
@@ -579,23 +464,6 @@ ergmm.lpBeta.grad<-function(theta,prior,given=ergmm.par.blank()){
 dsclinvchisq<-function(x,df,scale=1,log=FALSE){
   if(log) dchisq(df*scale/x,df,log=TRUE)+log(df)+log(scale)-2*log(x)
   else dchisq(df*scale/x,df,log=FALSE)*df*scale/x/x
-}
-
-ergmm.lpREV<-function(theta,prior,given=ergmm.par.blank()){
-  theta<-merge.lists(theta,given)
-  ({if(not.given("sender.var",theta,given)) dsclinvchisq(theta$sender.var,prior$sender.var.df,prior$sender.var,TRUE) else 0}+
-   {if(not.given("receiver.var",theta,given)) dsclinvchisq(theta$receiver.var,prior$receiver.var.df,prior$receiver.var,TRUE) else 0}+
-   {if(not.given("sociality.var",theta,given)) dsclinvchisq(theta$sociality.var,prior$sociality.var.df,prior$sociality.var,TRUE) else 0})
-}
-
-ergmm.lpREV.grad<-function(theta,prior,given=ergmm.par.blank()){
-  theta<-merge.lists(theta,given)
-  deriv<-list()
-  if(not.given("sender.var",theta,given)) deriv$sender.var<-prior$sender.var.df*prior$sender.var/theta$sender.var^2/2-(prior$sender.var.df/2+1)/theta$sender.var
-  if(not.given("receiver.var",theta,given)) deriv$receiver.var<-prior$receiver.var.df*prior$receiver.var/theta$receiver.var^2/2-(prior$receiver.var.df/2+1)/theta$receiver.var
-  if(not.given("sociality.var",theta,given)) deriv$sociality.var<-prior$sociality.var.df*prior$sociality.var/theta$sociality.var^2/2-(prior$sociality.var.df/2+1)/theta$sociality.var
-  
-  deriv
 }
 
 ergmm.lpLV<-function(theta,prior,given=ergmm.par.blank()){

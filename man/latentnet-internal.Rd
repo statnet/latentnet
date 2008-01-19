@@ -10,8 +10,6 @@
 \alias{inv.fit.vars}
 \alias{is.latent}
 \alias{is.latent.cluster}
-\alias{is.receiver}
-\alias{is.sender}
 \alias{kief.wolf2.optim}
 \alias{kief.wolf.optim}  
  
@@ -71,9 +69,6 @@
 \alias{InitErgmm.latentcov}
 \alias{InitErgmm.nodematch}
 \alias{InitErgmm.receivercov}
-\alias{InitErgmm.rreceiver}
-\alias{InitErgmm.rsender}
-\alias{InitErgmm.rsociality}
 \alias{InitErgmm.sendercov}
 \alias{InitErgmm.socialitycov}
 
@@ -126,10 +121,6 @@
 \alias{ergmm.lp.grad.approx}
 \alias{ergmm.lpLV}
 \alias{ergmm.lpLV.grad}
-\alias{ergmm.lpRE}
-\alias{ergmm.lpRE.grad}
-\alias{ergmm.lpREV}
-\alias{ergmm.lpREV.grad}
 \alias{ergmm.lpZ}
 \alias{ergmm.lpZ.grad}
 \alias{ergmm.eta}

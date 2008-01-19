@@ -87,12 +87,6 @@ ergmm(formula, response=NULL, family="Bernoulli.logit",fam.par=NULL,
   Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
   \emph{Model-Based Clustering for Social Networks.} Journal of the Royal
   Statistical Society: Series A, 2007, Vol. 170, Iss. 2; pp. 301-354.
-  
-  Pavel N. Krivitsky, Mark S. Handcock, Adrian E. Raftery, and Peter
-  D. Hoff. \emph{Representing Degree Distributions, Clustering, and
-  Homophily in Social Networks With Latent Cluster Random Effects
-  Models.} Center for Statistics and Social Sciences Working Paper
-  no. 77, Aug 2007. 
 }
 \examples{
 
@@ -109,8 +103,7 @@ data(sampson)
 # Get the group labels
 #
 
-samp.fit <- ergmm(samplike ~ latent(d=2), control=ergmm.control(burnin=10000,
-                 samplesize=2000, interval=10))
+samp.fit <- ergmm(samplike ~ latent(d=2))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
@@ -122,8 +115,7 @@ plot(samp.fit)
 # Using Sampson's Monk data, lets fit a latent clustering model
 #
 \dontrun{
-samp.fit <- ergmm(samplike ~ latentcluster(d=2, G=3), ergmm.control(burnin=10000,
-                 samplesize=2000, interval=10)
+samp.fit <- ergmm(samplike ~ latent(d=2, G=3))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)

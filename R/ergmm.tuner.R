@@ -9,7 +9,7 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
   ctrl$samplesize<-ceiling(control$tuning.runsize
                            *with(model,
                                  p+(network.size(Yg)+1)
-                                 *(d*2+sender+receiver+sociality)+1)
+                                 *(d*2)+1)
                            /threads/ctrl$interval)
   ctrl$burnin<-0
 #  ctrl$interval<-1
@@ -19,14 +19,14 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
   if(threads<=1)
     opt.f<-function(ldelta){
       my.ctrl<-ctrl
-      my.ctrl[c("Z.delta","Z.tr.delta","Z.scl.delta","RE.delta","RE.shift.delta")]<-exp(ldelta[1:5])
+      my.ctrl[c("Z.delta","Z.tr.delta","Z.scl.delta")]<-exp(ldelta[1:5])
       my.ctrl$beta.delta<-exp(ldelta[6:length(ldelta)])
       run.proposal(model,start[[1]],prior,my.ctrl)
     }
   else
     opt.f<-function(ldelta){
       my.ctrl<-ctrl
-      my.ctrl[c("Z.delta","Z.tr.delta","Z.scl.delta","RE.delta","RE.shift.delta")]<-exp(ldelta[1:5])
+      my.ctrl[c("Z.delta","Z.tr.delta","Z.scl.delta")]<-exp(ldelta[1:5])
       my.ctrl$beta.delta<-exp(ldelta[6:length(ldelta)])
       opts<-run.proposal.snowFT(threads,model,start,prior,my.ctrl)
       min(opts)*mean(opts)
@@ -40,7 +40,6 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
   ## probably because the data here are very "noisy".
   
   ldelta.start<-log(with(ctrl,c(Z.delta,Z.tr.delta,Z.scl.delta,
-                                RE.delta,RE.shift.delta,
                                 rep(beta.delta,length.out=p))))
 
   gmmajs<-numeric(0)
@@ -86,9 +85,7 @@ ergmm.tuner<-function(model, start, prior, control,start.is.list=FALSE){
   list(Z.delta=best.delta[1],
        Z.tr.delta=best.delta[2],
        Z.scl.delta=best.delta[3],
-       RE.delta=best.delta[4],
-       RE.shift.delta=best.delta[5],
-       beta.delta=best.delta[6:length(best.delta)])
+       beta.delta=best.delta[4:length(best.delta)])
 }
 
 run.proposal<-function(model, start, prior, tune.control){
@@ -119,37 +116,21 @@ gmmajump<-function(model,samples){
   y<-t(sapply(1:length(samples),function(i){
     l<-samples[[i]]
 
-    ## Center random effects and latent space positions for the purpose of
+    ## Center latent space positions for the purpose of
     ## evaluating mixing.
-    ## The change in density due to random effects is separated from the individual
-    ## random effects. The scale of latent space positions and their centroid
-    ## are also separated from individual latent space positions.
+    ## The scale of latent space positions and their centroid
+    ## are separated from individual latent space positions.
 
     etas<-ergmm.eta(model,l)[obs]
     dens<-mean(etas)
     vdens<-var(etas)
 
-    if(model$sender){
-      sender.shift<-mean(l$sender)
-      l$sender<-l$sender-sender.shift
-    }
-    if(model$receiver){
-      receiver.shift<-mean(l$receiver)
-      l$receiver<-l$receiver-receiver.shift
-    }
-    if(model$sociality){
-      sociality.shift<-mean(l$sociality)
-      l$sociality<-l$sociality-sociality.shift
-    }
     if(model$d) l$Z<-scale(l$Z)
     
     o<-c(l$llk,
          dens,
          vdens,
          pack.optim(l),
-         if(model$sender) sender.shift,
-         if(model$receiver) receiver.shift,
-         if(model$sociality) sociality.shift,
          if(model$d) c(attr(l$Z,"scaled:scale"),attr(l$Z,"scaled:center")))
     o[is.nan(o)]<-0
     o

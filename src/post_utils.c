@@ -191,9 +191,7 @@ void post_pred_wrapper(int *S,
 		       
 		       double *Z_mcmc, 
 		       double *coef_mcmc,
-		       double *sender_mcmc, double *receiver_mcmc,
-		       
-		       int *sociality,
+
 		       int *vobserved_ties,
 
 		       double *vEY,
@@ -202,7 +200,7 @@ void post_pred_wrapper(int *S,
   unsigned int i,j,k;
   unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
   double ***X = d3array(*p,*n,*n);
-  double **Z = dmatrix(*n,*d), *coef = dvector(*p), *sender = sender_mcmc ? dvector(*n):NULL, *receiver = receiver_mcmc ? dvector(*n):NULL;
+  double **Z = dmatrix(*n,*d), *coef = dvector(*p);
   
   // set up all of the covariate matrices if covariates are involed 
   // if p=0 (ie no covariates then these next two loops will do nothing)
@@ -229,8 +227,7 @@ void post_pred_wrapper(int *S,
 			    *n, // verts
 			    *d, // latent
 			    *p, // coef
-			    0,
-			    *sociality};
+			    0};
   
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z
@@ -238,17 +235,12 @@ void post_pred_wrapper(int *S,
 			  NULL, // Z_mean
 			  NULL, // Z_var
 			  NULL, // Z_pK			  
-			  sender_mcmc? Runpack_dvectors(sender_mcmc+s,*n,sender,*S):NULL, // sender
-			  0, // sender_var
-			  receiver_mcmc? Runpack_dvectors(receiver_mcmc+s,*n,receiver,*S):NULL, // receiver
-			  0, // receiver_var
 			  NULL, // Z_K
 			  0, // llk
 			  NULL, // lpedge
 			  0, // lpZ		  
 			  0, // lpLV
-			  0, // lpcoef
-			  0 // lpRE
+			  0 // lpcoef
     };
     ergmm_par_pred(&model,&par);
   }
@@ -266,17 +258,12 @@ void post_pred_wrapper(int *S,
 			    NULL, // Z_mean
 			    NULL, // Z_var
 			    NULL, // Z_pK			  
-			    sender_mcmc? Runpack_dvectors(sender_mcmc+s,*n,sender,*S):NULL, // sender
-			    0, // sender_var
-			    receiver_mcmc? Runpack_dvectors(receiver_mcmc+s,*n,receiver,*S):NULL, // receiver
-			    0, // receiver_var
 			    NULL, // Z_K
 			    0, // llk
 			    NULL, // lpedge
 			    0, // lpZ		  
 			    0, // lpLV
-			    0, // lpcoef
-			    0 // lpRE
+			    0 // lpcoef
       };
       
       double llk=ERGMM_MCMC_lp_Y(&model,&par,FALSE);

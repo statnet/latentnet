@@ -10,13 +10,6 @@ is.latent<-function(x) inherits(x,"ergmm") && x$model$d>0
 #
 is.latent.cluster<-function(x) inherits(x,"ergmm") && x$model$d>0 && x$model$G>0
 
-#
-# Return TRUE iff object x is a ergmm fit object
-# or a latent model and a sender random effect
-#
-is.sender<-function(x) inherits(x,"ergmm") && x$model$sender
-is.receiver<-function(x) inherits(x,"ergmm") && x$model$receiver
-
 sociomatrix<-function(object, matrix.type="adjacency", attrname=NULL)
 {
   if(class(object)=="network.series") {

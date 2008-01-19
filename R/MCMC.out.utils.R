@@ -1,9 +1,8 @@
 # Utilities for dealing with MCMC output produced by *.MCMC.C functions.
 
-ERGMM.PAR_VAR_NAMES<-c("beta","Z","sender","receiver","sociality",
-                       "Z.var","Z.mean","Z.K",
-                       "sender.var","receiver.var","sociality.var")
-ERGMM.PAR_LLK_NAMES<-c("beta","Z","sender","receiver","sociality")
+ERGMM.PAR_VAR_NAMES<-c("beta","Z",
+                       "Z.var","Z.mean","Z.K")
+ERGMM.PAR_LLK_NAMES<-c("beta","Z")
 
 del.iteration<-function(mcmcsamples,i){
   for(name in names(mcmcsamples)){

@@ -12,7 +12,6 @@
                           edge.col=8,
                           pie = FALSE,
                           labels=FALSE,
-                          rand.eff=NULL,
                           plot.means=TRUE,plot.vars=TRUE,suppress.axes=FALSE,
                           jitter1D=1,curve1D=TRUE,suppress.center=FALSE,density.par=list())
 
@@ -40,8 +39,7 @@
 	configuration.}
       \item{\code{"sampling.start"}}{Plots the starting configuration of
 	the sampling phase (the last burnin configuration).}
-      \item{\code{"mle"}}{Plots the maximum likelihood estimates. Random effects
-	are treated as fixed.}
+      \item{\code{"mle"}}{Plots the maximum likelihood estimates.}
       \item{\code{"pmean"}}{Plots the posterior means.}
       \item{\code{"pmode"}}{Plots the conditional posterior mode.}
       \item{\code{"cloud"}}{Plots the ``cloud'' of latent space position draws,
@@ -55,9 +53,6 @@
   }
   \item{pie}{For latent clustering models, each node is drawn as a pie
     chart representing the probabilities of cluster membership.}
-  \item{rand.eff}{A character vector selecting "sender", "receiver",
-    "sociality", or "total" random effects. Each vertex is scaled such that its area is proportional
-    to the odds ratio due to its selected random effect. }
   \item{plot.means}{Whether cluster means are plotted for latent cluster
     models. The "+" character is used. Defaults to \code{TRUE}.}
   \item{plot.vars}{Whether circles with radius equal to the square root

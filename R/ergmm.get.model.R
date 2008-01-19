@@ -21,9 +21,6 @@ ergmm.get.model <- function(formula,response,family,fam.par,orthogonalize,prior)
               p=0,
               d=0,
               G=0,
-              sender=FALSE,
-              receiver=FALSE,
-              sociality=FALSE,
               intercept=as.logical(attr(terms,"intercept")),
               prior=list() ## Only here for convenience.
               )

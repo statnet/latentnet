@@ -42,8 +42,6 @@ void MBC_MCMC_wrapper(int *samples_stored,
   GetRNGstate();
   
   
-  /* Since random effects are optional (can be NULL), we have to check before
-     dereferincing pointers that deal with them. */
   MBC_MCMC_init(*samples_stored, *interval,
 		
 		*n, *d, *G,
@@ -111,7 +109,7 @@ void MBC_MCMC_init(unsigned int samples_stored,
 			    G // clusters
   };
 
-  ERGMM_MCMC_MCMCSettings setting = {0,0,0,0,0,NULL, // deltas
+  ERGMM_MCMC_MCMCSettings setting = {0,0,0,NULL, // deltas
 				     NULL, // X_means
 				     samples_stored,interval};
 
@@ -120,26 +118,19 @@ void MBC_MCMC_init(unsigned int samples_stored,
 			     alphaprior, // a.k.a. Z_var_df (I hope)
 			     NULL,
 			     NULL,
-			     dirprior,
-			     0,0,0,0};
+			     dirprior};
   
   ERGMM_MCMC_Par state = {Z, // Z
 			  NULL, // coef
 			  Z_mean_start, // Z_mean
 			  Sigma, // Z_var
 			  epsilon, // Z_pK			  
-			  NULL,
-			  0,
-			  NULL,
-			  0,
 			  Ki, // Z_K
 			  0, // llk
 			  NULL, // lpedge
 			  0, // lpZ		  
 			  0, // lpLV
-			  0, // lpcoef
-			  0, // lpRE
-			  0 // lpREV
+			  0 // lpcoef
   };
 
   ERGMM_MCMC_MCMCState start = {&state,
@@ -149,10 +140,8 @@ void MBC_MCMC_init(unsigned int samples_stored,
 				model.clusters ? dvector(model.clusters): NULL, // pK
 				model.clusters ? (unsigned int *) ivector(model.clusters) : NULL, // n
 				PROP_NONE, // prop_Z
-				PROP_NONE, // prop_RE
 				PROP_NONE, // prop_coef
 				PROP_NONE, // prop_LV
-				PROP_NONE, // prop_REV
 				FALSE, // after_Gibbs
 				NULL // update_order
   };
@@ -160,17 +149,13 @@ void MBC_MCMC_init(unsigned int samples_stored,
   ERGMM_MCMC_ROutput outlists = {NULL, // llk
 				 lpZList,
 				 NULL, // lpcoef
-				 NULL, // lpRE
 				 lpLVList,
-				 NULL, //lpREV,
 				 NULL, // Z
 				 NULL, // Z_rate_move
 				 NULL, // Z_rate_move_all
 				 NULL, // coef
 				 NULL, // coef_rate
 				 muList,SigmaList,Z_pKList,
-				 NULL,NULL,
-				 NULL,NULL,
 				 KList};
 
   if(model.clusters>0)
