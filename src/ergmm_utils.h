@@ -1,5 +1,5 @@
 #ifndef ERGMM_UTILS_H
-#define ERGMM_UTILS_H 1
+#define ERGMM_UTILS_H
 
 #include "ergmm_structs.h"
 #define rdunif(a,b) ((int) floor(runif(a,b+1)))

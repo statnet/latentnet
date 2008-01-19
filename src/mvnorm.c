@@ -1,8 +1,6 @@
-/****************************************************************************/
-/*  Author: Jeremy Tantrum, tantrum@stat.washington.edu                     */
-/*  Purpose: support functions for model 2                                  */
-/*           proposed by Adrian E. Raftery, Mark S. Handcock and Jeremy T   */
-/****************************************************************************/
+/*******************************/
+/* Low-level density functions */
+/*******************************/
 #include <math.h>
 #include <R.h>
 #include <Rmath.h>

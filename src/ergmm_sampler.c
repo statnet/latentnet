@@ -1,9 +1,5 @@
 /****************************************************************************/
-/*  Original Author: Susan Shortreed, susanms@stat.washington.edu           */
-/*  Updated by: Jeremy Tantrum, tantrum@stat.washington.edu                 */
-/*  Purpose: main functions for parameter estimation model 2                */
-/*           All of this code is for an R function which is incorporated    */
-/*           into the R ERGM package.                                       */
+/* Top-level functions for sampling from an ERGMM's posterior distribution. */
 /****************************************************************************/
 
 #include "ergmm_structs.h"

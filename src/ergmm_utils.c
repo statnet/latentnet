@@ -1,12 +1,6 @@
-/****************************************************************************/
-/*  Author: Susan Shortreed, susanms@stat.washington.edu                    */
-/*  Purpose: support functions for parameter estimation for the latent      */
-/*           space model proposed by  Peter D. Hoff, Adrian E. Raftery      */
-/*           and Mark S. Handcock in                                        */
-/*           "Latent Space Approaches to Social Network Analysis"           */
-/*           All of this code is for an R function to be incorporated       */
-/*           into the R ERGM package.                                       */
-/****************************************************************************/
+/***********************************************************************/
+/* Utility functions, mostly involving higher-level matrix operations. */
+/***********************************************************************/
 #include <math.h>
 #include <R.h>
 #include <Rmath.h>
@@ -75,6 +69,7 @@ void add_randeff(double *effect, unsigned int n, double **eta, unsigned int is_c
     }
 }
 
+/* Generate a uniformly random permutation. */
 unsigned int *runifperm(unsigned int n, unsigned int *a){
   unsigned int i;
   if(!a) a=(unsigned int *) ivector(n);

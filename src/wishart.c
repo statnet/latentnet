@@ -1,3 +1,7 @@
+/****************************************/
+/* Sampling from Dirichlet distribution */
+/****************************************/
+
 #include <math.h>
 #include <R.h>
 #include <Rinternals.h>

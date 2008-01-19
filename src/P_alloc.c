@@ -1,3 +1,8 @@
+/**********************************************************************/
+/* Routines for memory management similar in functionality to R_alloc */
+/* Used because it's easier to debug things this way.                 */
+/**********************************************************************/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include "P_alloc.h"

@@ -1,5 +1,5 @@
 #ifndef ERGMM_STRUCTS_H
-#define ERGMM_STRUCTS_H 1
+#define ERGMM_STRUCTS_H
 
 #define PROP_NONE (65535-1)
 #define PROP_ALL (65535-2)

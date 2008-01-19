@@ -1,5 +1,5 @@
 #ifndef MATRIX_UTILS_H
-#define MATRIX_UTILS_H 1
+#define MATRIX_UTILS_H
 #include<R.h>
 #include"P_alloc.h"
 

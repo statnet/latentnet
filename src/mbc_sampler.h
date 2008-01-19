@@ -1,5 +1,5 @@
 #ifndef MBC_SAMPLER_H
-#define MBC_SAMPLER_H 1
+#define MBC_SAMPLER_H
 
 #include "ergmm_structs.h"
 #define FALSE 0

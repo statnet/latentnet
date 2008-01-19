@@ -1,3 +1,7 @@
+/********************************************/
+/* Utilities for processing posterior draws */
+/********************************************/
+
 #include <R.h>
 #include <Rmath.h>
 #include "post_utils.h"
