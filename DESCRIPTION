@@ -1,11 +1,11 @@
 Package: latentnet
-Version: 2.0-552-556-2008.01.15-12.28.00
-Date: 2008-01-15
+Version: 2.0-565-575.1-2008.01.18-20.10.49
+Date: 2008-01-18
 Title:  Latent position and cluster models for statistical networks
 Author: Pavel N. Krivitsky <pavel@stat.washington.edu>,
         Mark S. Handcock <handcock@stat.washington.edu>, 
         based on original code from "latentnetHRT",
-        and code from other packages of statnet project
+        and code from other packages of `statnet' project
 Maintainer: Pavel N. Krivitsky <pavel@stat.washington.edu>
 Description: A package to fit and simulate latent position and cluster models for statistical networks. 
 Depends: network, abind, shapes, tools

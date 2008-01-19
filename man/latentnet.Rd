@@ -39,14 +39,18 @@
 \seealso{latent, latentcluster, sna, network, terms.ergmm}
 \references{
  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock.
- \emph{Latent space approaches to social network analysis.} 
+ \emph{Latent space approaches to social network analysis}.
  Journal of the American Statistical Association, Dec 2002, Vol. 97, 
  Iss. 460;  pg. 1090-1098.
 
  Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
- \emph{Model-Based Clustering for Social Networks.} 
+ \emph{Model-Based Clustering for Social Networks}.
  Journal of the Royal Statistical Society: Series A (Statistics in
  Society), 2007, Vol. 170, Iss. 2; pg. 301-354.
+
+ Susan M. Shortreed, Mark S. Handcock, and Peter D. Hoff.
+ \emph{Positional Estimation within the Latent Space Model for
+   Networks}. Methodology, 2006, Vol. 2, Iss. 1; pg. 24-33.
 }
 \examples{
 #
