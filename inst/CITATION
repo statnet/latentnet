@@ -8,8 +8,8 @@ citHeader("To cite the individual package 'latentnet' please use:")
 
 citEntry(entry="Manual",
          title = "latentnet: Latent position and cluster models for statistical networks",
-         author = personList(as.person("Mark S. Handcock"),
-           as.person("Pavel N. Krivitsky")),
+         author = personList(as.person("Pavel N. Krivitsky"),
+                             as.person("Mark S. Handcock")),
          year         = 2008,
          note         = paste("Version",substring(library(help="latentnet",lib.loc=NULL,character.only=TRUE)$info[[1]][2],first=16)),
          address      = "Seattle, WA",
