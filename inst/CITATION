@@ -1,18 +1,27 @@
-citHeader("To cite 'latentnet' in publications use:")
+cat("'latentnet' is part of the 'statnet' suite of packages.\n")
+cat('Please see the LICENSE file for license information.\n\n')
+cat("If you are using the 'latentnet' package for research that will be published,\n")
+cat("we request that you acknowledge this with a citation. (Use citation(\"latentnet\")\n")
+cat("to display the citation to use.)")
+
+citHeader("To cite the individual package 'latentnet' please use:")
 
 citEntry(entry="Manual",
          title = "latentnet: Latent position and cluster models for statistical networks",
-         author = personList(as.person("Pavel N. Krivitsky"),
-                             as.person("Mark S. Handcock")), 
+         author = personList(as.person("Mark S. Handcock"),
+           as.person("Pavel N. Krivitsky")),
          year         = 2008,
+         note         = paste("Version",substring(library(help="latentnet",lib.loc=NULL,character.only=TRUE)$info[[1]][2],first=16)),
+         address      = "Seattle, WA",
          url          = "http://statnetproject.org",
-         
          textVersion = 
-         paste("Pavel N. Krivitsky and Mark S. Handcock (2008). ", 
-               "latentnet: Latent position and cluster models for statistical networks. ",
-               "URL http://statnetproject.org.",
+         paste("Pavel N. Krivitsky and Mark S. Handcock (2008).", 
+               "latentnet: Latent position and cluster models for statistical networks. Version ",
+               substring(library(help="latentnet",lib.loc=NULL,character.only=TRUE)$info[[1]][2],first=16),
+               ",", " URL http://statnetproject.org.",
                sep="")
          )
 
-citFooter("We have invested a lot of time and effort in creating 'latentnet',",
-          "please cite it when using it for network analysis.")
+citFooter("We have invested a lot of time and effort in creating the",
+          "'statnet' suite of packages for use by other researchers.",
+          "Please cite it in all papers where it is used.")
