@@ -1,19 +1,16 @@
 citHeader("To cite 'latentnet' in publications use:")
 
 citEntry(entry="Manual",
-         title = "statnet: An R package for the Statistical Modeling of Social Networks",
-         author = personList(as.person("Mark S. Handcock"),
-                             as.person("David Hunter"),
-                             as.person("Carter T. Butts"),
-                             as.person("Steven M. Goodreau"),
-                             as.person("Martina Morris")), 
-         year         = 2003,
-         url          = "http://www.csde.washington.edu/statnet",
+         title = "latentnet: Latent position and cluster models for statistical networks",
+         author = personList(as.person("Pavel N. Krivitsky"),
+                             as.person("Mark S. Handcock")), 
+         year         = 2008,
+         url          = "http://statnetproject.org",
          
          textVersion = 
-         paste("Mark S. Handcock, David Hunter, Carter T. Butts, Steven M. Goodreau, and Martina Morris (2003)", 
-               "statnet: An R package for the Statistical Modeling of Social Networks. ",
-               "URL http://www.csde.washington.edu/statnet.",
+         paste("Pavel N. Krivitsky and Mark S. Handcock (2008). ", 
+               "latentnet: Latent position and cluster models for statistical networks. ",
+               "URL http://statnetproject.org.",
                sep="")
          )
 
