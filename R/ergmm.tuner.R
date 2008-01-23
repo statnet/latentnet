@@ -181,3 +181,17 @@ trimmed.mean<-function(x,trim=0.05){
   n<-length(x)
   mean(sort(x)[floor(trim*n):ceiling((1-trim)*n)])
 }
+
+adjust.beta.delta<-function(model, control){
+
+#  n<-network.size(model$Yg)
+#  if(model$d>0){
+#    control$Z.tr.delta<-control$Z.delta<-sqrt(sum(start$Z^2)/n)*control$Z.tr.delta
+#  }
+#  if(model$sender || model$receiver || model$sociality){
+#    control$RE.delta<-sd(c(start$sender,start$receiver,start$sociality))*control$RE.delta
+#    control$RE.shift.delta<-control$RE.delta*1.5
+#  }
+  control$beta.delta<-control$beta.delta/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))
+  control
+}

@@ -17,21 +17,12 @@ ergmm.control<-function(samplesize=2000,
                         RE.delta=0.3,
                         RE.shift.delta=0.4,
                         beta.delta=0.4,
+                        beta.delta.adjust=TRUE,
                         store.burnin=FALSE){
-  list(samplesize=samplesize,
-       burnin=burnin,interval=interval,
-       threads=threads,
-       mle.maxit=mle.maxit,
-       tune=tune,
-       tuning.runs=tuning.runs,
-       tuning.runsize=tuning.runsize,
-       Z.delta=Z.delta,
-       Z.tr.delta=Z.tr.delta,
-       Z.scl.delta=Z.scl.delta,
-       RE.delta=RE.delta,
-       RE.shift.delta=RE.shift.delta,
-       beta.delta=beta.delta,
-       store.burnin=store.burnin)
+  control<-list()
+  for(arg in names(formals(sys.function())))
+    control[[arg]]<-get(arg)
+  control
 }
 
 ergmm.fit.deps<-list(pmode=character(0),
