@@ -144,7 +144,7 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
 print.summary.ergmm<-function(x,...){
   ## For convenience
   model<-x$model
-  control<-x$control
+  control<-x$ergmm$control
   
   cat("\n==========================\n")
   cat("Summary of model fit\n")
