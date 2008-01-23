@@ -21,6 +21,11 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
     x.ac<-autocorr(x,lag=0:1)
     for(chain in seq(along=x.ac)){
       cat(paste("Chain",chain,"\n"))
+      didnt.mix<-colnames(x.ac[[chain]][2,,])[which(is.nan(x.ac[[chain]][2,,]))]
+      if(any(is.nan(diag(x.ac[[chain]][2,,]))))
+        cat(paste("WARNING: Variables",
+                  paste(didnt.mix,collapse=", "),
+                  "did not mix AT ALL. MCMC should be rerun with different proposal parameters!\n"))
       for(i in 1:2){
         cat(paste(dimnames(x.ac[[chain]])[[1]][i],"\n"))
         print(x.ac[[chain]][i,,])
