@@ -1,7 +1,7 @@
 ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                   control=ergmm.control(),
                   user.start=ergmm.par.blank(),
-                  prior=ergmm.par.blank(),
+                  prior=as.ergmm.par.list(list(adjust.beta.var=TRUE)),
                   tofit=c("pmode","mcmc","mkl","mkl.mbc","mle","procrustes","klswitch"),
                   Z.ref=NULL,
                   Z.K.ref=NULL,
@@ -37,6 +37,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     prior<-tmp$prior
   }
   burnin.start<-ergmm.initvals(model,user.start,prior,control)
+  if(control$beta.delta.adjust) control<-adjust.beta.delta(model,control)
   
   if(control$tofit$mcmc){
     if(control$burnin>0){
