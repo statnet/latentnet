@@ -192,6 +192,6 @@ adjust.beta.delta<-function(model, control){
 #    control$RE.delta<-sd(c(start$sender,start$receiver,start$sociality))*control$RE.delta
 #    control$RE.shift.delta<-control$RE.delta*1.5
 #  }
-  control$beta.delta<-control$beta.delta/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))
+  control$beta.delta<-control$beta.delta/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))*sqrt(2/(1+model$p))
   control
 }
