@@ -81,6 +81,8 @@ void procr_alloc(int n, int d, int G,
   *workspace=dvector(d*d*3+d*4);
 }
 
+/* NOTE: Origins of some of the Procrustes code are unclear. */
+
 int procr_transform(double **Z, double **Z_mean, double **Zo, int n, int d, int G,
 		    double **pZ, double **pZ_mean,
 		    double **A, double **tZ, double **tZo, double **Ahalf, 
@@ -335,7 +337,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 
     /* Precalculate p(K|Z,mu,sigma).
        This is a speed-memory trade-off:
-       we allocate approx S*n*G*8 bytes so that we don't have to do
+       we allocate approx. S*n*G*8 bytes so that we don't have to do
        O(it*S*n*G*G!) (!=factorial) evaluations of MVN density.
      */
 
