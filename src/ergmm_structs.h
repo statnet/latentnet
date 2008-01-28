@@ -22,7 +22,7 @@ typedef struct {
 
 typedef struct {
   ERGMM_MCMC_Par *state,*prop;
-  double **Z_bar,*tr_by, *pK;
+  double **Z_bar,*deltas, *pK;
   unsigned int *n;
   unsigned int prop_Z, prop_RE, prop_coef, prop_LV, prop_REV, after_Gibbs;
   unsigned int *update_order;
@@ -32,8 +32,9 @@ typedef struct {
  * they affect the sampling, are not a part of the posterior distribution.
  */
 typedef struct {
-  double Z_delta, Z_tr_delta, Z_scl_delta, RE_delta, RE_shift_delta, *coef_delta;
-  double *X_means;
+  double Z_delta, RE_delta, Z_scl_delta;
+  double **group_deltas;
+  unsigned int group_prop_size;
   unsigned int sample_size, interval;
 } ERGMM_MCMC_MCMCSettings;
 
