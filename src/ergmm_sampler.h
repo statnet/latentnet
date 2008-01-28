@@ -15,13 +15,11 @@
 
 /* deltas have the following values:
    [0] Z_delta
-   [1] Z_tr_delta
-   [2] Z_scl_delta 
-   [3] RE_delta
-   [4] RE_shift_delta
-   [5]-[5+p-1] coef_delta
+   [1] RE_delta
+   [2] Z_scl_delta
+   [3]- group_deltas
 */
-#define COEF_DELTA_START 5
+#define GROUP_DELTAS_START 3
 
 void ERGMM_MCMC_wrapper(int *samples_stored, int *interval,
 			   
@@ -97,9 +95,10 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 		     unsigned int sociality,
 		     unsigned int **observed_ties,
 
-		     double Z_delta, double Z_tr_delta, double Z_scl_delta,
-		     double RE_delta, double RE_shift_delta,
-		     double *coef_delta);
+		     double Z_delta,
+		     double RE_delta,
+		     double Z_scl_delta,
+		     double **group_deltas, unsigned int group_prop_size);
 
 void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 		     ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_MCMCSettings *setting,

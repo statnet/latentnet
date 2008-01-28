@@ -6,7 +6,6 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                   Z.ref=NULL,
                   Z.K.ref=NULL,
                   seed=NULL,
-                  orthogonalize=FALSE,
                   verbose=FALSE){
   #    current.warn <- options()$warn
   #    options(warn=0)
@@ -32,57 +31,39 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     }
     stop("If an ergmm.model is specified in place of a formula, prior must also be specified")
   }else{
-    tmp <- ergmm.get.model(formula, response, family, fam.par, orthogonalize, prior)
+    tmp <- ergmm.get.model(formula, response, family, fam.par, prior)
     model<-tmp$model
     prior<-tmp$prior
   }
   burnin.start<-ergmm.initvals(model,user.start,prior,control)
-  if(control$beta.delta.adjust) control<-adjust.beta.delta(model,control)
-  
+   
   if(control$tofit$mcmc){
+    
     if(control$burnin>0){
-      if(control$tune){
-        if(control$verbose) cat("Tuning parameters for burnin...\n")
-        tuning<-ergmm.tuner(model,burnin.start,prior,control)
-        if(control$verbose) cat("Finished.\n")
-        for(name in names(tuning)){
-          control[[name]]<-tuning[[name]]
-        }
-      }
+      burnin.control<-get.group.deltas(control$group.deltas, model, NULL, control)
 
-      if(control$verbose) cat("Burning in... ")
-      
-      if(control$threads<=1){
+      if(burnin.control$verbose) cat("Burning in... ")
+      if(burnin.control$threads<=1){
         # Burn in one thread.
-        if(control$store.burnin){
-          burnin.samples<-ergmm.MCMC.C(model,burnin.start,prior,control,
-                                       samplesize=control$burnin/control$interval)$samples
-          sampling.start<-burnin.samples[[length(burnin.samples$llk)]]
-        }else sampling.start<-ergmm.MCMC.C(model,burnin.start,prior,control,
-                                           samplesize=1,interval=control$burnin)$samples[[1]]
+        burnin.samples<-ergmm.MCMC.C(model,burnin.start,prior,burnin.control,
+                                     samplesize=burnin.control$burnin/burnin.control$interval)$samples
+        sampling.start<-burnin.samples[[length(burnin.samples$llk)]]
       }else{
-        burnin.samples<-ergmm.MCMC.snowFT(control$threads,control$threads,
+        burnin.samples<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
                                           model.l=list(model),
                                           start.l=list(burnin.start),
                                           prior.l=list(prior),
-                                          control.l=list(control),
-                                          samplesize.l=list(control$burnin/control$interval))$samples
-        sampling.start<-sapply(1:control$threads,
+                                          control.l=list(burnin.control),
+                                          samplesize.l=list(burnin.control$burnin/burnin.control$interval))$samples
+        sampling.start<-sapply(1:burnin.control$threads,
                                function(thread) burnin.samples[[thread]][[length(burnin.samples[[thread]]$llk)]],
                                simplify=FALSE)
+        burnin.samples<-stack.ergmm.par.list.list(burnin.samples)
       }
-      
-      if(control$verbose) cat("Finished.\n")
+      if(burnin.control$verbose) cat("Finished.\n")
     }else sampling.start<-burnin.start
-    
-    if(control$tune){
-      if(control$verbose) cat("Tuning parameters for sampling run...\n ")
-      tuning<-ergmm.tuner(model,sampling.start,prior,control,control$burnin>0 && control$threads>1)
-      if(control$verbose) cat("Finished.\n")
-      for(name in names(tuning)){
-        control[[name]]<-tuning[[name]]
-      }
-    }
+
+    control<-get.group.deltas(control$group.deltas, model, if(control$pilot.runs) burnin.samples, control)
     
     if(control$verbose) cat("Starting sampling run... ")
     if(control$threads<=1)
@@ -105,9 +86,9 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
   
     if(control$tofit$mcmc){
       v$burnin.start<-burnin.start
+      v$burnin.control<-burnin.control
       v$sampling.start<-sampling.start
-      if(control$store.burnin)
-        v$burnin.samples<-burnin.samples
+      v$burnin.samples<-burnin.samples
     }
   
   v$starting.seed<-start.seed

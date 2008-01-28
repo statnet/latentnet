@@ -1,4 +1,4 @@
-ergmm.get.model <- function(formula,response,family,fam.par,orthogonalize,prior){
+ergmm.get.model <- function(formula,response,family,fam.par,prior){
   
   terms<-terms(formula)
 
@@ -31,7 +31,7 @@ ergmm.get.model <- function(formula,response,family,fam.par,orthogonalize,prior)
   model<-fam.par.check(model)
   
   if(model$intercept){
-    model<-InitErgmm.latentcov(model,observed.dyads(Yg),"density")
+    model<-InitErgmm.latentcov(model,matrix(1,network.size(Yg),network.size(Yg)),"density")
   }
               
   for (term in as.list(attr(terms,"variables"))[-(1:2)]){
@@ -47,9 +47,6 @@ ergmm.get.model <- function(formula,response,family,fam.par,orthogonalize,prior)
     model <- eval(as.call(init.call), attr(terms,".Environment"))
   }
   
-  if(orthogonalize && model$p>1)
-    model$X<-GS.orth.matrix(model$X,observed.dyads(Yg))
-
   for(name in names(prior)){
     model$prior[[name]]<-prior[[name]]
   }
@@ -65,22 +62,4 @@ ergmm.get.model <- function(formula,response,family,fam.par,orthogonalize,prior)
   
   class(model)<-"ergmm.model"  
   list(model=model,prior=prior)
-}
-
-GS.orth.matrix<-function(X,missing){
-  p<-length(X)
-  if(p<=1) return(X)
-  
-  Y<-list()
-  Y[[1]]<-X[[1]]
-  for(i in 2:p){
-    Y[[i]]<-X[[i]]
-    
-    for(j in 1:(i-1)){
-      Yv<-Y[[j]][!missing]
-      Xv<-Y[[i]][!missing]
-      Y[[i]]<-Y[[i]]-crossprod(Yv,Xv)/sqrt(crossprod(Xv))*X[[j]]
-    }
-  }
-  Y
 }

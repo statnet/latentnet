@@ -100,6 +100,18 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
   unsigned int **observed_ties = vobserved_ties ? (unsigned int **) Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL;
   double ***X = d3array(*p,*n,*n);
 
+  /* The joint proposal coefficient matrix is square with side
+     + covariate coefficients  : p
+     + latent space            : d // +1
+     + sender                  : 1
+     + receiver (no sociality) : 1
+  */
+
+  unsigned int group_prop_size = *p + (*d ? *d //+1
+				       : 0) + (sender_start ? 1 : 0) + (receiver_start&&!*sociality ? 1 : 0);
+  double **group_deltas = Runpack_dmatrix(deltas+GROUP_DELTAS_START, group_prop_size, group_prop_size, NULL);
+
+
   // set up all of the covariate matrices if covariates are involed 
   // if p=0 (ie no covariates then these next two loops will do nothing)
   //
@@ -153,8 +165,7 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 		  sender_var_mcmc, receiver_var_mcmc,
 		  *sociality,
 		  observed_ties,
-		  deltas[0],deltas[1],deltas[2],
-		  deltas[3],deltas[4],deltas+COEF_DELTA_START);
+		  deltas[0],deltas[1],deltas[2],group_deltas,group_prop_size);
 
   PutRNGstate();
   P_free_all();
@@ -195,13 +206,14 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 		     double *sender_var_mcmc, double *receiver_var_mcmc,
 		     unsigned int sociality,
 		     unsigned int **observed_ties,
-
-		     double Z_delta, double Z_tr_delta, double Z_scl_delta,
-		     double RE_delta, double RE_shift_delta,
-		     double *coef_delta)
+		     
+		     double Z_delta,
+		     double RE_delta,
+		     double Z_scl_delta,
+		     double **group_deltas,
+		     unsigned int group_prop_size)
 {
-  unsigned int i,j,k,n_observed;
-  double X_sum;
+  unsigned int i;
 
   // Packing constants into structs.
   ERGMM_MCMC_Model model = {dir,
@@ -221,28 +233,12 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 			    sociality};
   ERGMM_MCMC_set_lp_Yconst[family](&model);
 
-  ERGMM_MCMC_MCMCSettings setting = {Z_delta,Z_tr_delta,Z_scl_delta,
-				     RE_delta,RE_shift_delta,coef_delta,
-				     dvector(model.coef), // X_means
+  ERGMM_MCMC_MCMCSettings setting = {Z_delta,
+				     RE_delta,
+				     Z_scl_delta,
+				     group_deltas,
+				     group_prop_size,
 				     samples_stored,interval};
-
-  for(k=0;k<model.coef;k++){
-    X_sum=0;
-    n_observed=0;
-    for(i=0;i<model.verts;i++){
-      if(model.dir)
-	for(j=0;j<model.verts;j++){
-	  n_observed+=IS_OBSERVABLE(model.observed_ties,i,j) ? 1:0;
-	  X_sum+=model.X[k][i][j]*IS_OBSERVABLE(model.observed_ties,i,j);
-	}
-      else
-	for(j=0;j<i;j++){
-	  n_observed+=IS_OBSERVABLE(model.observed_ties,i,j) ? 1:0;
-	  X_sum+=model.X[k][i][j]*IS_OBSERVABLE(model.observed_ties,i,j);
-	}
-    }
-    setting.X_means[k]=X_sum/n_observed;
-  }
 
   ERGMM_MCMC_Priors prior = {Z_mean_prior_var, // Z_mean_var
 			     Z_var_prior, // Z_var
@@ -297,7 +293,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
   ERGMM_MCMC_MCMCState start = {&state,
 				&prop,
 				model.clusters ? dmatrix(model.clusters,model.latent) : NULL, // Z_bar
-				model.latent ? dvector(model.latent) : NULL, // tr_by
+				setting.group_prop_size ? dvector(setting.group_prop_size) : NULL, // deltas
 				model.clusters ? dvector(model.clusters): NULL, // pK
 				model.clusters ? (unsigned int *) ivector(model.clusters) : NULL, // n
 				PROP_NONE, // prop_Z

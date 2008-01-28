@@ -228,83 +228,83 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
 /* updates coef, scale of Z, and shifts the random effects; also translates Z */
 unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,
 			     ERGMM_MCMC_MCMCSettings *setting){  
-  unsigned int i;
-  double lr, h, dens_change=0;
-  
   ERGMM_MCMC_Par *par=cur->prop;
   
   // Signal the proposal (of everything).
   ERGMM_MCMC_propose(model,cur,PROP_ALL,PROP_ALL,PROP_ALL,PROP_ALL,PROP_NONE);
 
+  for(unsigned int j=0; j<setting->group_prop_size; j++) 
+    cur->deltas[j] = 0;
+
+  for(unsigned int i=0; i<setting->group_prop_size; i++){
+    double delta = rnorm(0,1);
+    for(unsigned int j=0; j<setting->group_prop_size; j++){
+      cur->deltas[j] += setting->group_deltas[j][i]*delta;
+    }
+  }
+  
+  unsigned int prop_pos=0;
+  
+  // Propose coef.
+  for(unsigned int i=0;i< model->coef;i++){
+    par->coef[i] += cur->deltas[prop_pos++];
+  }
+
   if(model->latent){  
     // Propose to scale Z.
     // Note that log P(mu,sigma) is changed.
+
+    // Grab the deltas, since each will be used several times.
+    double h=exp(rnorm(0,setting->Z_scl_delta)); //exp(cur->deltas[prop_pos++]); 
+    double *tr_by=cur->deltas+prop_pos;
+    prop_pos+=model->latent;
+    unsigned int order = rdunif(0,1);
+
+    /* To guarantee symmetry of the proposal (which may be the case
+       anyway, but I am not sure), randomize the order in which these
+       two transformations happen. */
     
-    h = rlnorm(0,setting->Z_scl_delta);
-
-    for(i=0;i<model->latent;i++)
-      cur->tr_by[i]=rnorm(0,setting->Z_tr_delta);
-
-    dmatrix_scale_by(par->Z,model->verts,model->latent,h);
-    latentpos_translate(par->Z,model->verts,model->latent,cur->tr_by);
-    if(model->clusters){
-      dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
-      latentpos_translate(par->Z_mean,model->clusters,model->latent,cur->tr_by);
-      dvector_scale_by(par->Z_var,model->clusters,h*h);
+    if(order){
+      dmatrix_scale_by(par->Z,model->verts,model->latent,h);
+      latentpos_translate(par->Z,model->verts,model->latent,tr_by);
+    }else{
+      latentpos_translate(par->Z,model->verts,model->latent,tr_by);
+      dmatrix_scale_by(par->Z,model->verts,model->latent,h);
     }
-    else
-      dvector_scale_by(par->Z_var,1,h*h);
-  }
+    if(model->clusters){
+      if(order){
+	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
+	latentpos_translate(par->Z_mean,model->clusters,model->latent,tr_by);
+      }else{
+	latentpos_translate(par->Z_mean,model->clusters,model->latent,tr_by);
+	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
+      }
 
-  // Propose coef.
-  for(i=0;i< model->coef;i++){
-    h=rnorm(0.0,setting->coef_delta[i]);
-    par->coef[i] += h;
-    dens_change += setting->X_means[i]*h;
+      dvector_scale_by(par->Z_var,model->clusters,h*h);
+    }else{
+      dvector_scale_by(par->Z_var,1,h*h);
+    }
   }
 
   // Propose to shift random effects.
-  /* The proposal here effectively counteracts the change in density due to the proposal
-     of coef.
-     The SD of the change in density after all is said and done is settings->RE_shift_delta.
-  */
-  // It may make sense to also propose a jump in random effects variance here.
-  
-  //  dens_change=0;
   if(par->sender){
-    if(model->sociality || !par->receiver){
-      randeff_translate(par->sender,model->verts,
-			(dens_change*ERGMM_MCMC_COEF_RE1_12
-			 +rnorm(0.0,setting->RE_shift_delta)*ERGMM_MCMC_COEF_RE1_22));
-    }else{
-      h=rnorm(0.0,setting->RE_shift_delta);
-      randeff_translate(par->sender,model->verts,
-			(dens_change*ERGMM_MCMC_COEF_RE2_12
-			 +h*ERGMM_MCMC_COEF_RE2_22));
-    }
+    randeff_translate(par->sender,model->verts,
+		      cur->deltas[prop_pos++]);
   }
   
   if(par->receiver && !model->sociality){
-    if(par->sender)
-      randeff_translate(par->receiver,model->verts,
-			(dens_change*ERGMM_MCMC_COEF_RE2_13
-			 +h*ERGMM_MCMC_COEF_RE2_23
-			 +rnorm(0.0,setting->RE_shift_delta)*ERGMM_MCMC_COEF_RE2_33));
-    else
-      randeff_translate(par->receiver,model->verts,
-			(dens_change*ERGMM_MCMC_COEF_RE1_12
-			 +rnorm(0.0,setting->RE_shift_delta)*ERGMM_MCMC_COEF_RE1_22));
+    randeff_translate(par->receiver,model->verts,
+		      cur->deltas[prop_pos++]);
   }
 
   /* Calculate the log-likelihood-ratio.
      Note that even functions that don't make sense in context
      (e.g. logp_Z for a non-latent-space model) are safe to call and return 0). */
-  lr = (ERGMM_MCMC_lp_Y_diff(model,cur)
-	+ERGMM_MCMC_logp_coef_diff(model,cur,prior)
-	+ERGMM_MCMC_logp_Z_diff(model,cur)
-	+ERGMM_MCMC_logp_LV_diff(model,cur,prior)
-	+ERGMM_MCMC_logp_RE_diff(model,cur));
-  
+  double lr = (ERGMM_MCMC_lp_Y_diff(model,cur)
+	       +ERGMM_MCMC_logp_coef_diff(model,cur,prior)
+	       +ERGMM_MCMC_logp_Z_diff(model,cur)
+	       +ERGMM_MCMC_logp_LV_diff(model,cur,prior)
+	       +ERGMM_MCMC_logp_RE_diff(model,cur));
   
   /* accept or reject */
   if( runif(0.0,1.0) < exp(lr) ){

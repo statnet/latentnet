@@ -8,17 +8,12 @@ ergmm.control<-function(samplesize=2000,
                         interval=10,
                         threads=1,
                         mle.maxit=400,
-                        tune=FALSE,
-                        tuning.runs=100,
-                        tuning.runsize=8,
+                        pilot.runs=1,
                         Z.delta=0.4,
-                        Z.tr.delta=0.4,
-                        Z.scl.delta=0.02,
                         RE.delta=0.3,
-                        RE.shift.delta=0.4,
-                        beta.delta=0.4,
-                        beta.delta.adjust=TRUE,
-                        store.burnin=FALSE){
+                        Z.scl.delta=0.02,
+                        group.deltas=NULL,
+                        group.deltas.mul=0.3){
   control<-list()
   for(arg in names(formals(sys.function())))
     control[[arg]]<-get(arg)

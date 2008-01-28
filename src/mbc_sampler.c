@@ -111,8 +111,7 @@ void MBC_MCMC_init(unsigned int samples_stored,
 			    G // clusters
   };
 
-  ERGMM_MCMC_MCMCSettings setting = {0,0,0,0,0,NULL, // deltas
-				     NULL, // X_means
+  ERGMM_MCMC_MCMCSettings setting = {0,0,0,NULL,0, // deltas
 				     samples_stored,interval};
 
   ERGMM_MCMC_Priors prior = {muSigprior, // Z_mean_var

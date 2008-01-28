@@ -46,7 +46,6 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
   if(!is.null(start$Z)){
     if(!all(dim(start$Z)==c(n,d))) stop("Incorrect size for the starting latent positions.")
     if(is.null(control$Z.delta)) stop("Need Z-move proposal standard deviation (control$Z.delta).")
-    if(is.null(control$Z.scl.delta)) stop("Need Z-scale proposal standard deviation (control$Z.delta).")
     if(G > 0){
       if(length(start$Z.K)!=n) stop("Incorrect length for the vector of starting cluster assignments.")
       if(length(start$Z.pK)!=G) stop("Incorrect length for the vector of starting cluster probabilities.")
@@ -159,9 +158,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
              lock.RE=model$sociality,
              observed=as.integer(observed),
 
-             deltas=with(control,as.numeric(c(Z.delta,Z.tr.delta,Z.scl.delta,
-               RE.delta,RE.shift.delta,
-               rep(beta.delta,length.out=p)))),
+             deltas=with(control,as.numeric(c(Z.delta,RE.delta,Z.scl.delta,group.deltas))),
              
              PACKAGE="latentnet")
 #  cat("Finished C routine.\n")
