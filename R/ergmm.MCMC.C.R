@@ -158,7 +158,9 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
              lock.RE=model$sociality,
              observed=as.integer(observed),
 
-             deltas=with(control,as.numeric(c(Z.delta,RE.delta,Z.scl.delta,group.deltas))),
+             deltas=with(control,as.numeric(c(Z.delta,RE.delta,group.deltas))),
+
+             accept.all=control$accept.all,
              
              PACKAGE="latentnet")
 #  cat("Finished C routine.\n")

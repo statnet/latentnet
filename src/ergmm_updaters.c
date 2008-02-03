@@ -213,7 +213,7 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
 
     lr = ERGMM_MCMC_lp_Y_diff(model,cur)+ERGMM_MCMC_logp_Z_diff(model,cur)+ERGMM_MCMC_logp_RE_diff(model,cur);
 
-    if( runif(0.0,1.0) < exp(lr) ){
+    if( setting->accept_all || runif(0.0,1.0) < exp(lr) ){
       change++;
       ERGMM_MCMC_accept(model,cur);
     }
@@ -239,7 +239,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
   for(unsigned int i=0; i<setting->group_prop_size; i++){
     double delta = rnorm(0,1);
     for(unsigned int j=0; j<setting->group_prop_size; j++){
-      cur->deltas[j] += setting->group_deltas[j][i]*delta;
+      cur->deltas[j] += setting->group_deltas[i][j]*delta;
     }
   }
   
@@ -255,7 +255,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
     // Note that log P(mu,sigma) is changed.
 
     // Grab the deltas, since each will be used several times.
-    double h=exp(rnorm(0,setting->Z_scl_delta)); //exp(cur->deltas[prop_pos++]); 
+    double h=exp(cur->deltas[prop_pos++]); 
     double *tr_by=cur->deltas+prop_pos;
     prop_pos+=model->latent;
     unsigned int order = rdunif(0,1);
@@ -307,7 +307,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
 	       +ERGMM_MCMC_logp_RE_diff(model,cur));
   
   /* accept or reject */
-  if( runif(0.0,1.0) < exp(lr) ){
+  if( setting->accept_all || runif(0.0,1.0) < exp(lr) ){
     ERGMM_MCMC_accept(model,cur);
     return(1);
   }
@@ -322,7 +322,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
 */
 
 void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur){
-  double S_hat, useSig,sum,temp;
+  double S_hat, useSig,temp;
   unsigned int i,j,loop1;
 
   ERGMM_MCMC_Par *par=cur->state;
@@ -332,7 +332,6 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
 
   // Reassign clusters.
   for(i=0;i<model->verts;i++){
-    sum = 0;
     for(j=0;j<model->clusters;j++){
       temp=dindnormmu(model->latent,par->Z[i],par->Z_mean[j],sqrt(par->Z_var[j]),FALSE);
       if(j>0)
@@ -342,9 +341,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
     }
     
     temp = runif(0.0,1.0);
-    j = 0;
-    while(cur->pK[j]/cur->pK[model->clusters-1] < temp)
-      j++;
+    for(j=0; cur->pK[j]/cur->pK[model->clusters-1] < temp; j++); // NOTE: this is not a bug; the for loop is there to find the right j!
     par->Z_K[i] = j + 1;
   }
 
@@ -380,7 +377,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
     
   }
 
-  //mvrnorm for mumat
+  // Z_mean
   for(i=0;i<model->clusters;i++){
     for(j=0;j<model->latent;j++)
       cur->Z_bar[i][j] = cur->n[i] * cur->Z_bar[i][j]/(cur->n[i]+ par->Z_var[i]/prior->Z_mean_var);

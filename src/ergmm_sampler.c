@@ -91,7 +91,8 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 
 			int *sociality,
 			int *vobserved_ties,
-			double *deltas){
+			double *deltas,
+			int *accept_all){
   int i=0,j=0,k=0;
   double **Z_start = vZ_start ? Runpack_dmatrix(vZ_start,*n,*d, NULL) : NULL;
   double **Z_mean_start = vZ_mean_start ? Runpack_dmatrix(vZ_mean_start,*G,*d,NULL) : NULL;
@@ -102,12 +103,12 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 
   /* The joint proposal coefficient matrix is square with side
      + covariate coefficients  : p
-     + latent space            : d // +1
+     + latent space            : d +1
      + sender                  : 1
      + receiver (no sociality) : 1
   */
 
-  unsigned int group_prop_size = *p + (*d ? *d //+1
+  unsigned int group_prop_size = *p + (*d ? *d+1
 				       : 0) + (sender_start ? 1 : 0) + (receiver_start&&!*sociality ? 1 : 0);
   double **group_deltas = Runpack_dmatrix(deltas+GROUP_DELTAS_START, group_prop_size, group_prop_size, NULL);
 
@@ -165,7 +166,8 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 		  sender_var_mcmc, receiver_var_mcmc,
 		  *sociality,
 		  observed_ties,
-		  deltas[0],deltas[1],deltas[2],group_deltas,group_prop_size);
+		  deltas[0],deltas[1],group_deltas,group_prop_size,
+		  *accept_all);
 
   PutRNGstate();
   P_free_all();
@@ -209,9 +211,9 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 		     
 		     double Z_delta,
 		     double RE_delta,
-		     double Z_scl_delta,
 		     double **group_deltas,
-		     unsigned int group_prop_size)
+		     unsigned int group_prop_size,
+		     unsigned int accept_all)
 {
   unsigned int i;
 
@@ -235,10 +237,11 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 
   ERGMM_MCMC_MCMCSettings setting = {Z_delta,
 				     RE_delta,
-				     Z_scl_delta,
 				     group_deltas,
 				     group_prop_size,
-				     samples_stored,interval};
+				     samples_stored,interval,
+				     accept_all
+  };
 
   ERGMM_MCMC_Priors prior = {Z_mean_prior_var, // Z_mean_var
 			     Z_var_prior, // Z_var

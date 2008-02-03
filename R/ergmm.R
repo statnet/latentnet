@@ -63,7 +63,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
       if(burnin.control$verbose) cat("Finished.\n")
     }else sampling.start<-burnin.start
 
-    control<-get.group.deltas(control$group.deltas, model, if(control$pilot.runs) burnin.samples, control)
+    control<-get.group.deltas(control$group.deltas, model, if(control$pilot.runs && control$burnin) burnin.samples, control)
     
     if(control$verbose) cat("Starting sampling run... ")
     if(control$threads<=1)
@@ -85,10 +85,12 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                      Z.ref, Z.K.ref)
   
     if(control$tofit$mcmc){
-      v$burnin.start<-burnin.start
-      v$burnin.control<-burnin.control
+      if(control$burnin){
+        v$burnin.start<-burnin.start
+        v$burnin.control<-burnin.control
+        v$burnin.samples<-burnin.samples
+      }
       v$sampling.start<-sampling.start
-      v$burnin.samples<-burnin.samples
     }
   
   v$starting.seed<-start.seed

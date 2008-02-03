@@ -32,10 +32,11 @@ typedef struct {
  * they affect the sampling, are not a part of the posterior distribution.
  */
 typedef struct {
-  double Z_delta, RE_delta, Z_scl_delta;
+  double Z_delta, RE_delta;
   double **group_deltas;
   unsigned int group_prop_size;
   unsigned int sample_size, interval;
+  unsigned int accept_all; // debugging option: accept all MH proposals
 } ERGMM_MCMC_MCMCSettings;
 
 /* The structure to house the parameters of the prior distribution. 
