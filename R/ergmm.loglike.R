@@ -76,7 +76,7 @@ ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
 
   grad<-list()
   
-  if(!is.null(theta$beta)) grad$beta <- sapply(1:length(theta$beta),function(k) sum(dlpY.deta*model$X[[k]]*obs))
+  if(not.given("beta",theta,given)) grad$beta <- sapply(1:length(theta$beta),function(k) sum((dlpY.deta*model$X[[k]])[obs]))
 
   if(not.given("Z",theta,given)){
     d<-model$d
@@ -89,16 +89,17 @@ ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
       Z.k.d<-with(theta,sapply(1:n,function(i) sapply(1:n, function(j) Z[j,k]-Z[i,k]))*Z.invdist)
       for(i in 1:n)
         for(j in 1:n)
-          grad$Z[i,k]<-grad$Z[i,k]+(Z.k.d[i,j]*dlpY.deta[i,j]*obs[i,j]-
-                                    Z.k.d[j,i]*dlpY.deta[j,i]*obs[j,i])
+          if(obs[i,j])
+            grad$Z[i,k]<-grad$Z[i,k]+(Z.k.d[i,j]*dlpY.deta[i,j]*obs[i,j]-
+                                      Z.k.d[j,i]*dlpY.deta[j,i]*obs[j,i])
     }
   }
 
   if(not.given("sociality",theta,given))
-    grad$sociality <- sapply(1:n,function(i) sum(dlpY.deta[i,]*obs[i,])+sum(dlpY.deta[,i]*obs[,i]))
+    grad$sociality <- sapply(1:n,function(i) sum(dlpY.deta[i,][obs[i,]])+sum(dlpY.deta[,i][obs[,i]]))
   else{
-    if(not.given("sender",theta,given)) grad$sender <- sapply(1:n,function(i) sum(dlpY.deta[i,]*obs[i,]))
-    if(not.given("receiver",theta,given)) grad$receiver <-  sapply(1:n,function(i) sum(dlpY.deta[,i]*obs[,i]))
+    if(not.given("sender",theta,given)) grad$sender <- sapply(1:n,function(i) sum(dlpY.deta[i,][obs[i,]]))
+    if(not.given("receiver",theta,given)) grad$receiver <-  sapply(1:n,function(i) sum(dlpY.deta[,i][obs[,i]]))
   }
   
   grad
