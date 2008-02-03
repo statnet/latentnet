@@ -129,12 +129,12 @@ post.predict.R<-function(model,samples,control,MKL=FALSE){
     EY<-EY+EY.f(eta,model$fam.par)
   }
   EY<-EY/control$samplesize
-  #EY[!observed.dyads(model$Yg)]<-NA
 
   if(MKL){
     min.MKL<-NA
     min.dev<-Inf
     model$Ym<-EY
+    model$Ym[!observed.dyads(model$Yg)]<-NA
     for(i in 1:control$samplesize){
       state<-samples[[i]]
       dev<--ergmm.loglike(model,state,up.to.const=TRUE)
