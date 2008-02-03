@@ -11,9 +11,10 @@ ergmm.control<-function(samplesize=2000,
                         pilot.runs=1,
                         Z.delta=0.4,
                         RE.delta=0.3,
-                        Z.scl.delta=0.02,
+                        propose.ind=c("Z.tr","Z.scl"),
                         group.deltas=NULL,
-                        group.deltas.mul=0.3){
+                        group.deltas.mul=0.3,
+                        accept.all=FALSE){
   control<-list()
   for(arg in names(formals(sys.function())))
     control[[arg]]<-get(arg)
@@ -21,7 +22,7 @@ ergmm.control<-function(samplesize=2000,
 }
 
 ergmm.fit.deps<-list(pmode=character(0),
-                     mcmc=c("pmode"),
+                     mcmc=character(0),
                      mkl=c("mcmc"),
                      mkl.mbc=c("mkl"),
                      mle=c("pmode"),

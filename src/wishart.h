@@ -14,7 +14,7 @@ void rdirich(unsigned int n, double *epsilon);
    These functions evaluate the density and generate deviates from this distribution.
 */
 
-#define dsclinvchisq(x,df,scale,give_log) (give_log ? (dchisq((df)*((double)scale)/((double)x),df,1)+log(((double)scale)*(df)/(double)((x)*(x)))) : (dchisq((df)*((double)scale)/((double)x),df,0)*(df)*((double)scale)/(double)((x)*(x))))
+#define dsclinvchisq(x,df,scale,give_log) (give_log ? (dchisq((df)*((double)(scale))/((double)(x)),df,1)+log(((double)(scale))*(df)/(double)((x)*(x)))) : (dchisq((df)*((double)(scale))/((double)(x)),df,0)*(df)*((double)(scale))/(double)((x)*(x))))
 
 #define rsclinvchisq(df,scale) ((scale)*(df)/(rchisq(df)))
 

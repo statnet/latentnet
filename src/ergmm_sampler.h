@@ -16,10 +16,9 @@
 /* deltas have the following values:
    [0] Z_delta
    [1] RE_delta
-   [2] Z_scl_delta
-   [3]- group_deltas
+   [2]- group_deltas
 */
-#define GROUP_DELTAS_START 3
+#define GROUP_DELTAS_START 2
 
 void ERGMM_MCMC_wrapper(int *samples_stored, int *interval,
 			   
@@ -59,7 +58,8 @@ void ERGMM_MCMC_wrapper(int *samples_stored, int *interval,
 
 			int *sociality,
 			int *vobserved_ties,
-			double *deltas);
+			double *deltas,
+			int *accept_all);
 
 void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval, 
 
@@ -97,8 +97,8 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 
 		     double Z_delta,
 		     double RE_delta,
-		     double Z_scl_delta,
-		     double **group_deltas, unsigned int group_prop_size);
+		     double **group_deltas, unsigned int group_prop_size,
+		     unsigned int accept_all);
 
 void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 		     ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_MCMCSettings *setting,
