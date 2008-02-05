@@ -11,16 +11,30 @@ lp.works<-function(name,theta,given){
   not.given(name, theta, given) && all(PRIOR_NAMES[[name]]%in%names(merge.lists(theta,given)))
 }
 
-
-getYm<-function(Yg,response=NULL){
-  if(is.null(response)){
-    return(as.matrix.network(Yg, matrix.type="adjacency"))
-  }else{
-    if(is.matrix(response)) return(response)
-    else return(as.matrix.network(Yg, response, matrix.type="adjacency"))
+bipartite.augment<-function(m,actors){
+  if(is.null(actors)) m
+  else{
+    events<-dim(m)[1]-actors
+    rbind(cbind(matrix(NA,actors,actors),m),
+                 cbind(t(m),matrix(NA,events,events)))
   }
 }
-  
+
+getYm<-function(Yg,response=NULL){
+  m <-
+    if(is.null(response)){
+      as.matrix.network(Yg, matrix.type="adjacency")
+    }else{
+      if(is.matrix(response)) response
+      else as.matrix.network(Yg, response, matrix.type="adjacency")
+    }
+
+  ## If bipartite, augment into a matrix of the form
+  ##  N    m
+  ## t(m)  N
+  ## where N is a matrix of NAs of appropriate dimension.
+  bipartite.augment(m,get.network.attribute(Yg,"bipartite"))
+}
 
 ergmm.eta<-function(model,theta){
   n<-network.size(model$Yg)
@@ -170,12 +184,15 @@ observed.dyads<-function(Yg){
   observed.dyads<-get.network.attribute(Yg,"design")
   if(is.null(observed.dyads))
     observed.dyads<-matrix(TRUE,network.size(Yg),network.size(Yg))
-  else
-    observed.dyads<-as.matrix.network(observed.dyads,matrix.type="adjacency")==0
-      
-  if(!is.directed(Yg)) observed.dyads[upper.tri(observed.dyads)]<-FALSE
-
-  if(!has.loops(Yg)) diag(observed.dyads)<-FALSE
+  else{
+    observed.dyads<-bipartite.augment(as.matrix.network(observed.dyads,matrix.type="adjacency")==0,get.network.attribute(Yg,"bipartite"))
+    observed.dyads[is.na(observed.dyads)]<-FALSE
+  }
+  
+  if(!is.bipartite(Yg)){
+    if(!is.directed(Yg)) observed.dyads[upper.tri(observed.dyads)]<-FALSE
+    if(!has.loops(Yg)) diag(observed.dyads)<-FALSE
+  }
   
   observed.dyads
 }
