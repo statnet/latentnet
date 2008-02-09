@@ -351,12 +351,9 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 
     R_CheckUserInterrupt(); // So that CTRL-C can interrupt the run.
 
-    n_accept_z += ERGMM_MCMC_Z_RE_up(model, prior, cur, setting); 
+    n_accept_z += ERGMM_MCMC_Z_RE_up(model, prior, cur, setting);
 
     if(model->latent){
-
-      //n_accept_transl_z += translate_Z(model,prior,cur,setting);
-
       // Update cluster parameters (they are separated from data by Z, so plain Gibbs).
       // Note that they are also updated in coef_up_scl_tr_Z_shift_RE.
       if(model->clusters>0)
@@ -368,10 +365,9 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
     /* Update coef given this new value of Z and conditioned on everything else.
        Also propose to scale Z and shift random effects.
     */
-    
     if( ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(model,prior,cur,setting) ){
       n_accept_b++;
-    }  
+    }
 
     if(cur->state->sender || cur->state->receiver){
       ERGMM_MCMC_REV_up(model,prior,cur);

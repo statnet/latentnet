@@ -17,17 +17,10 @@
 #define FALSE 0
 #define TRUE !0
 
-//#define VERBOSE 1
-//#define SUPER_VERBOSE 1
-//#define ALWAYS_RECOMPUTE_LLK 1
-
-
 /*
   Initiates a Metropolis-Hasting step, by signaling what is about to be proposed.
   *** It MUST be called BEFORE the proposals are made. ***
-  At the moment, it's not possible to propose LV without Z and REV without RE;
-  this may change in the future. Gibbs-updating is OK, as long as the affected
-  probabilities are updated.
+  Gibbs-updating is OK, as long as the affected probabilities are updated.
  */
 void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsigned int Z, unsigned int RE, unsigned int coef, unsigned int LV, unsigned int REV){
   // If the state has been Gibbs-updated, it means prop is inconsistent.
@@ -52,11 +45,9 @@ void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsi
 
   if(LV!=PROP_NONE && cur->state->Z){
     cur->prop_LV=PROP_ALL;
-    cur->prop_Z=PROP_ALL;
   }
   if(REV!=PROP_NONE && (cur->state->sender || cur->state->receiver)){
     cur->prop_REV=PROP_ALL;
-    cur->prop_RE=PROP_ALL;
   }
 
   /* Also, if we want to change latent position of one vertex but a random
@@ -152,31 +143,35 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
     }
   }
 
-  // Finally, update probabilities and signal the end of proposal.
-  old->llk=new->llk;
-
   if(cur->prop_Z!=PROP_NONE){
+    old->llk=new->llk;
     old->lpZ=new->lpZ;
     cur->prop_Z=PROP_NONE;
   }
 
   if(cur->prop_RE!=PROP_NONE){
+    old->llk=new->llk;
     old->lpRE=new->lpRE;
     cur->prop_RE=PROP_NONE;
   }
 
   if(cur->prop_coef!=PROP_NONE){
+    old->llk=new->llk;
     old->lpcoef=new->lpcoef;
     cur->prop_coef=PROP_NONE;
   }
 
   if(cur->prop_LV!=PROP_NONE){
     old->lpLV=new->lpLV;
+    // A jump in latent space variables can also affect the probability of Z.
+    old->lpZ=new->lpZ;
     cur->prop_LV=PROP_NONE;
   }
 
   if(cur->prop_REV!=PROP_NONE){
     old->lpREV=new->lpREV;
+    // Ditto RE...
+    old->lpRE=new->lpRE;
     cur->prop_REV=PROP_NONE;
   }
 }
@@ -210,9 +205,11 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
       par->receiver[i] += rnorm(0,setting->RE_delta);
     }
 
-
-    lr = ERGMM_MCMC_lp_Y_diff(model,cur)+ERGMM_MCMC_logp_Z_diff(model,cur)+ERGMM_MCMC_logp_RE_diff(model,cur);
-
+    lr = (ERGMM_MCMC_lp_Y_diff(model,cur)
+	  +ERGMM_MCMC_logp_Z_diff(model,cur)
+	  +ERGMM_MCMC_logp_RE_diff(model,cur)
+	  );
+	  
     if( setting->accept_all || runif(0.0,1.0) < exp(lr) ){
       change++;
       ERGMM_MCMC_accept(model,cur);
@@ -227,7 +224,7 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
 
 /* updates coef, scale of Z, and shifts the random effects; also translates Z */
 unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,
-			     ERGMM_MCMC_MCMCSettings *setting){  
+						  ERGMM_MCMC_MCMCSettings *setting){  
   ERGMM_MCMC_Par *par=cur->prop;
   
   // Signal the proposal (of everything).
@@ -239,7 +236,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
   for(unsigned int i=0; i<setting->group_prop_size; i++){
     double delta = rnorm(0,1);
     for(unsigned int j=0; j<setting->group_prop_size; j++){
-      cur->deltas[j] += setting->group_deltas[i][j]*delta;
+      cur->deltas[j] += setting->group_deltas[j][i]*delta;
     }
   }
   
@@ -279,7 +276,6 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
 	latentpos_translate(par->Z_mean,model->clusters,model->latent,tr_by);
 	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
       }
-
       dvector_scale_by(par->Z_var,model->clusters,h*h);
     }else{
       dvector_scale_by(par->Z_var,1,h*h);
@@ -300,11 +296,12 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
   /* Calculate the log-likelihood-ratio.
      Note that even functions that don't make sense in context
      (e.g. logp_Z for a non-latent-space model) are safe to call and return 0). */
-  double lr = (ERGMM_MCMC_lp_Y_diff(model,cur)
+  double lr = (+ERGMM_MCMC_lp_Y_diff(model,cur)
 	       +ERGMM_MCMC_logp_coef_diff(model,cur,prior)
 	       +ERGMM_MCMC_logp_Z_diff(model,cur)
 	       +ERGMM_MCMC_logp_LV_diff(model,cur,prior)
-	       +ERGMM_MCMC_logp_RE_diff(model,cur));
+	       +ERGMM_MCMC_logp_RE_diff(model,cur)
+	       );
   
   /* accept or reject */
   if( setting->accept_all || runif(0.0,1.0) < exp(lr) ){
@@ -413,6 +410,7 @@ void ERGMM_MCMC_LV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   ERGMM_MCMC_logp_Z(model,par);
   ERGMM_MCMC_logp_LV(model,par,prior);
 }
+*/
 
 void ERGMM_MCMC_REV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur){
   double S_hat;
