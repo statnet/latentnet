@@ -242,7 +242,7 @@ double ERGMM_MCMC_logp_Z_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur
   double lpZ_diff=0;
   ERGMM_MCMC_Par *new=cur->prop,*old=cur->state;
 
-  if(cur->prop_Z==PROP_ALL){
+  if(cur->prop_Z==PROP_ALL || cur->prop_LV!=PROP_NONE){
     return(ERGMM_MCMC_logp_Z(model,new)-old->lpZ);
   }
   else if(cur->prop_Z==PROP_NONE){
@@ -285,7 +285,7 @@ double ERGMM_MCMC_logp_RE_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cu
   double lpRE_diff=0;
   ERGMM_MCMC_Par *new=cur->prop,*old=cur->state;
 
-  if(cur->prop_RE==PROP_ALL){
+  if(cur->prop_RE==PROP_ALL || cur->prop_REV!=PROP_NONE){
     return(ERGMM_MCMC_logp_RE(model,new)-old->lpRE);
   }
   else if(cur->prop_RE==PROP_NONE){
@@ -317,16 +317,19 @@ double ERGMM_MCMC_logp_LV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MC
   if(model->clusters>0)
     for(i = 0; i < model->clusters; i++){
       for(j = 0; j < model->latent; j++)
-	par->lpLV += dnorm(par->Z_mean[i][j],0,sqrt(prior->Z_mean_var),1);
-      par->lpLV+=dsclinvchisq(par->Z_var[i],prior->Z_var_df,prior->Z_var,1);
+	par->lpLV += dnorm(par->Z_mean[i][j],0,sqrt(prior->Z_mean_var),TRUE);
+      par->lpLV+=dsclinvchisq(par->Z_var[i],prior->Z_var_df,prior->Z_var,TRUE);
     }
   else
-    par->lpLV =dsclinvchisq(par->Z_var[0],prior->Z_var_df,prior->Z_var,1);
+    par->lpLV =dsclinvchisq(par->Z_var[0],prior->Z_var_df,prior->Z_var,TRUE);
   return(par->lpLV);
 }
 
 double ERGMM_MCMC_logp_LV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior){
-  if(cur->prop_LV==PROP_NONE) return(0);
+  if(cur->prop_LV==PROP_NONE){
+    cur->prop->lpLV=cur->state->lpLV;
+    return(0);
+  }
   return(ERGMM_MCMC_logp_LV(model,cur->prop,prior)-cur->state->lpLV);
 }
 
@@ -341,7 +344,10 @@ double ERGMM_MCMC_logp_coef(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_
 }
 
 double ERGMM_MCMC_logp_coef_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior){
-  if(cur->prop_coef==PROP_NONE) return(0);
+  if(cur->prop_coef==PROP_NONE){
+    cur->prop->lpcoef=cur->state->lpcoef;
+    return(0);
+  }
   return(ERGMM_MCMC_logp_coef(model,cur->prop,prior)-cur->state->lpcoef);
 }
 
@@ -353,6 +359,9 @@ double ERGMM_MCMC_logp_REV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_M
 }
 
 double ERGMM_MCMC_logp_REV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior){
-  if(cur->prop_REV==PROP_NONE) return(0);
+  if(cur->prop_REV==PROP_NONE){
+    cur->prop->lpREV=cur->state->lpREV;
+    return(0);
+  }
   return(ERGMM_MCMC_logp_REV(model,cur->prop,prior)-cur->state->lpREV);
 }

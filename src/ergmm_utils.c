@@ -94,16 +94,18 @@ R_INLINE void uiswap(unsigned int *a, unsigned int *b){
 }
 
 void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_Par *dest){
-  if(source->Z && (source->Z != dest->Z)) copy_dmatrix(source->Z,dest->Z,model->verts,model->latent);
-  if(source->coef && (source->coef != dest->coef)) copy_dvector(source->coef,dest->coef,model->coef);
-  if(source->Z_mean && (source->Z_mean != dest->Z_mean)) copy_dmatrix(source->Z_mean,dest->Z_mean,model->clusters,model->latent);
-  if(source->Z_var && (source->Z_var != dest->Z_var)) copy_dvector(source->Z_var,dest->Z_var,model->clusters?model->clusters:1);
-  if(source->Z_pK && (source->Z_pK != dest->Z_pK)) copy_dvector(source->Z_pK,dest->Z_pK,model->clusters);
-  if(source->sender && (source->sender != dest->sender)) copy_dvector(source->sender,dest->sender,model->verts);
+#define tocopy(name) (source->name && (source->name != dest->name))
+  if(tocopy(Z)) copy_dmatrix(source->Z,dest->Z,model->verts,model->latent);
+  if(tocopy(coef)) copy_dvector(source->coef,dest->coef,model->coef);
+  if(tocopy(Z_mean)) copy_dmatrix(source->Z_mean,dest->Z_mean,model->clusters,model->latent);
+  if(tocopy(Z_var)) copy_dvector(source->Z_var,dest->Z_var,model->clusters?model->clusters:1);
+  if(tocopy(Z_pK)) copy_dvector(source->Z_pK,dest->Z_pK,model->clusters);
+  if(tocopy(sender)) copy_dvector(source->sender,dest->sender,model->verts);
   if(source->sender) dest->sender_var=source->sender_var;
-  if(source->receiver && (source->receiver != dest->receiver)) copy_dvector(source->receiver,dest->receiver,model->verts);
+  if(!model->sociality && tocopy(receiver)) copy_dvector(source->receiver,dest->receiver,model->verts);
   if(source->receiver) dest->receiver_var=source->receiver_var;
-  if(source->Z_K && (source->Z_K != dest->Z_K)) copy_ivector((int *) source->Z_K,(int *) dest->Z_K,model->verts);
+  if(tocopy(Z_K)) copy_ivector((int *) source->Z_K,(int *) dest->Z_K,model->verts);
+#undef tocopy
 
   dest->llk=source->llk;
   // The lpedge matrix is NOT copied.
@@ -113,3 +115,4 @@ void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_P
   dest->lpRE=source->lpRE;
   dest->lpREV=source->lpREV;
 }
+

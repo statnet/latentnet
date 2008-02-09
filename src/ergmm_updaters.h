@@ -16,14 +16,4 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
 void ERGMM_MCMC_LV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur);
 void ERGMM_MCMC_REV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur);
 
-/* These are the coefficient matrixes for the correlated update-beta-shift-RE proposal. */
-#define ERGMM_MCMC_COEF_RE1_12 (-0.5)
-#define ERGMM_MCMC_COEF_RE1_22 (0.8660254037844385)
-
-#define ERGMM_MCMC_COEF_RE2_12 (-0.3333333333333333)
-#define ERGMM_MCMC_COEF_RE2_13 (-0.3333333333333333)
-#define ERGMM_MCMC_COEF_RE2_22 (0.9428090415820633)
-#define ERGMM_MCMC_COEF_RE2_23 (-0.4714045207910316)
-#define ERGMM_MCMC_COEF_RE2_33 (0.8164965809277260)
-
 #endif
