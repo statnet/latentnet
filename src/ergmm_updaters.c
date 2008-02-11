@@ -224,7 +224,8 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
 
 /* updates coef, scale of Z, and shifts the random effects; also translates Z */
 unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,
-						  ERGMM_MCMC_MCMCSettings *setting){  
+						  ERGMM_MCMC_MCMCSettings *setting){
+  double logh=0;
   ERGMM_MCMC_Par *par=cur->prop;
   
   // Signal the proposal (of everything).
@@ -252,33 +253,24 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
     // Note that log P(mu,sigma) is changed.
 
     // Grab the deltas, since each will be used several times.
-    double h=exp(cur->deltas[prop_pos++]); 
-    double *tr_by=cur->deltas+prop_pos;
+    logh=cur->deltas[prop_pos++];
     prop_pos+=model->latent;
     unsigned int order = rdunif(0,1);
 
-    /* To guarantee symmetry of the proposal (which may be the case
-       anyway, but I am not sure), randomize the order in which these
-       two transformations happen. */
-    
     if(order){
-      dmatrix_scale_by(par->Z,model->verts,model->latent,h);
-      latentpos_translate(par->Z,model->verts,model->latent,tr_by);
+      dmatrix_scale_by(par->Z,model->verts,model->latent,exp(logh));
     }else{
-      latentpos_translate(par->Z,model->verts,model->latent,tr_by);
-      dmatrix_scale_by(par->Z,model->verts,model->latent,h);
+      dmatrix_scale_by(par->Z,model->verts,model->latent,exp(logh));
     }
     if(model->clusters){
       if(order){
-	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
-	latentpos_translate(par->Z_mean,model->clusters,model->latent,tr_by);
+	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,exp(logh));
       }else{
-	latentpos_translate(par->Z_mean,model->clusters,model->latent,tr_by);
-	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,h);
+	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,exp(logh));
       }
-      dvector_scale_by(par->Z_var,model->clusters,h*h);
+      dvector_scale_by(par->Z_var,model->clusters,exp(2*logh));
     }else{
-      dvector_scale_by(par->Z_var,1,h*h);
+      dvector_scale_by(par->Z_var,1,exp(2*logh));
     }
   }
 
@@ -296,11 +288,16 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
   /* Calculate the log-likelihood-ratio.
      Note that even functions that don't make sense in context
      (e.g. logp_Z for a non-latent-space model) are safe to call and return 0). */
+  // The following computes the adjustment to the jump probabilities due to
+  // proposing of some variables on log or log-polar scale.
+  unsigned int h_factor=(model->latent*(model->verts+model->clusters)+
+			 (model->latent?2*(model->clusters?model->clusters:1):0));
   double lr = (+ERGMM_MCMC_lp_Y_diff(model,cur)
 	       +ERGMM_MCMC_logp_coef_diff(model,cur,prior)
 	       +ERGMM_MCMC_logp_Z_diff(model,cur)
 	       +ERGMM_MCMC_logp_LV_diff(model,cur,prior)
 	       +ERGMM_MCMC_logp_RE_diff(model,cur)
+	       +h_factor*logh
 	       );
   
   /* accept or reject */
@@ -410,7 +407,7 @@ void ERGMM_MCMC_LV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   ERGMM_MCMC_logp_Z(model,par);
   ERGMM_MCMC_logp_LV(model,par,prior);
 }
-*/
+
 
 void ERGMM_MCMC_REV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur){
   double S_hat;
