@@ -237,7 +237,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
   for(unsigned int i=0; i<setting->group_prop_size; i++){
     double delta = rnorm(0,1);
     for(unsigned int j=0; j<setting->group_prop_size; j++){
-      cur->deltas[j] += setting->group_deltas[j][i]*delta;
+      cur->deltas[j] += setting->group_deltas[i][j]*delta;
     }
   }
   
