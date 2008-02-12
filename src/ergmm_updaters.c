@@ -225,7 +225,7 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
 /* updates coef, scale of Z, and shifts the random effects; also translates Z */
 unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,
 						  ERGMM_MCMC_MCMCSettings *setting){
-  double logh=0;
+  double acc_adjust=0;
   ERGMM_MCMC_Par *par=cur->prop;
   
   // Signal the proposal (of everything).
@@ -252,25 +252,23 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
     // Propose to scale Z.
     // Note that log P(mu,sigma) is changed.
 
-    // Grab the deltas, since each will be used several times.
-    logh=cur->deltas[prop_pos++];
-    prop_pos+=model->latent;
-    unsigned int order = rdunif(0,1);
+    // Grab the scaling factor.
+    double logh=cur->deltas[prop_pos++];
 
-    if(order){
-      dmatrix_scale_by(par->Z,model->verts,model->latent,exp(logh));
-    }else{
-      dmatrix_scale_by(par->Z,model->verts,model->latent,exp(logh));
-    }
+    // Every scaling proposal has an accompanying adjustment for the log-probability
+    // ratios.
+    dmatrix_scale_by(par->Z,model->verts,model->latent,exp(logh));
+    acc_adjust+=model->verts*model->latent*logh;
+
     if(model->clusters){
-      if(order){
-	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,exp(logh));
-      }else{
-	dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,exp(logh));
-      }
+      dmatrix_scale_by(par->Z_mean,model->clusters,model->latent,exp(logh));
+      acc_adjust+=model->clusters*model->latent*logh;
+
       dvector_scale_by(par->Z_var,model->clusters,exp(2*logh));
+      acc_adjust+=model->clusters*2*logh;
     }else{
       dvector_scale_by(par->Z_var,1,exp(2*logh));
+      acc_adjust+=2*logh;
     }
   }
 
@@ -288,16 +286,13 @@ unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGM
   /* Calculate the log-likelihood-ratio.
      Note that even functions that don't make sense in context
      (e.g. logp_Z for a non-latent-space model) are safe to call and return 0). */
-  // The following computes the adjustment to the jump probabilities due to
-  // proposing of some variables on log or log-polar scale.
-  unsigned int h_factor=(model->latent*(model->verts+model->clusters)+
-			 (model->latent?2*(model->clusters?model->clusters:1):0));
+
   double lr = (+ERGMM_MCMC_lp_Y_diff(model,cur)
 	       +ERGMM_MCMC_logp_coef_diff(model,cur,prior)
 	       +ERGMM_MCMC_logp_Z_diff(model,cur)
 	       +ERGMM_MCMC_logp_LV_diff(model,cur,prior)
 	       +ERGMM_MCMC_logp_RE_diff(model,cur)
-	       +h_factor*logh
+	       +acc_adjust
 	       );
   
   /* accept or reject */

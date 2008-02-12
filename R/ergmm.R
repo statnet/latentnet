@@ -35,35 +35,48 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     model<-tmp$model
     prior<-tmp$prior
   }
-  burnin.start<-ergmm.initvals(model,user.start,prior,control)
-   
+  
   if(control$tofit$mcmc){
-    
-    if(control$burnin>0){
-      burnin.control<-get.group.deltas(control$group.deltas, model, NULL, control)
+    burnin.start<-burnin.state<-ergmm.initvals(model,user.start,prior,control)
+    burnin.control<-get.init.deltas(model, control)
+    burnin.controls<-list()
 
+    if(control$burnin>0){
+      burnin.runs<-max(control$pilot.runs,1)
+      burnin.size<-burnin.control$burnin/burnin.runs/burnin.control$interval
+      
       if(burnin.control$verbose) cat("Burning in... ")
-      if(burnin.control$threads<=1){
-        # Burn in one thread.
-        burnin.samples<-ergmm.MCMC.C(model,burnin.start,prior,burnin.control,
-                                     samplesize=burnin.control$burnin/burnin.control$interval)$samples
-        sampling.start<-burnin.samples[[length(burnin.samples$llk)]]
-      }else{
-        burnin.samples<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
-                                          model.l=list(model),
-                                          start.l=list(burnin.start),
-                                          prior.l=list(prior),
-                                          control.l=list(burnin.control),
-                                          samplesize.l=list(burnin.control$burnin/burnin.control$interval))$samples
-        sampling.start<-sapply(1:burnin.control$threads,
-                               function(thread) burnin.samples[[thread]][[length(burnin.samples[[thread]]$llk)]],
+      for(pilot.run in 1:control$pilot.runs){
+        if(burnin.control$verbose>1) cat(pilot.run)
+        burnin.controls[[length(burnin.controls)+1]]<-burnin.control
+        
+        if(burnin.control$threads<=1){
+          ## Burn in one thread.
+          burnin.samples<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
+                                       samplesize=burnin.size)$samples
+          sampling.start<-burnin.samples[[burnin.size]]
+        }else{
+          ## Burn in multiple threads.
+          burnin.samples<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
+                                            model.l=list(model),
+                                            start.l=list(burnin.state),
+                                            prior.l=list(prior),
+                                            control.l=list(burnin.control),
+                                            samplesize.l=list(burnin.size))$samples
+          burnin.state<-sapply(1:burnin.control$threads,
+                               function(thread) burnin.samples[[thread]][[burnin.size]],
                                simplify=FALSE)
-        burnin.samples<-stack.ergmm.par.list.list(burnin.samples)
+          burnin.samples<-stack.ergmm.par.list.list(burnin.samples)
+
+        }
+        if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.samples, control)
       }
       if(burnin.control$verbose) cat("Finished.\n")
-    }else sampling.start<-burnin.start
-
-    control<-get.group.deltas(control$group.deltas, model, if(control$pilot.runs && control$burnin) burnin.samples, control)
+    }
+    
+    sampling.start<-burnin.state
+    
+    control<-burnin.control
     
     if(control$verbose) cat("Starting sampling run... ")
     if(control$threads<=1)
@@ -87,7 +100,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     if(control$tofit$mcmc){
       if(control$burnin){
         v$burnin.start<-burnin.start
-        v$burnin.control<-burnin.control
+        v$burnin.controls<-burnin.controls
         v$burnin.samples<-burnin.samples
       }
       v$sampling.start<-sampling.start
