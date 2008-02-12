@@ -8,12 +8,12 @@ ergmm.control<-function(samplesize=2000,
                         interval=10,
                         threads=1,
                         mle.maxit=400,
-                        Z.delta=0.4,
-                        RE.delta=0.3,
+                        Z.delta=0.6,
+                        RE.delta=0.6,
                         propose.ind=c(),
                         pilot.runs=2,
-                        pilot.factor=0.3,
-                        group.deltas=0.3,
+                        pilot.factor=0.8,
+                        group.deltas=0.4,
                         accept.all=FALSE){
   control<-list()
   for(arg in names(formals(sys.function())))
