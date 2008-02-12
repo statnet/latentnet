@@ -44,10 +44,11 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     if(control$burnin>0){
       burnin.runs<-max(control$pilot.runs,1)
       burnin.size<-burnin.control$burnin/burnin.runs/burnin.control$interval
-      
+
+      if(control$threads>1) burnin.state<-list(burnin.state)
       if(burnin.control$verbose) cat("Burning in... ")
       for(pilot.run in 1:control$pilot.runs){
-        if(burnin.control$verbose>1) cat(pilot.run)
+        if(burnin.control$verbose>1) cat(pilot.run,"")
         burnin.controls[[length(burnin.controls)+1]]<-burnin.control
         
         if(burnin.control$threads<=1){
@@ -59,7 +60,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
           ## Burn in multiple threads.
           burnin.samples<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
                                             model.l=list(model),
-                                            start.l=list(burnin.state),
+                                            start.l=burnin.state,
                                             prior.l=list(prior),
                                             control.l=list(burnin.control),
                                             samplesize.l=list(burnin.size))$samples
