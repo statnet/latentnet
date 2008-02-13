@@ -12,7 +12,7 @@ lp.works<-function(name,theta,given){
 }
 
 bipartite.augment<-function(m,actors){
-  if(is.null(actors)) m
+  if(is.null(actors) || actors==FALSE) m
   else{
     events<-dim(m)[1]-actors
     rbind(cbind(matrix(NA,actors,actors),m),
@@ -87,6 +87,7 @@ ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
   eta<-ergmm.eta(model,theta)
   
   dlpY.deta <- dlpY.deta.fs[[model$familyID]](model$Ym,eta,model$fam.par)
+  dlpY.deta[!obs] <- 0
 
   grad<-list()
   
@@ -94,19 +95,18 @@ ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
 
   if(not.given("Z",theta,given)){
     d<-model$d
-    Z.invdist<- -as.matrix(dist(theta$Z))
+    Z.invdist<- as.matrix(dist(theta$Z))
     Z.invdist[Z.invdist==0]<-Inf
     Z.invdist<-1/Z.invdist
 
     grad$Z<-matrix(0,n,d)
-    for(k in 1:d){
-      Z.k.d<-with(theta,sapply(1:n,function(i) sapply(1:n, function(j) Z[j,k]-Z[i,k]))*Z.invdist)
+    for(k in 1:d)
       for(i in 1:n)
         for(j in 1:n)
-          if(obs[i,j])
-            grad$Z[i,k]<-grad$Z[i,k]+(Z.k.d[i,j]*dlpY.deta[i,j]*obs[i,j]-
-                                      Z.k.d[j,i]*dlpY.deta[j,i]*obs[j,i])
-    }
+          if(obs[i,j]){
+            grad$Z[i,k]<-grad$Z[i,k]+-(theta$Z[i,k]-theta$Z[j,k])*Z.invdist[i,j]*dlpY.deta[i,j]
+            grad$Z[j,k]<-grad$Z[j,k]+-(theta$Z[j,k]-theta$Z[i,k])*Z.invdist[j,i]*dlpY.deta[i,j]
+          }
   }
 
   if(not.given("sociality",theta,given))
