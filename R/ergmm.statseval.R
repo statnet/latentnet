@@ -79,7 +79,7 @@ nullapply<-function(X,margin,FUN,...){
 
 add.mkl.mbc.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
   if(is.null(x$mkl) || x$model$d<=0 || x$model$G<=0){
-    if(x$control$verbose) cat("MKL is not available or non-latent-cluster model. MKL MBC will not be fitted.\n")
+    if(x$control$verbose) cat("MKL MBC is not available or non-latent-cluster model.\n")
     return(x)
   }else Z<-x$mkl$Z
 

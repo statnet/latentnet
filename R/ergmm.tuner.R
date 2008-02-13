@@ -30,14 +30,7 @@ get.init.deltas<-function(model, control){
 
 
 get.sample.deltas<-function(model,samples,control){
-  ## Construct the "extended" beta: not just the coefficients, but also the scale and the average
-  ## value of each random effect.
-  beta.ext<-cbind(if(model$p) samples$beta, # covariate coefs
-                  if(model$d) log(apply(sqrt(apply(samples$Z^2,1:2,sum)),1,mean)), # scale of Z
-                  if(model$sender) apply(samples$sender,1,mean), # sender eff.
-                  if(model$receiver) apply(samples$receiver,1,mean), # receiver eff.
-                  if(model$sociality) apply(samples$sociality,1,mean)) # sociality eff.
-  cov.beta.ext<-cov(beta.ext)
+  cov.beta.ext<-cov.beta.ext(model,samples)
   
   
   ## Zero-out those rows in the variance-covariance matrix that are to be proposed independently.
@@ -80,4 +73,16 @@ partial.diag<-function(m,idx){
   m[,idx]<-0
   diag(m)<-saved
   m
+}
+
+## Compute the empirical covariance of coefficients, latent scale, and random effect means.
+cov.beta.ext<-function(model,samples){
+  ## Construct the "extended" beta: not just the coefficients, but also the scale and the average
+  ## value of each random effect.
+  beta.ext<-cbind(if(model$p) samples$beta, # covariate coefs
+                  if(model$d) log(apply(sqrt(apply(samples$Z^2,1:2,sum)),1,mean)), # scale of Z
+                  if(model$sender) apply(samples$sender,1,mean), # sender eff.
+                  if(model$receiver) apply(samples$receiver,1,mean), # receiver eff.
+                  if(model$sociality) apply(samples$sociality,1,mean)) # sociality eff.
+  cov(beta.ext)
 }
