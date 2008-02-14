@@ -22,6 +22,12 @@ ergmm.control<-function(samplesize=4000,
   control
 }
 
+ergmm.prior<-function(...,adjust.beta.var=TRUE){
+  prior<-list(...)
+  prior$adjust.beta.var<-adjust.beta.var
+  as.ergmm.par.list(prior)
+}
+
 ergmm.fit.deps<-list(pmode=character(0),
                      mcmc=character(0),
                      mkl=c("mcmc"),
