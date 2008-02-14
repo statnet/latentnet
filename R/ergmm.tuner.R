@@ -30,6 +30,8 @@ get.init.deltas<-function(model, control){
 
 
 get.sample.deltas<-function(model,samples,control){
+  control$Z.delta<-control$Z.delta*mean(samples$Z.rate)/control$target.acc.rate
+  control$pilot.factor<-control$pilot.factor*mean(samples$beta.rate)/control$target.acc.rate
   cov.beta.ext<-cov.beta.ext(model,samples)
   
   
