@@ -13,6 +13,7 @@ ergmm.control<-function(samplesize=4000,
                         propose.ind=c(),
                         pilot.runs=4,
                         pilot.factor=0.8,
+                        pilot.discard.first=0.5,
                         group.deltas=0.4,
                         target.acc.rate=0.5,
                         accept.all=FALSE){
