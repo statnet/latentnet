@@ -1,7 +1,7 @@
 ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                   control=ergmm.control(),
                   user.start=ergmm.par.blank(),
-                  prior=as.ergmm.par.list(list(adjust.beta.var=TRUE)),
+                  prior=ergmm.prior(),
                   tofit=c("mcmc","mkl","mkl.mbc","procrustes","klswitch"),
                   Z.ref=NULL,
                   Z.K.ref=NULL,
