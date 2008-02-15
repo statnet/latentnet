@@ -68,7 +68,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if(need.to.fit$beta){
     if(model$intercept)
-      pm$beta<-logit(mean(Ym01))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z)))
+      pm$beta<-logit(mean(Ym01))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z))) else 0
     pm$beta<-c(pm$beta,rep(0,p-model$intercept))
   }
 
