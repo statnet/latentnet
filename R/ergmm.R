@@ -55,7 +55,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
           ## Burn in one thread.
           burnin.samples<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
                                        samplesize=burnin.size)$samples
-          sampling.start<-burnin.samples[[burnin.size]]
+          burnin.state<-burnin.samples[[burnin.size]]
         }else{
           ## Burn in multiple threads.
           burnin.samples<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
