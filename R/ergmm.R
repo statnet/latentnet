@@ -70,7 +70,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
           burnin.samples<-stack.ergmm.par.list.list(burnin.samples)
 
         }
-        if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.samples, control)
+        if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.samples, burnin.control)
       }
       if(burnin.control$verbose) cat("Finished.\n")
     }
