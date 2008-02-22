@@ -40,6 +40,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     burnin.start<-burnin.state<-ergmm.initvals(model,user.start,prior,control)
     burnin.control<-get.init.deltas(model, control)
     burnin.controls<-list()
+    burnin.samples<-list()
 
     if(control$burnin>0){
       burnin.runs<-max(control$pilot.runs,1)
@@ -53,24 +54,25 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
         
         if(burnin.control$threads<=1){
           ## Burn in one thread.
-          burnin.samples<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
+          burnin.sample<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
                                        samplesize=burnin.size)$samples
-          burnin.state<-burnin.samples[[burnin.size]]
+          burnin.state<-burnin.sample[[burnin.size]]
+          burnin.samples[[pilot.run]]<-burnin.sample
         }else{
           ## Burn in multiple threads.
-          burnin.samples<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
+          burnin.sample<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
                                             model.l=list(model),
                                             start.l=burnin.state,
                                             prior.l=list(prior),
                                             control.l=list(burnin.control),
                                             samplesize.l=list(burnin.size))$samples
           burnin.state<-sapply(1:burnin.control$threads,
-                               function(thread) burnin.samples[[thread]][[burnin.size]],
+                               function(thread) burnin.sample[[thread]][[burnin.size]],
                                simplify=FALSE)
-          burnin.samples<-stack.ergmm.par.list.list(burnin.samples)
+          burnin.samples[[pilot.run]]<-stack.ergmm.par.list.list(burnin.sample)
 
         }
-        if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.samples, burnin.control)
+        if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.sample, burnin.control)
       }
       if(burnin.control$verbose) cat("Finished.\n")
     }
