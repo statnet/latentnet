@@ -69,7 +69,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
           burnin.state<-sapply(1:burnin.control$threads,
                                function(thread) burnin.sample[[thread]][[burnin.size]],
                                simplify=FALSE)
-          burnin.samples[[pilot.run]]<-stack.ergmm.par.list.list(burnin.sample)
+          burnin.samples[[pilot.run]]<-burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
 
         }
         if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.sample, burnin.control)
