@@ -12,12 +12,9 @@
 
 
 ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=NULL){
-  ## Note that passing NULL as a parameter will cause the corresponding parameter in
-  ## latent_MCMC_wrapper(...) to be set to NULL when NULL is coerced to double.
-  ## (as.double(NULL)==double(0))
-
-  Ym <-model$Ym
-  
+  Ym.noNA<- Ym <-model$Ym
+  Ym.noNA[is.na(Ym.noNA)]<-0
+    
   n<-network.size(model$Yg)
   d<-model$d
   G<-model$G
@@ -31,7 +28,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
 
   ## Figure out the design matrix.
   observed<-observed.dyads(model$Yg)
-
+  
   if((observed==(diag(n)==0) && is.directed(model$Yg)) ||
      (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
     observed<-NULL
@@ -98,8 +95,8 @@ ergmm.MCMC.C<-function(model, start, prior, control, samplesize=NULL, interval=N
              G=as.integer(G), 
              
              dir=as.integer(is.directed(model$Yg)),
-             viY=as.integer(Ym),
-             vdY=as.double(Ym),
+             viY=as.integer(Ym.noNA),
+             vdY=as.double(Ym.noNA),
              family=as.integer(model$familyID),
              iconsts=as.integer(model$iconsts),
              dconsts=as.double(model$dconsts),

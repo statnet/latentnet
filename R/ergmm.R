@@ -35,9 +35,9 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
     model<-tmp$model
     prior<-tmp$prior
   }
-  
+
+  burnin.start<-burnin.state<-ergmm.initvals(model,user.start,prior,control)
   if(control$tofit$mcmc){
-    burnin.start<-burnin.state<-ergmm.initvals(model,user.start,prior,control)
     burnin.control<-get.init.deltas(model, control)
     burnin.controls<-list()
     burnin.samples<-list()
