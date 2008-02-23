@@ -29,6 +29,8 @@ getYm<-function(Yg,response=NULL){
       else as.matrix.network(Yg, response, matrix.type="adjacency")
     }
 
+  m[!observed.dyads(Yg)]<-NA
+  
   ## If bipartite, augment into a matrix of the form
   ##  N    m
   ## t(m)  N

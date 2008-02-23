@@ -22,7 +22,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
 
   Ym<-getYm(Yg,model$response)
   
-  Ym01<-Ym>mean(Ym)
+  Ym01<-Ym>mean(Ym,na.rm=TRUE)
   mode(Ym01)<-"numeric"
   
   pm<-user.start
@@ -68,11 +68,11 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if(need.to.fit$beta){
     if(model$intercept)
-      pm$beta<-logit(mean(Ym01))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z))) else 0
+      pm$beta<-logit(mean(Ym01,na.rm=TRUE))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z))) else 0
     pm$beta<-c(pm$beta,rep(0,p-model$intercept))
   }
 
-  bayes.prop<-function(x) (sum(x)+1)/(length(x)+2)
+  bayes.prop<-function(x) (sum(x,na.rm=TRUE)+1)/(length(na.omit(x))+2)
   
   if(need.to.fit$sociality){
     pm$sociality<-logit((apply(Ym01,1,bayes.prop)+apply(Ym01,2,bayes.prop))/2)

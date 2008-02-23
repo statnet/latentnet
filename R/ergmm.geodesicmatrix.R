@@ -2,7 +2,8 @@ ergmm.geodesicmatrix<-function(model){
   Yg<-model$Yg
   Ym<-model$Ym
   # For the purpose of geodesic distance, dichotomize the network about its mean.
-  Ym<-Ym>mean(Ym)
+  Ym<-Ym>mean(Ym,na.rm=TRUE)
+  Ym[is.na(Ym)]<-0
   mode(Ym)<-"numeric"
   Ymg<-network(Ym,matrix.type="adjacency",directed=is.directed(Yg))
   ergmm.geodesicmatrix.edgelist(edgelist=as.matrix.network(Ymg,matrix.type="edgelist"),
