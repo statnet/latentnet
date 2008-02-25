@@ -55,14 +55,17 @@
   This is typically plotted using \code{\link[ergmm]{plot.gofobject}}.
 }
 
-\seealso{ergmm,ergm, network, simulate.ergmm, summary.ergmm, plot.gofobject}
+\seealso{\code{\link{ergmm}},
+  \code{\link[=ergmm.object]{ergmm (object)}},
+  \code{\link[ergm]{ergm}}, \code{network},
+  \code{\link{simulate.ergmm}}, \code{\link[ergm]{plot.gofobject}}}
 \examples{
 #
 data(sampson)
 #
 # test the gof.ergm function
 #
-samplike.fit <- ergmm(samplike ~ latent(d=2,G=3))
+samplike.fit <- ergmm(samplike ~ latent(d=2,G=3),control=ergmm.control(burnin=1000,interval=5))
 samplike.fit
 summary(samplike.fit)
 

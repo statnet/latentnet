@@ -49,6 +49,11 @@
     parameters (but not that of the cluster assignments).\cr
     \code{lpREV}: \eqn{\log p(\sigma_\delta,\sigma_\gamma)}\tab
     Prior log-density of all random effect variances. \cr
+    \code{Z.rate}\tab
+    Proportion of single-vertex proposals accepted over the preceding
+    interval. \cr
+    \code{beta.rate}\tab
+    Proportion of group proposals accepted over the preceding interval. \cr
   }
 }
 \seealso{

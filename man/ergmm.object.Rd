@@ -12,7 +12,7 @@
   
   The structure of \code{ergmm} is as follows:
   \tabular{ll}{
-    \code{samples}\tab An object of class
+    \code{sample}\tab An object of class
     \code{\link[=ergmm.par.list.object]{ergmm.par.list}} containing the
     MCMC sample from the posterior. If the run had multiple threads, their output is concatenated.\cr
     \code{mcmc.mle}\tab An object of class

@@ -17,12 +17,12 @@
 }
 \arguments{
   \item{x}{ An object of class \code{\link[=ergmm.object]{ergmm}}. }
-  \item{which.diags}{A list of diagnostics to produce. "cor" is the correlation
-matrix of the statistics, "acf" plots the autocorrelation functions, "trace"
-produces trace plots, and "raftery" produces the Raftery-Lewis statistics.} 
-  \item{burnin}{ If \code{TRUE}, generates an
-    \code{\link[coda]{mcmc.list}} object for the burnin (if stored)
-    instead of the main sampling run. }
+  \item{which.diags}{A list of diagnostics to produce. "cor" is the
+    correlation matrix of the statistics, "acf" plots the
+    autocorrelation functions, "trace" produces trace plots and density
+    estimates, and "raftery" produces the Raftery-Lewis statistics.}
+  \item{burnin}{ If not \code{FALSE}, rather than perform diagnostics on
+    the sampling run, performs them on the pilot run whose index is given. }
   \item{which.vars}{A named list mapping variable names to the indices
     to include. If given, overrides the defaults and all arguments that follow.}
   \item{vertex.i}{ A numeric vector of vertices whose latent space
@@ -31,10 +31,9 @@ produces trace plots, and "raftery" produces the Raftery-Lewis statistics.}
 }
 
 \details{
-The plots produced are a trace of the sampled output
-and a density estimate for each variable in the chain.
-
-Autocorrelation with lags 0 and 1 and a Raftery-Lewis diagnostic is prited.
+  Produces the plots per \code{which.diags}.
+  Autocorrelation function that is printed if "acf" is requested is for
+  lags \code{0} and \code{interval}.
 }
 \value{
   \code{mcmc.diagnostics.ergmm} returns a table of Raftery-Lewis diagnostics.
@@ -46,17 +45,19 @@ Autocorrelation with lags 0 and 1 and a Raftery-Lewis diagnostic is prited.
   \code{\link[coda]{plot.mcmc.list}}
 }
 \examples{
+\dontrun{
 #
 data(sampson)
 #
 # test the mcmc.diagnostics function
 #
-gest <- ergmm(samplike ~ latent(d=2))
+gest <- ergmm(samplike ~ latent(d=2),control=ergmm.control(burnin=1000,interval=5))
 summary(gest)
 #
 # Plot the traces and densities
 #
 mcmc.diagnostics(gest)
+}
 }
 \keyword{graphs}
 \keyword{hplot}
