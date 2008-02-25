@@ -198,11 +198,7 @@ print.summary.ergmm<-function(x,...){
     }
     cat("\n")
   }
-  if(!is.null(x$pmean)){
-    cat("Covariate coefficients posterior mean:\n")
-    print(x$pmean$coef.table)
-    cat("\n\n")
-  }
+
   if(!is.null(x$mkl)){
     cat("Covariate coefficients MKL:\n")
     print(x$mkl$coef.table)

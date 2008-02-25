@@ -20,6 +20,7 @@
   distances<-NULL
   n<-network.size(Yg)
   d<-x$model$d
+  if(d==0) stop("Plotting non-latent-space models is not available.")
   G<-x$model$G
   if(G<1) pie<-FALSE
 

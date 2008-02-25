@@ -4,9 +4,10 @@ data(sampson)
 
 monks.nmr<-ergmm(samplike~nodematch("group")+rreceiver)
 mcmc.diagnostics(monks.nmr)
-print(summary(monks.nmr))
 
-plot(monks.nmr)
+print(summary(monks.nmr))
+# Should produce a meaningful error message.
+print(try(plot(monks.nmr)))
 
 monks.dnmr<-ergmm(samplike~nodematch("group",diff=TRUE)+rreceiver)
 mcmc.diagnostics(monks.dnmr)

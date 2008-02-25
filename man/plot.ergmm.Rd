@@ -23,8 +23,10 @@
   default.  The maximum likelihood, posterior mean, posterior mode, or a
   particular iteration's or configuration's positions
   can be used instead, or pie charts of the posterior
-  probabilities of cluster membership can be shown. See \code{\link{ergmm}} for more information on how to fit these
-  models.
+  probabilities of cluster membership can be shown. See
+  \code{\link{ergmm}} for more information on how to fit these models.
+
+  At this time, no plotting non-latent-space model fits is not supported.
 }
 \arguments{
   \item{x}{an R object of class \code{\link[=ergmm.object]{ergmm}}.
