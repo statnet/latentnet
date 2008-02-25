@@ -12,6 +12,9 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
                                    which.vars=NULL,
                                    vertex.i=c(1),...){
   extraneous.argcheck(...)
+  
+  if(is.null(x$sample)) stop("MCMC was not run for this ERGMM fit.")
+
   x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
   oldask=par("ask")
   on.exit(par(ask=oldask))
@@ -42,7 +45,11 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
   }
 
   if("raftery" %in% which.diags){
-    rd<-raftery.diag(x,r=0.0125)
+    rd<-try(raftery.diag(x,r=0.0125))
+    if(inherits(rd,"try-error")){
+      cat("Raftery-Lewis diagnostic failed, likely due to some of the vairables not mixing at all.\n MCMC should be rerun.")
+      return(invisible(NULL))
+    }
     print(rd)
     invisible(rd)
   }

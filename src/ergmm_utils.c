@@ -81,13 +81,13 @@ unsigned int *runifperm(unsigned int n, unsigned int *a){
   return(a);
 }
 
-R_INLINE void iswap(int *a, int *b){
+/*R_INLINE*/ void iswap(int *a, int *b){
   int tmp=*b;
   *b=*a;
   *a=tmp;
 }
 
-R_INLINE void uiswap(unsigned int *a, unsigned int *b){
+/*R_INLINE*/ void uiswap(unsigned int *a, unsigned int *b){
   unsigned int tmp=*b;
   *b=*a;
   *a=tmp;

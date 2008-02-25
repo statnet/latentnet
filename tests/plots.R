@@ -15,4 +15,4 @@ plot(samp.fit,what="density",rand.eff="receiver")
 plot(samp.fit,what=5,rand.eff="receiver")
 
 plot(simulate(samp.fit))
-with(samp.fit,simulate(model,par=sample[[1]],prior=prior))
+plot(with(samp.fit,simulate(model,par=sample[[1]],prior=prior)))

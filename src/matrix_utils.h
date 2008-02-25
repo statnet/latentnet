@@ -49,7 +49,7 @@ double *Runpack_dvectors(double *va, unsigned int n, double *a, unsigned int sam
 double dmatrix_scale_to(double **A,unsigned int n, unsigned int m, double rms_wanted);
 void dmatrix_scale_by(double **A, unsigned int n, unsigned int m, double by);
 void dvector_scale_by(double *v, unsigned int n, double by);
-R_INLINE double dvector_dist(double *u, double *v, unsigned int dim);
-R_INLINE int inverse(double **x, int n ,double **res, double *workspace);
-R_INLINE int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors, double *workspace);
+/*R_INLINE*/ double dvector_dist(double *u, double *v, unsigned int dim);
+/*R_INLINE*/ int inverse(double **x, int n ,double **res, double *workspace);
+/*R_INLINE*/ int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors, double *workspace);
 #endif

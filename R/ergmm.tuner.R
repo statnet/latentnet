@@ -12,16 +12,17 @@ get.init.deltas<-function(model, control){
   
   ## If a vector of appropriate length is given, use a diagonal matrix
   if(length(control$group.deltas)==nterms){
-    control$group.deltas<-diag(control$group.deltas)
+    control$group.deltas<-diag(control$group.deltas,nrow=nterms)
     return(control)
   }
   
   ## If a scalar is given, construct a diagonal matrix that's in the ballpark.
   if(length(control$group.deltas)==1){
+    group.deltas.scale<-control$group.deltas
     control$group.deltas<-1/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))
     if(model$d) control$group.deltas<-c(control$group.deltas, 0.05)
     control$group.deltas<-c(control$group.deltas,rep(1,model$sender+model$receiver+model$sociality))
-    control$group.deltas<-diag(control$group.deltas*control$group.deltas*2/(1+nterms),nrow=nterms)
+    control$group.deltas<-diag(group.deltas.scale*control$group.deltas*2/(1+nterms),nrow=nterms)
   }
 
   control

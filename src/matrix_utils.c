@@ -475,7 +475,7 @@ double mean(double *x, unsigned int n){
   return(mu/n);
 }
 
-R_INLINE double dvector_dist(double *u, double *v, unsigned int dim){
+/*R_INLINE*/ double dvector_dist(double *u, double *v, unsigned int dim){
   unsigned int k;
   double dist,dist2=0;
   for(k=0;k<dim;k++){
@@ -511,7 +511,7 @@ void dvector_scale_by(double *v, unsigned int n, double by){
 
 /* Inverts a matrix "in place".
    "workspace" must be an expendable block of memory of length (n*n*3+4*n)*sizeof(double)*/
-R_INLINE int inverse(double **x, int n, double **res, double *workspace)
+/*R_INLINE*/ int inverse(double **x, int n, double **res, double *workspace)
 {
   /** QR decomposition solve x*x=I **/
   /** res contains the result **/
@@ -561,7 +561,7 @@ R_INLINE int inverse(double **x, int n, double **res, double *workspace)
    dim(EVectors) = n,n
    "workspace" must be an expendable block of memory of length (n*n*2+n*3)*sizeof(double).
 */
-R_INLINE int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors,double *workspace)
+/*R_INLINE*/ int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors,double *workspace)
 {
   int err=0,i=0,j=0;
   /*

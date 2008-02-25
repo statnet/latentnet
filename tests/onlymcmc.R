@@ -9,6 +9,6 @@ mcmc.diagnostics(onlymcmc)
 print(try(plot(onlymcmc)))
 
 plot(simulate(onlymcmc))
-with(onlymcmc,simulate(model,par=sample[[1]],prior=prior))
+plot(with(onlymcmc,simulate(model,par=sample[[1]],prior=prior)))
 
 heatmap(predict(onlymcmc))
