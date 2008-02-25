@@ -52,8 +52,11 @@ EY.Poisson.log<-function(eta,fam.par=NULL) exp(eta)
 
 ## Dispatcher functions
 
-family.IDs<-list(Bernoulli.logit=1,
+family.IDs<-list(Bernoulli=1,
+                 Bernoulli.logit=1,
+                 binomial=2,
                  binomial.logit=2,
+                 Poisson=3,
                  Poisson.log=3,
                  Bernoulli.cont.logit=4,
                  binomial.cont.logit=5,
