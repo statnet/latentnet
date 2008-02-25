@@ -176,7 +176,7 @@ find.pmode.loop<-function(model,start,prior,control){
 }
 
 add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
-  if(!is.null(x$sample) && x$model$d>0){
+  if(!is.null(x$sample)){
     if(x$control$verbose) cat("Fitting the MKL locations... ")
     x$mkl<-find.mkl(x$model,x$sample,x$control)
     if(!require(shapes,quietly=TRUE)){

@@ -123,7 +123,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              prior.Z.var.df=as.double(prior$Z.var.df),
              
              Z.mcmc = double((sample.size+RESERVED)*n*d),
-             Z.rate = if(d > 0) double((sample.size+RESERVED)) else double(0),
+             Z.rate = if(d > 0 || model$sender || model$sociality || model$receiver) double((sample.size+RESERVED)) else double(0),
              
              K.mcmc = if(G > 0) integer(n*(sample.size+RESERVED)) else integer(0),
              Z.pK.mcmc = double(G*(sample.size+RESERVED)),
@@ -175,7 +175,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
                 Z.var = if(d>0) matrix(Cret$Z.var.mcmc,ncol=max(G,1)),
                 Z.pK = if(G>0) matrix(Cret$Z.pK.mcmc,ncol=G),
                 Z=if(d>0)array(Cret$Z.mcmc,dim=c((sample.size+RESERVED),n,d)),
-                Z.rate=if(d>0) Cret$Z.rate,
+                Z.rate=if(d>0 || model$sender || model$sociality || model$receiver) Cret$Z.rate,
                 sender=if(model$sender && !model$sociality) matrix(Cret$sender.mcmc,ncol=n),
                 receiver=if(model$receiver) matrix(Cret$receiver.mcmc,ncol=n),
                 sociality=if(model$sociality) matrix(Cret$sender.mcmc,ncol=n),

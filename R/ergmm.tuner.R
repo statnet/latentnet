@@ -29,13 +29,15 @@ get.init.deltas<-function(model, control){
 
 get.sample.deltas<-function(model,sample,control){
   use.draws<-ceiling(length(sample)*control$pilot.discard.first):length(sample)
-  control$Z.delta<-control$Z.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
-  control$RE.delta<-control$RE.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
+  if(model$d) control$Z.delta<-control$Z.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
+  if(model$sender || model$receiver || model$sociality) control$RE.delta<-control$RE.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
+  
   control$pilot.factor<-control$pilot.factor*mean(sample$beta.rate[use.draws])/control$target.acc.rate
   cov.beta.ext<-cov.beta.ext(model,sample[use.draws])
   
   ## Take the Choletsky decomposition of the empirical covariance matrix.
-  control$group.deltas<-chol(cov.beta.ext)*control$pilot.factor
+  control$group.deltas<-try(chol(cov.beta.ext)*control$pilot.factor)
+  if(inherits(control$group.deltas,"try-error")) stop("Looks like a pilot run did not mix at all (practically no proposals were accepted). Try using a smaller starting proposal variance.")
   control
 }
 

@@ -348,11 +348,11 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
   for(iter=1;iter<=total_iters;iter++){
 
     R_CheckUserInterrupt(); // So that CTRL-C can interrupt the run.
-
-    n_accept_z += ERGMM_MCMC_Z_RE_up(model, prior, cur, setting);
+    if(model->latent || cur->state->sender || cur->state->receiver)
+      n_accept_z += ERGMM_MCMC_Z_RE_up(model, prior, cur, setting);
 
     if(model->latent){
-      // Update cluster parameters (they are separated from data by Z, so plain Gibbs).
+      // Update cluster parameters (they are separated from data by Z, so full conditional sampling).
       // Note that they are also updated in coef_up_scl_tr_Z_shift_RE.
       if(model->clusters>0)
 	ERGMM_MCMC_CV_up(model,prior,cur);
@@ -390,7 +390,7 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 
       // Acceptance rates.
       outlists->coef_rate[pos] = (double) ((double)n_accept_b)/((double)setting->interval);
-      if(model->latent){
+      if(outlists->Z_rate_move){
 	outlists->Z_rate_move[pos] = (double) ((double)n_accept_z)/((double)setting->interval*model->verts); 
       }
 

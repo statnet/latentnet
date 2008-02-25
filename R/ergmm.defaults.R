@@ -15,6 +15,8 @@ ergmm.control<-function(sample.size=4000,
                         pilot.factor=0.8,
                         pilot.discard.first=0.5,
                         target.acc.rate=0.5,
+                        backoff.threshold=0.05,
+                        backoff.factor=0.1,
                         accept.all=FALSE,
                         store.burnin=FALSE){
   control<-list()
