@@ -19,6 +19,8 @@ ergmm.control(sample.size=4000,
                         pilot.factor=0.8,
                         pilot.discard.first=0.5,
                         target.acc.rate=0.5,
+                        backoff.threshold=0.05,
+                        backoff.factor=0.1,
                         accept.all=FALSE,
                         store.burnin=FALSE)
 }
@@ -64,8 +66,14 @@ ergmm.control(sample.size=4000,
   \item{target.acc.rate}{Taget acceptance rate for the proposals
     used. After a pilot run, the proposal variances are adjusted upward
     if the acceptance rate is above this, and downward if below.}
+  \item{backoff.threshold}{If a pilot run's acceptance rate is below
+    this, redo it with drastically reduced proposal standard deviation.
+    Set to \code{0} to disable this behavior.}
+  \item{backoff.factor}{Factor by which to multiply the relevant
+    proposal standard deviation if its acceptance rate fell below the
+    backoff threshold. }
   \item{accept.all}{Forces all proposals to be accepted
-    unconditionally. Used only in debugging.}
+    unconditionally. Use only in debugging proposal distributions!}
   \item{store.burnin}{If \code{TRUE}, the samples from the burnin are
     also stored and returned, to be used in MCMC diagnostics.}
 }

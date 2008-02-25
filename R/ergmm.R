@@ -7,8 +7,6 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                   Z.K.ref=NULL,
                   seed=NULL,
                   verbose=FALSE){
-  #    current.warn <- options()$warn
-  #    options(warn=0)
   
   control$verbose<-verbose
   control$tofit<-ergmm.tofit.resolve(tofit)
@@ -50,29 +48,52 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
       if(burnin.control$verbose) cat("Burning in... ")
       for(pilot.run in 1:control$pilot.runs){
         if(burnin.control$verbose>1) cat(pilot.run,"")
-        burnin.controls[[length(burnin.controls)+1]]<-burnin.control
+        ## Set up a loop such that if a pilot run is catastrophically
+        ## bad (only accepts a very tiny fraction of proposals), the
+        ## proposals are "backed off" and the pilot run is redone.
+        backoff<-TRUE
+        while(backoff){
+          burnin.controls[[length(burnin.controls)+1]]<-burnin.control
         
-        if(burnin.control$threads<=1){
-          ## Burn in one thread.
-          burnin.sample<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
-                                       sample.size=burnin.size)$sample
-          burnin.state<-burnin.sample[[burnin.size]]
-          burnin.samples[[pilot.run]]<-burnin.sample
-        }else{
-          ## Burn in multiple threads.
-          burnin.sample<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
-                                            model.l=list(model),
-                                            start.l=burnin.state,
-                                            prior.l=list(prior),
-                                            control.l=list(burnin.control),
-                                            sample.size.l=list(burnin.size))$sample
-          burnin.state<-sapply(1:burnin.control$threads,
-                               function(thread) burnin.sample[[thread]][[burnin.size]],
-                               simplify=FALSE)
-          burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
-          if(control$store.burnin) burnin.samples[[pilot.run]]<-burnin.sample
+          if(burnin.control$threads<=1){
+            ## Burn in one thread.
+            burnin.sample<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
+                                        sample.size=burnin.size)$sample
+            burnin.state<-burnin.sample[[burnin.size]]
+            if(control$store.burnin) burnin.samples[[pilot.run]]<-burnin.sample
+          }else{
+            ## Burn in multiple threads.
+            burnin.sample<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
+                                             model.l=list(model),
+                                             start.l=burnin.state,
+                                             prior.l=list(prior),
+                                             control.l=list(burnin.control),
+                                             sample.size.l=list(burnin.size))$sample
+            burnin.state<-sapply(1:burnin.control$threads,
+                                 function(thread) burnin.sample[[thread]][[burnin.size]],
+                                 simplify=FALSE)
+            burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
+            if(control$store.burnin) burnin.samples[[pilot.run]]<-burnin.sample
+            
+          }
 
+          backoff<-FALSE
+          if((model$d || model$sender || model$receiver || model$sociality) && mean(burnin.sample$Z.rate)<burnin.control$backoff.threshold) {
+            burnin.control$Z.delta<-burnin.control$Z.delta*burnin.control$backoff.factor
+            burnin.control$RE.delta<-burnin.control$RE.delta*burnin.control$backoff.factor
+            backoff<-TRUE
+          }
+          if(mean(burnin.sample$beta.rate)<burnin.control$backoff.threshold) {
+            burnin.control$group.deltas<-burnin.control$group.deltas*burnin.control$backoff.factor
+            backoff<-TRUE
+          }
+          if(backoff){
+            backoff.str<-"Pilot run had catastrophically low acceptance rates, and will be redone with smaller proposal variances. If you see this message several times in a row, it may be due to an unknown bug or a posterior distribution the algorithm cannot properly explore. Either way, please report it."
+            if(burnin.control$verbose) cat(paste(backoff.str,"\n",sep=""))
+            else warning(backoff.str)
+          }
         }
+        
         if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.sample, burnin.control)
       }
       if(burnin.control$verbose) cat("Finished.\n")
