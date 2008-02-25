@@ -150,7 +150,7 @@
     if (is.null(main)) 
       main <- paste("MKL Latent Positions of", 
                     deparse(substitute(x)))
-    plot(matrix(c(x$samples$Z),ncol=2),pch=".")
+    plot(matrix(c(x$sample$Z),ncol=2),pch=".")
     points(Z.pos,col=cluster.col[Z.K])
     points(Z.mean,col=cluster.col)
     
@@ -174,7 +174,7 @@
 
     old.par<-par(mfrow=density.par$mfrow,mar=c(2.5,2.5,1,1))
 
-    Z.all<-matrix(c(aperm(x$samples$Z,c(2,1,3))),ncol=2)
+    Z.all<-matrix(c(aperm(x$sample$Z,c(2,1,3))),ncol=2)
 
     if(density.par$totaldens){
       plot(Z.all,type='n',xlab=xlab,ylab=ylab,...)
@@ -185,7 +185,7 @@
     }
     
     if(G>1 && density.par$subdens){
-      Z.K.all <- c(t(x$samples$Z.K))
+      Z.K.all <- c(t(x$sample$Z.K))
       for(i in 1:G){
         plot(Z.all,main=paste("Class",i),type="n",...)
         Z.bkde <- bkde2D(Z.all[Z.K.all==i,],0.2,c(101,101))
@@ -206,7 +206,7 @@
     return(invisible(NULL))
     
   }else if(is.numeric(what) && round(what)==what){
-    summ<-x$samples[[what]]
+    summ<-x$sample[[what]]
     Z.pos <- summ$Z
     Z.mean<-summ$Z.mean
     Z.var<-summ$Z.var

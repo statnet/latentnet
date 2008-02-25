@@ -1,4 +1,4 @@
-bayesmbc.MCMC.C<-function(G, start, prior, samplesize=NULL, interval=NULL){
+bayesmbc.MCMC.C<-function(G, start, prior, sample.size=NULL, interval=NULL){
   ## Note that passing NULL as a parameter will cause the corresponding parameter in
   ## the C function be set to NULL when NULL is coerced to double.
   ## (as.double(NULL)==double(0))
@@ -25,15 +25,15 @@ bayesmbc.MCMC.C<-function(G, start, prior, samplesize=NULL, interval=NULL){
 
 #  cat("Entering C routine... ")
   Cret <- .C("MBC_MCMC_wrapper",
-             samplesize=as.integer(samplesize),
+             sample.size=as.integer(sample.size),
              interval=as.integer(interval),
              
              n=as.integer(n),
              d=as.integer(d),
              G=as.integer(G), 
              
-             lpZ.mcmc=double(samplesize+RESERVED),
-             lpLV.mcmc=double(samplesize+RESERVED),
+             lpZ.mcmc=double(sample.size+RESERVED),
+             lpLV.mcmc=double(sample.size+RESERVED),
              
              Z=as.double(Z),
              
@@ -47,29 +47,29 @@ bayesmbc.MCMC.C<-function(G, start, prior, samplesize=NULL, interval=NULL){
              prior.Z.pK=if(G > 0) as.double(prior$Z.pK) else double(0),
              prior.Z.var.df=as.double(prior$Z.var.df),
              
-             K.mcmc = if(G > 0) integer(n*(samplesize+RESERVED)) else integer(0),
-             Z.pK.mcmc = if(G > 0) double(G*(samplesize+RESERVED)) else double(0),
-             mu.mcmc = double(d*G*(samplesize+RESERVED)),
-             Z.var.mcmc = double(max(G,1)*(samplesize+RESERVED)),
+             K.mcmc = if(G > 0) integer(n*(sample.size+RESERVED)) else integer(0),
+             Z.pK.mcmc = if(G > 0) double(G*(sample.size+RESERVED)) else double(0),
+             mu.mcmc = double(d*G*(sample.size+RESERVED)),
+             Z.var.mcmc = double(max(G,1)*(sample.size+RESERVED)),
              PACKAGE="latentnet")
 #  cat("Finished C routine.\n")
   
-  samples<-list(## MCMC Samples
+  sample<-list(## MCMC Sample
                 lpZ=Cret$llike.mcmc,
                 Z.K = if(G>0) matrix(Cret$K.mcmc,ncol=n),
-                Z.mean = if(G>0) array(Cret$mu.mcmc,dim=c((samplesize+RESERVED),G,d)),
+                Z.mean = if(G>0) array(Cret$mu.mcmc,dim=c((sample.size+RESERVED),G,d)),
                 Z.var = if(d>0) matrix(Cret$Z.var.mcmc,ncol=max(G,1)),
                 Z.pK = if(G>0) matrix(Cret$Z.pK.mcmc,ncol=G)
                 )
-  class(samples)<-"ergmm.par.list"
+  class(sample)<-"ergmm.par.list"
   
   
-  mcmc.mle<-samples[[1]]
+  mcmc.mle<-sample[[1]]
   
-  samples<-del.iteration(samples,1)
+  sample<-del.iteration(sample,1)
   
   ## Construct the list (of lists) for return.
-  out<-list(samples=samples,
+  out<-list(sample=sample,
             mcmc.mle=mcmc.mle)
 
   out

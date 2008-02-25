@@ -45,9 +45,11 @@ typedef struct {
   double Z_mean_var, Z_var, Z_var_df, *coef_mean, *coef_var, Z_pK, sender_var, sender_var_df, receiver_var, receiver_var_df;
 } ERGMM_MCMC_Priors;
 
+/* The structure to house the MCMC draws.
+ */
 typedef struct {
   double *llk, *lpZ, *lpcoef, *lpRE, *lpLV, *lpREV;
-  double *Z, *Z_rate_move, *Z_rate_move_all, *coef, *coef_rate, *Z_mean, *Z_var, *Z_pK, *sender, *sender_var, *receiver, *receiver_var;
+  double *Z, *Z_rate_move, *coef, *coef_rate, *Z_mean, *Z_var, *Z_pK, *sender, *sender_var, *receiver, *receiver_var;
   int *Z_K;
 } ERGMM_MCMC_ROutput;
 

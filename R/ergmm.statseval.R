@@ -7,7 +7,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   n <- network.size(Yg)
   p <- model$p
   family <- model$family
-  samplesize <- control$samplesize
+  sample.size <- control$sample.size
 
   if(!is.null(Z.ref)){
     Z.ref<-scale(Z.ref,scale=FALSE)
@@ -26,12 +26,12 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   class(mcmc.out)<-"ergmm"
 
 
-  if(control$tofit$klswitch) mcmc.out<-labelswitch.samples.ergmm(mcmc.out)
+  if(control$tofit$klswitch) mcmc.out<-labelswitch.sample.ergmm(mcmc.out)
   if(control$tofit$pmode) mcmc.out<-add.mcmc.pmode.pmode.ergmm(mcmc.out)
   if(control$tofit$mle) mcmc.out<-add.mcmc.mle.mle.ergmm(mcmc.out)
   if(control$tofit$mkl) mcmc.out<-add.mkl.pos.ergmm(mcmc.out)
   if(control$tofit$mkl.mbc) mcmc.out<-add.mkl.mbc.ergmm(mcmc.out)
-  if(control$tofit$procrustes) mcmc.out<-proc.samples.ergmm(mcmc.out)
+  if(control$tofit$procrustes) mcmc.out<-proc.sample.ergmm(mcmc.out)
 
   class(mcmc.out)<-"ergmm"
   return(mcmc.out)
@@ -45,22 +45,22 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   if(!is.null(Z.K.ref)){
     x$control$Z.K.ref<-Z.K.ref
   }
-  x<-labelswitch.samples.ergmm(x)
+  x<-labelswitch.sample.ergmm(x)
   if(rerun) x<-add.mcmc.pmode.pmode.ergmm(x)
   if(rerun) x<-add.mcmc.mle.mle.ergmm(x)
   if(rerun) x<-add.mkl.pos.ergmm(x)
   x<-add.mkl.mbc.ergmm(x)
-  x<-proc.samples.ergmm(x)
+  x<-proc.sample.ergmm(x)
   x
 }
 
-find.mkl<-function(model,samples,control){
+find.mkl<-function(model,sample,control){
   if(control$verbose>1) cat("Evaluating matrix of predicted dyad values and finding initial value... ")
-  EY<-post.predict.C(model,samples,control,TRUE)
+  EY<-post.predict.C(model,sample,control,TRUE)
   EY[!observed.dyads(model$Yg)]<-NA
   if(control$verbose>1) cat("Finished.\nMaximizing...")
 
-  mkl<-samples[[attr(EY,"s.MKL")]]
+  mkl<-sample[[attr(EY,"s.MKL")]]
   model$Ym<-EY
   for(i in 1:control$mle.maxit){
     if(control$verbose>1) cat(i,"")
@@ -176,9 +176,9 @@ find.pmode.loop<-function(model,start,prior,control){
 }
 
 add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
-  if(!is.null(x$samples) && x$model$d>0){
+  if(!is.null(x$sample) && x$model$d>0){
     if(x$control$verbose) cat("Fitting the MKL locations... ")
-    x$mkl<-find.mkl(x$model,x$samples,x$control)
+    x$mkl<-find.mkl(x$model,x$sample,x$control)
     if(!require(shapes,quietly=TRUE)){
       stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
     }
@@ -189,21 +189,21 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
   x
 }
 
-proc.samples.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
-  if(!is.null(x$samples) && x$model$d>0){
+proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
+  if(!is.null(x$sample) && x$model$d>0){
     if(x$control$verbose) cat("Performing Procrustes tranformation... ")
-    x$samples<-proc.Z.mean.C(x$samples,Z.ref,verbose=x$control$verbose)
+    x$sample<-proc.Z.mean.C(x$sample,Z.ref,verbose=x$control$verbose)
     if(x$control$verbose) cat("Finished.\n")
   }
   x
 }
 
-labelswitch.samples.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
-  if(!is.null(x$samples) && x$model$G>1){
+labelswitch.sample.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
+  if(!is.null(x$sample) && x$model$G>1){
     if(x$control$verbose) cat("Performing label-switching... ")
     require(mclust,quiet=TRUE)
     Q.start<-switch.Q.K(Z.K.ref,x$model$G)
-    x$samples<-klswitch.C(Q.start,x$samples,verbose=x$control$verbose)
+    x$sample<-klswitch.C(Q.start,x$sample,verbose=x$control$verbose)
     if(x$control$verbose) cat("Finished.\n")
   }
   x
@@ -225,7 +225,7 @@ best.avail.Z.K.ref.ergmm<-function(x){
   if(x$model$G==0) return(NULL)
   
   if(!is.null(x$control$Z.K.ref)) return(x$control$Z.K.ref)
-  if(!is.null(attr(x$samples,"Q"))) return(apply(attr(x$samples,"Q"),1,which.max))
+  if(!is.null(attr(x$sample,"Q"))) return(apply(attr(x$sample,"Q"),1,which.max))
   if(!is.null(x$pmode$Z.K)) return(x$pmode$Z.K)
   if(!is.null(x$mkl$mbc$Z.K)) return(x$mkl$mbc$Z.K)
   if(!is.null(x$mcmc.pmode$Z.K)) return(x$mcmc.pmode$Z.K)

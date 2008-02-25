@@ -55,7 +55,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
         if(burnin.control$threads<=1){
           ## Burn in one thread.
           burnin.sample<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
-                                       samplesize=burnin.size)$samples
+                                       sample.size=burnin.size)$sample
           burnin.state<-burnin.sample[[burnin.size]]
           burnin.samples[[pilot.run]]<-burnin.sample
         }else{
@@ -65,11 +65,12 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                                             start.l=burnin.state,
                                             prior.l=list(prior),
                                             control.l=list(burnin.control),
-                                            samplesize.l=list(burnin.size))$samples
+                                            sample.size.l=list(burnin.size))$sample
           burnin.state<-sapply(1:burnin.control$threads,
                                function(thread) burnin.sample[[thread]][[burnin.size]],
                                simplify=FALSE)
-          burnin.samples[[pilot.run]]<-burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
+          burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
+          if(control$store.burnin) burnin.samples[[pilot.run]]<-burnin.sample
 
         }
         if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.sample, burnin.control)
@@ -90,8 +91,8 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
                                     start.l=if(control$burnin) sampling.start else list(sampling.start),
                                     prior.l=list(prior),
                                     control.l=list(control),
-                                    samplesize.l=list(ceiling(control$samplesize/control$threads)))
-      mcmc.out$samples <- stack.ergmm.par.list.list(mcmc.out$samples)
+                                    sample.size.l=list(ceiling(control$sample.size/control$threads)))
+      mcmc.out$sample <- stack.ergmm.par.list.list(mcmc.out$sample)
     }
     if(control$verbose) cat("Finished.\n")
   }
@@ -104,7 +105,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
       if(control$burnin){
         v$burnin.start<-burnin.start
         v$burnin.controls<-burnin.controls
-        v$burnin.samples<-burnin.samples
+        if(control$store.burnin) v$burnin.samples<-burnin.samples
       }
       v$sampling.start<-sampling.start
     }

@@ -9,58 +9,58 @@
    [0] Iteration with the highest likelihood so far.
 */
 #define MBC_OUTLISTS_RESERVE 1
-void MBC_MCMC_wrapper(int *samples_stored,
+void MBC_MCMC_wrapper(int *sample_size,
 		      int *interval,
 
 		      int *n,
 		      int *d,
 		      int *G,
 			  
-		      double *lpZList, 
-		      double *lpLVList, 
+		      double *lpZ_mcmc, 
+		      double *lpLV_mcmc, 
 		      
 		      double *vZ,
 		      
-		      double *epsilon,
-		      double *mu,
-		      double *Sigma,
-		      int *Ki,
+		      double *Z_pK,
+		      double *Z_mean,
+		      double *Z_var,
+		      int *Z_K,
 		      
-		      double *Sigprior, 
-		      double *muSigprior, 
-		      double *dirprior,
-		      double *alphaprior,
+		      double *Z_var_prior, 
+		      double *Z_mean_prior_var, 
+		      double *Z_K_prior,
+		      double *Z_var_df,
 		      
-		      int *KiList, 
-		      double *Z_pKList, 
-		      double *muList, 
-		      double *SigmaList);
-void MBC_MCMC_init(unsigned int samples_stored, 
+		      int *Z_K_mcmc, 
+		      double *Z_pK_mcmc, 
+		      double *Z_mean_mcmc, 
+		      double *Z_var_mcmc);
+void MBC_MCMC_init(unsigned int sample_size, 
 		   unsigned int interval, 
 
 		   unsigned int n,
 		   unsigned int d,
 		   unsigned int G,
 		   
-		   double *lpZList,
-		   double *lpLVList, 
+		   double *lpZ_mcmc,
+		   double *lpLV_mcmc, 
 		   
 		   double **Z,
 
-		   double *epsilon, 
-		   double **Z_mu_start, 
-		   double *Sigma, 
-		   unsigned int *Ki,
+		   double *Z_pK, 
+		   double **Z_mean_start, 
+		   double *Z_var, 
+		   unsigned int *Z_K,
 
-		   double Sigprior,
-		   double muSigprior,
-		   double dirprior,
-		   double alphaprior,
+		   double Z_var_prior,
+		   double Z_mean_prior_var,
+		   double Z_K_prior,
+		   double Z_var_df,
 
-		   int *KList,
-		   double *Z_pKList,
-		   double *muList,
-		   double *SigmaList);
+		   int *K_mcmc,
+		   double *Z_pK_mcmc,
+		   double *Z_mean_mcmc,
+		   double *Z_var_mcmc);
 
 void MBC_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 		   ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_MCMCSettings *setting, ERGMM_MCMC_ROutput *outlists);

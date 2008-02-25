@@ -27,66 +27,26 @@ get.init.deltas<-function(model, control){
   control
 }
 
-
-
-get.sample.deltas<-function(model,samples,control){
-  use.draws<-ceiling(length(samples)*control$pilot.discard.first):length(samples)
-  control$Z.delta<-control$Z.delta*mean(samples$Z.rate[use.draws])/control$target.acc.rate
-  control$RE.delta<-control$RE.delta*mean(samples$Z.rate[use.draws])/control$target.acc.rate
-  control$pilot.factor<-control$pilot.factor*mean(samples$beta.rate[use.draws])/control$target.acc.rate
-  cov.beta.ext<-cov.beta.ext(model,samples[use.draws])
-  
-  
-  ## Zero-out those rows in the variance-covariance matrix that are to be proposed independently.
-  cov.pos<-0
-  if(model$p){
-    if("beta" %in% control$propose.ind) cov.beta.ext<-partial.diag(cov.beta.ext,cov.pos+(1:model$p))
-    cov.pos<-cov.pos+model$p
-  }
-  
-  if(model$d){
-    if("Z.scl" %in% control$propose.ind) cov.beta.ext<-partial.diag(cov.beta.ext,cov.pos+1)
-      cov.pos<-cov.pos+1
-  }
-  
-  if(model$sender){
-    if("sender" %in% control$propose.ind) cov.beta.ext<-partial.diag(cov.beta.ext,cov.pos+1)
-    cov.pos<-cov.pos+1
-  }
-  
-  if(model$receiver){
-    if("receiver" %in% control$propose.ind) cov.beta.ext<-partial.diag(cov.beta.ext,cov.pos+1)
-    cov.pos<-cov.pos+1
-  }
-  
-  if(model$sociality){
-    if("sociality" %in% control$propose.ind) cov.beta.ext<-partial.diag(cov.beta.ext,cov.pos+1)
-    cov.pos<-cov.pos+1
-  }
+get.sample.deltas<-function(model,sample,control){
+  use.draws<-ceiling(length(sample)*control$pilot.discard.first):length(sample)
+  control$Z.delta<-control$Z.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
+  control$RE.delta<-control$RE.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
+  control$pilot.factor<-control$pilot.factor*mean(sample$beta.rate[use.draws])/control$target.acc.rate
+  cov.beta.ext<-cov.beta.ext(model,sample[use.draws])
   
   ## Take the Choletsky decomposition of the empirical covariance matrix.
   control$group.deltas<-chol(cov.beta.ext)*control$pilot.factor
   control
 }
 
-## Zero the off-diagonal entries in a particular set of rows and columns.
-partial.diag<-function(m,idx){
-  m<-as.matrix(m)
-  saved<-diag(m)
-  m[idx,]<-0
-  m[,idx]<-0
-  diag(m)<-saved
-  m
-}
-
 ## Compute the empirical covariance of coefficients, latent scale, and random effect means.
-cov.beta.ext<-function(model,samples){
+cov.beta.ext<-function(model,sample){
   ## Construct the "extended" beta: not just the coefficients, but also the scale and the average
   ## value of each random effect.
-  beta.ext<-cbind(if(model$p) samples$beta, # covariate coefs
-                  if(model$d) log(apply(sqrt(apply(samples$Z^2,1:2,sum)),1,mean)), # scale of Z
-                  if(model$sender) apply(samples$sender,1,mean), # sender eff.
-                  if(model$receiver) apply(samples$receiver,1,mean), # receiver eff.
-                  if(model$sociality) apply(samples$sociality,1,mean)) # sociality eff.
+  beta.ext<-cbind(if(model$p) sample$beta, # covariate coefs
+                  if(model$d) log(apply(sqrt(apply(sample$Z^2,1:2,sum)),1,mean)), # scale of Z
+                  if(model$sender) apply(sample$sender,1,mean), # sender eff.
+                  if(model$receiver) apply(sample$receiver,1,mean), # receiver eff.
+                  if(model$sociality) apply(sample$sociality,1,mean)) # sociality eff.
   cov(beta.ext)
 }

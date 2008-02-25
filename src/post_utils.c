@@ -305,7 +305,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   
 
   if(*verbose>1) Rprintf("KLswitch: Allocating memory.\n");
-  ERGMM_MCMC_Par *samples = (ERGMM_MCMC_Par *) P_alloc(*S,sizeof(ERGMM_MCMC_Par));
+  ERGMM_MCMC_Par *sample = (ERGMM_MCMC_Par *) P_alloc(*S,sizeof(ERGMM_MCMC_Par));
   unsigned int *perm=(unsigned int *)P_alloc(*G,sizeof(unsigned int)), *bestperm=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
   unsigned int *dir=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
   double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);
@@ -327,7 +327,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   if(*verbose>1) Rprintf("KLswitch: Unpacking R input and precalculating pK.\n");
 
   for(unsigned int s=0; s<*S; s++){
-    ERGMM_MCMC_Par *cur=samples+s;
+    ERGMM_MCMC_Par *cur=sample+s;
     if(*Z_ref) cur->Z = Z_space[0];
     else cur->Z = Runpack_dmatrixs(vZ_mcmc+s,*n,*d,Z_space[s],*S);
     cur->Z_mean = Runpack_dmatrixs(vZ_mean_mcmc+s,*G,*d,Z_mean_space[s],*S);
@@ -365,11 +365,11 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
        During subsequent iterations, if no labels were permuted, Q need not be recalculated (
        since it already has been calculated with those labels). 
     */
-    if(!klswitch_step2(Q, samples, &tmp, *S, *n, *d, *G, perm, bestperm, dir, pK) && it>0){
+    if(!klswitch_step2(Q, sample, &tmp, *S, *n, *d, *G, perm, bestperm, dir, pK) && it>0){
       if(*verbose>1) Rprintf("KLswitch: Iterating: Q converged after %u iterations.\n", it+1);
       break;
     }
-    klswitch_step1(samples, *S, *n, *d, *G, Q, pK);
+    klswitch_step1(sample, *S, *n, *d, *G, Q, pK);
 
 
     if(*verbose>2) Rprintf("KLswitch: Iterating: Completed %u/%d.\n",it+1,*maxit);
@@ -378,7 +378,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   if(*verbose>1) Rprintf("KLswitch: Packing for return to R.\n");
 
   for(unsigned int s=0; s<*S; s++){
-    ERGMM_MCMC_Par *cur=samples+s;
+    ERGMM_MCMC_Par *cur=sample+s;
     Rpack_dmatrixs(cur->Z_mean,*G,*d,vZ_mean_mcmc+s,*S);
     Rpack_dvectors(cur->Z_var,*G,vZ_var_mcmc+s,*S);
     Rpack_dvectors(cur->Z_pK,*G,vZ_pK_mcmc+s,*S);
@@ -466,7 +466,7 @@ R_INLINE void apply_perm(unsigned int *perm, ERGMM_MCMC_Par *to, double **pK, ER
 }
 
 // "Step 1": evaluate new Q.
-void klswitch_step1(ERGMM_MCMC_Par *samples, int S, int n, int d, int G, double **Q, double ***pK){
+void klswitch_step1(ERGMM_MCMC_Par *sample, int S, int n, int d, int G, double **Q, double ***pK){
   for(unsigned int i=0; i<n; i++){
     for(unsigned int g=0; g<G; g++){ 
       Q[i][g]=0;
@@ -480,13 +480,13 @@ void klswitch_step1(ERGMM_MCMC_Par *samples, int S, int n, int d, int G, double 
 
 
 // "Step 2": labelswitch to Q.
-int klswitch_step2(double **Q, ERGMM_MCMC_Par *samples, ERGMM_MCMC_Par *tmp, 
+int klswitch_step2(double **Q, ERGMM_MCMC_Par *sample, ERGMM_MCMC_Par *tmp, 
 		   int S, int n, int d, int G,
 		   unsigned int *perm, unsigned int *bestperm, unsigned int *dir,
 		   double ***pK){
   int changed=FALSE;
   for(unsigned int s=0; s<S;s++){
-    ERGMM_MCMC_Par *cur=samples+s;
+    ERGMM_MCMC_Par *cur=sample+s;
     for(unsigned int g=0;g<G;g++){
       perm[g]=g+1;
       dir[g]=0;

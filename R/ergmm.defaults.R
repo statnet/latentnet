@@ -3,20 +3,20 @@
 ## for glm.
 
 ## Variables affecting the sampling process but not the posterior distribution.
-ergmm.control<-function(samplesize=4000,
+ergmm.control<-function(sample.size=4000,
                         burnin=10000,
                         interval=10,
                         threads=1,
-                        mle.maxit=400,
+                        mle.maxit=100,
                         Z.delta=0.6,
                         RE.delta=0.6,
-                        propose.ind=c(),
+                        group.deltas=0.4,
                         pilot.runs=4,
                         pilot.factor=0.8,
                         pilot.discard.first=0.5,
-                        group.deltas=0.4,
                         target.acc.rate=0.5,
-                        accept.all=FALSE){
+                        accept.all=FALSE,
+                        store.burnin=FALSE){
   control<-list()
   for(arg in names(formals(sys.function())))
     control[[arg]]<-get(arg)
