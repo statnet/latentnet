@@ -9,34 +9,34 @@
 #include "ergmm_updaters.h"
 
 
-void MBC_MCMC_wrapper(int *samples_stored,
+void MBC_MCMC_wrapper(int *sample_size,
 		      int *interval,
 
 		      int *n,
 		      int *d,
 		      int *G,
 			  
-		      double *lpZList, 
-		      double *lpLVList, 
+		      double *lpZ_mcmc, 
+		      double *lpLV_mcmc, 
 		      
 		      double *vZ,
 		      
-		      double *epsilon,
-		      double *mu,
-		      double *Sigma,
-		      int *Ki,
+		      double *Z_pK,
+		      double *Z_mean,
+		      double *Z_var,
+		      int *Z_K,
 		      
-		      double *Sigprior, 
-		      double *muSigprior, 
-		      double *dirprior,
-		      double *alphaprior,
+		      double *Z_var_prior, 
+		      double *Z_mean_prior_var, 
+		      double *Z_K_prior,
+		      double *Z_var_df,
 		      
-		      int *KiList, 
-		      double *Z_pKList, 
-		      double *muList, 
-		      double *SigmaList){
+		      int *Z_K_mcmc, 
+		      double *Z_pK_mcmc, 
+		      double *Z_mean_mcmc, 
+		      double *Z_var_mcmc){
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
-  double **Z_mean_start = mu ? Runpack_dmatrix(mu,*G,*d,NULL) : NULL;
+  double **Z_mean_start = Z_mean ? Runpack_dmatrix(Z_mean,*G,*d,NULL) : NULL;
   
   /* R function enabling uniform RNG */
   GetRNGstate();
@@ -44,19 +44,19 @@ void MBC_MCMC_wrapper(int *samples_stored,
   
   /* Since random effects are optional (can be NULL), we have to check before
      dereferincing pointers that deal with them. */
-  MBC_MCMC_init(*samples_stored, *interval,
+  MBC_MCMC_init(*sample_size, *interval,
 		
 		*n, *d, *G,
 		
-		lpZList, lpLVList,
+		lpZ_mcmc, lpLV_mcmc,
 		
 		Z, 
-		epsilon,Z_mean_start,Sigma,(unsigned int *) Ki,
-		Sigprior? *Sigprior : 0,
-		muSigprior ? *muSigprior : 0,
-		dirprior ? *dirprior : 0,
-		alphaprior ? *alphaprior : 0,
-		KiList, Z_pKList, muList, SigmaList);
+		Z_pK,Z_mean_start,Z_var,(unsigned int *) Z_K,
+		Z_var_prior? *Z_var_prior : 0,
+		Z_mean_prior_var ? *Z_mean_prior_var : 0,
+		Z_K_prior ? *Z_K_prior : 0,
+		Z_var_df ? *Z_var_df : 0,
+		Z_K_mcmc, Z_pK_mcmc, Z_mean_mcmc, Z_var_mcmc);
   
   PutRNGstate();
   P_free_all();
@@ -65,32 +65,32 @@ void MBC_MCMC_wrapper(int *samples_stored,
 }
 
 /* Initializes the MCMC sampler and allocates memory. */
-void MBC_MCMC_init(unsigned int samples_stored, 
+void MBC_MCMC_init(unsigned int sample_size, 
 		   unsigned int interval, 
 
 		   unsigned int n,
 		   unsigned int d,
 		   unsigned int G,
 		   
-		   double *lpZList,
-		   double *lpLVList, 
+		   double *lpZ_mcmc,
+		   double *lpLV_mcmc, 
 		   
 		   double **Z,
 
-		   double *epsilon, 
+		   double *Z_pK, 
 		   double **Z_mean_start, 
-		   double *Sigma, 
-		   unsigned int *Ki,
+		   double *Z_var, 
+		   unsigned int *Z_K,
 
-		   double Sigprior,
-		   double muSigprior,
-		   double dirprior,
-		   double alphaprior,
+		   double Z_var_prior,
+		   double Z_mean_prior_var,
+		   double Z_K_prior,
+		   double Z_var_df,
 
-		   int *KList,
-		   double *Z_pKList,
-		   double *muList,
-		   double *SigmaList){
+		   int *K_mcmc,
+		   double *Z_pK_mcmc,
+		   double *Z_mean_mcmc,
+		   double *Z_var_mcmc){
   unsigned int i;
 
 
@@ -112,28 +112,28 @@ void MBC_MCMC_init(unsigned int samples_stored,
   };
 
   ERGMM_MCMC_MCMCSettings setting = {0,0,NULL,0, // deltas
-				     samples_stored,interval,
+				     sample_size,interval,
 				     FALSE // accept_all
   };
 
-  ERGMM_MCMC_Priors prior = {muSigprior, // Z_mean_var
-			     Sigprior, // Z_var
-			     alphaprior, // a.k.a. Z_var_df (I hope)
+  ERGMM_MCMC_Priors prior = {Z_mean_prior_var, // Z_mean_var
+			     Z_var_prior, // Z_var
+			     Z_var_df, // a.k.a. Z_var_df (I hope)
 			     NULL,
 			     NULL,
-			     dirprior,
+			     Z_K_prior,
 			     0,0,0,0};
   
   ERGMM_MCMC_Par state = {Z, // Z
 			  NULL, // coef
 			  Z_mean_start, // Z_mean
-			  Sigma, // Z_var
-			  epsilon, // Z_pK			  
+			  Z_var, // Z_var
+			  Z_pK, // Z_pK			  
 			  NULL,
 			  0,
 			  NULL,
 			  0,
-			  Ki, // Z_K
+			  Z_K, // Z_K
 			  0, // llk
 			  NULL, // lpedge
 			  0, // lpZ		  
@@ -159,20 +159,19 @@ void MBC_MCMC_init(unsigned int samples_stored,
   };
   
   ERGMM_MCMC_ROutput outlists = {NULL, // llk
-				 lpZList,
+				 lpZ_mcmc,
 				 NULL, // lpcoef
 				 NULL, // lpRE
-				 lpLVList,
+				 lpLV_mcmc,
 				 NULL, //lpREV,
 				 NULL, // Z
 				 NULL, // Z_rate_move
-				 NULL, // Z_rate_move_all
 				 NULL, // coef
 				 NULL, // coef_rate
-				 muList,SigmaList,Z_pKList,
+				 Z_mean_mcmc,Z_var_mcmc,Z_pK_mcmc,
 				 NULL,NULL,
 				 NULL,NULL,
-				 KList};
+				 K_mcmc};
 
   if(model.clusters>0)
     for(i=0;i<model.verts;i++)

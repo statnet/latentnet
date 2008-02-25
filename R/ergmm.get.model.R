@@ -47,18 +47,19 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
     model <- eval(as.call(init.call), attr(terms,".Environment"))
   }
   
+  if(!("Z.var" %in% names(model$prior))) model$prior$Z.var<-model$prior$Z.var.mul*(network.size(model$Yg)/max(1,model$G))^(2/model$d)
+  if(!("Z.mean.var" %in% names(model$prior))) model$prior$Z.mean.var<-model$prior$Z.mean.var.mul*model$prior$Z.var*max(1,model$G)^(2/model$d)
+  if(!("Z.var.df" %in% names(model$prior))) model$prior$Z.var.df<-model$prior$Z.var.df.mul*sqrt(network.size(model$Yg)/max(1,model$G))
+  if(!("Z.pK" %in% names(model$prior))) model$prior$Z.pK<-model$prior$Z.pK.mul*sqrt(network.size(model$Yg)/max(1,model$G))
+  
+  if(prior$adjust.beta.var) model$prior$beta.var<-model$prior$beta.var/sapply(1:model$p,function(i) mean((model$X[[i]][observed.dyads(model$Yg)])^2))
+  
   for(name in names(prior)){
     model$prior[[name]]<-prior[[name]]
   }
 
   prior<-model$prior
   model$prior<-NULL
-
-  if(!("Z.var" %in% names(prior))) prior$Z.var<-prior$Z.var.mul*(network.size(model$Yg)/max(1,model$G))^(2/model$d)
-  if(!("Z.mean.var" %in% names(prior))) prior$Z.mean.var<-prior$Z.mean.var.mul*prior$Z.var*max(1,model$G)^(2/model$d)
-  if(!("Z.var.df" %in% names(prior))) prior$Z.var.df<-prior$Z.var.df.mul*sqrt(network.size(model$Yg)/max(1,model$G))
-  if(!("Z.pK" %in% names(prior))) prior$Z.pK<-prior$Z.pK.mul*sqrt(network.size(model$Yg)/max(1,model$G))
-  if(prior$adjust.beta.var) prior$beta.var<-prior$beta.var/sapply(1:model$p,function(i) mean((model$X[[i]][observed.dyads(model$Yg)])^2))
   
   class(model)<-"ergmm.model"  
   list(model=model,prior=prior)

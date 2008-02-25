@@ -5,15 +5,15 @@ ERGMM.PAR_VAR_NAMES<-c("beta","Z","sender","receiver","sociality",
                        "sender.var","receiver.var","sociality.var")
 ERGMM.PAR_LLK_NAMES<-c("beta","Z","sender","receiver","sociality")
 
-del.iteration<-function(mcmcsamples,i){
-  for(name in names(mcmcsamples)){
-    if(length(mcmcsamples[[name]])>0){
-      if(length(dim(mcmcsamples[[name]]))<=1) mcmcsamples[[name]]<-mcmcsamples[[name]][-i]
-      else if(length(dim(mcmcsamples[[name]]))==2) mcmcsamples[[name]]<-mcmcsamples[[name]][-i,,drop=FALSE]
-      else if(length(dim(mcmcsamples[[name]]))==3) mcmcsamples[[name]]<-mcmcsamples[[name]][-i,,,drop=FALSE]
+del.iteration<-function(mcmcsample,i){
+  for(name in names(mcmcsample)){
+    if(length(mcmcsample[[name]])>0){
+      if(length(dim(mcmcsample[[name]]))<=1) mcmcsample[[name]]<-mcmcsample[[name]][-i]
+      else if(length(dim(mcmcsample[[name]]))==2) mcmcsample[[name]]<-mcmcsample[[name]][-i,,drop=FALSE]
+      else if(length(dim(mcmcsample[[name]]))==3) mcmcsample[[name]]<-mcmcsample[[name]][-i,,,drop=FALSE]
     }
   }
-  mcmcsamples
+  mcmcsample
 }
 
 seldrop<-function(x,i){
@@ -56,7 +56,7 @@ length.ergmm.par.list<-function(x){
   ## Delete its class, to keep it from recursing.
   tmp<-class(x)
   class(x)<-NULL
-  if(class(i)=="character"){ ## If the index is a character, return all the samples for the corresponding variable.
+  if(class(i)=="character"){ ## If the index is a character, return all the draws for the corresponding variable.
     xi<-x[i][[1]]
     class(x)<-tmp
     return(xi)
@@ -86,19 +86,19 @@ length.ergmm.par.list<-function(x){
 stack.ergmm.par.list.list<-function(x,...){
   extraneous.argcheck(...)
   require(abind)
-  mcmcsamples<-list()
+  mcmcsample<-list()
 
   for(name in names(x[[1]]))
-    mcmcsamples[[name]]<-abind(sapply(1:length(x),
+    mcmcsample[[name]]<-abind(sapply(1:length(x),
                                       function(i) x[[i]][[name]],
                                       simplify=FALSE),along=1)
 
-  attr(mcmcsamples,"breaks")<-cumsum(c(sapply(1:(length(x)
+  attr(mcmcsample,"breaks")<-cumsum(c(sapply(1:(length(x)
                                                  ),
                                               function(i) length(x[[i]]),
                                               simplify=FALSE)))
-  class(mcmcsamples)<-"ergmm.par.list"
-  mcmcsamples
+  class(mcmcsample)<-"ergmm.par.list"
+  mcmcsample
 }
 
 unstack.ergmm.par.list<-function(x,...){

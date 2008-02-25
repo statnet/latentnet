@@ -12,9 +12,9 @@ predict.ergmm<-function(object,...,type="post"){
   }else if(type=="pmode"){
     type<-object$pmode
   }else if(type=="post"){
-    return(with(object,post.predict.C(model,samples,control)))
+    return(with(object,post.predict.C(model,sample,control)))
   }else if(is.numeric(type) && round(type)==type){
-    type<-object$samples[[type]]
+    type<-object$sample[[type]]
   }else stop("Invalid parameter structure.")
 
   ergmm.EY(object$model,type,NA.unobserved=FALSE)

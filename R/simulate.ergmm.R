@@ -11,8 +11,8 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
   
   l<-list()
   for(i in 1:nsim){
-    iter<-floor(runif(1,1,object$control$samplesize+1))
-    l[[i]]<-sim.1.ergmm(object$model,object$samples[[iter]],object$prior)
+    iter<-floor(runif(1,1,object$control$sample.size+1))
+    l[[i]]<-sim.1.ergmm(object$model,object$sample[[iter]],object$prior)
   }
   
   if(!is.null(seed)) .Random.seed<-old.seed

@@ -7,7 +7,7 @@
 
 #include "mvnorm.h"
 
-// pdf of n independent samples from a normal distribution with common variance
+// pdf of n independent draws from a normal distribution with common variance
 double dindnormmu(unsigned int n, double *x, double *mu, double sigma, int give_log){
   unsigned int i;
   double result = give_log ? 0 : 1 ;
@@ -20,7 +20,7 @@ double dindnormmu(unsigned int n, double *x, double *mu, double sigma, int give_
   return(result);
 }
 
-// pdf of n iid samples from a normal distribution with mean 0
+// pdf of n iid draws from a normal distribution with mean 0
 double diidnorm0(unsigned int n, double *x, double sigma, int give_log){
   unsigned int i;
   double result = give_log ? 0 : 1 ;

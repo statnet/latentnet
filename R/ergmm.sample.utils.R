@@ -1,9 +1,9 @@
-proc.Z.mean.C<-function(samples,Z.ref,center=FALSE,verbose=0){
+proc.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]
-  G<-dim(samples$Z.mean)[2]
+  G<-dim(sample$Z.mean)[2]
   if(is.null(G)) G<-0
   d<-dim(Z.ref)[2]
-  S<-dim(samples$Z)[1]
+  S<-dim(sample$Z)[1]
   ## Center Z.ref.
   Z.ref<-scale(Z.ref,scale=FALSE)
 
@@ -13,26 +13,26 @@ proc.Z.mean.C<-function(samples,Z.ref,center=FALSE,verbose=0){
            d=as.integer(d),
            G=as.integer(G),
            Z.ref=as.double(Z.ref),
-           Z=as.double(samples$Z),
-           Z.mean=as.double(samples$Z.mean),
+           Z=as.double(sample$Z),
+           Z.mean=as.double(sample$Z.mean),
            verbose=as.integer(verbose),
            PACKAGE="latentnet")
-  samples$Z<-if(d>0)array(Cret$Z,dim=c(S,n,d))
-  samples$Z.mean<-if(G>0)array(Cret$Z.mean,dim=c(S,G,d))
+  sample$Z<-if(d>0)array(Cret$Z,dim=c(S,n,d))
+  sample$Z.mean<-if(G>0)array(Cret$Z.mean,dim=c(S,G,d))
   
-  samples
+  sample
 }
 
-klswitch.C <- function(Q.start,samples,Z=NULL,maxit=100,verbose=0)
+klswitch.C <- function(Q.start,sample,Z=NULL,maxit=100,verbose=0)
 {
   
   Z.ref<-!is.null(Z)
 
-  n <- if(Z.ref) dim(Z)[1] else dim(samples$Z)[2]
+  n <- if(Z.ref) dim(Z)[1] else dim(sample$Z)[2]
   
-  d <- dim(samples$Z.mean)[3]
-  S <- dim(samples$Z.mean)[1]
-  G <- dim(samples$Z.mean)[2]
+  d <- dim(sample$Z.mean)[3]
+  S <- dim(sample$Z.mean)[1]
+  G <- dim(sample$Z.mean)[2]
 
   if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
   
@@ -42,32 +42,32 @@ klswitch.C <- function(Q.start,samples,Z=NULL,maxit=100,verbose=0)
              n = as.integer(n),
              d = as.integer(d),
              G = as.integer(G),
-             Z = if(Z.ref) as.double(Z) else as.double(samples$Z),
+             Z = if(Z.ref) as.double(Z) else as.double(sample$Z),
              Z.ref=as.integer(Z.ref),
-             Z.mean = as.double(samples$Z.mean),
-             Z.var = as.double(samples$Z.var),
-             Z.K = as.integer(samples$Z.K),
-             Z.pK = as.double(samples$Z.pK),
+             Z.mean = as.double(sample$Z.mean),
+             Z.var = as.double(sample$Z.var),
+             Z.K = as.integer(sample$Z.K),
+             Z.pK = as.double(sample$Z.pK),
              Q = as.double(Q.start),
              verbose=as.integer(verbose),
              PACKAGE="latentnet")
   
-  samples$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))
-  samples$Z.var<-matrix(Cret$Z.var,S,G)
-  samples$Z.K<-matrix(Cret$Z.K,S,n)
-  samples$Z.pK<-matrix(Cret$Z.pK,S,G)
-  attr(samples,"Q")<-array(Cret$Q,dim=c(1,n,G))[1,,]
+  sample$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))
+  sample$Z.var<-matrix(Cret$Z.var,S,G)
+  sample$Z.K<-matrix(Cret$Z.K,S,n)
+  sample$Z.pK<-matrix(Cret$Z.pK,S,G)
+  attr(sample,"Q")<-array(Cret$Q,dim=c(1,n,G))[1,,]
 
-  samples
+  sample
 }
 
 thin.ergmm<-function(x,by){
   if(x$control$threads>1) warning("Multithreaded run output. Stuff might be broken.")
-  S<-x$control$samplesize
+  S<-x$control$sample.size
   s.kept<-seq(from=1,to=S,by=by)
-  x$samples<-x$samples[s.kept]
+  x$sample<-x$sample[s.kept]
   x$control$interval<-x$control$interval*by
-  x$control$samplesize<-length(s.kept)
+  x$control$sample.size<-length(s.kept)
   x
 }
 
@@ -78,7 +78,7 @@ switch.Q.K<-function(K,G,smooth=1/G){
   t(apply(Q,1,function(x) x/sum(x)))
 }
 
-post.predict.C<-function(model,samples,control,MKL=FALSE){
+post.predict.C<-function(model,sample,control,MKL=FALSE){
   n<-network.size(model$Yg)
   d<-model$d
   p<-model$p
@@ -91,7 +91,7 @@ post.predict.C<-function(model,samples,control,MKL=FALSE){
     observed<-NULL
 
   ret<-.C("post_pred_wrapper",
-          S = as.integer(control$samplesize),
+          S = as.integer(control$sample.size),
           
           n = as.integer(n),
           p = as.integer(p),
@@ -104,10 +104,10 @@ post.predict.C<-function(model,samples,control,MKL=FALSE){
           
           X=as.double(unlist(model$X)),
           
-          Z = as.double(samples$Z),
-          beta = as.double(samples$beta), # coef
-          sender = as.double(samples$sender),
-          receiver = as.double(samples$receiver),
+          Z = as.double(sample$Z),
+          beta = as.double(sample$beta), # coef
+          sender = as.double(sample$sender),
+          receiver = as.double(sample$receiver),
           sociality = as.double(model$sociality),
           observed=as.integer(observed),
           
@@ -120,23 +120,23 @@ post.predict.C<-function(model,samples,control,MKL=FALSE){
   EY
 }
 
-post.predict.R<-function(model,samples,control,MKL=FALSE){
+post.predict.R<-function(model,sample,control,MKL=FALSE){
   EY.f<-EY.fs[[model$familyID]]
   EY<-matrix(0,network.size(model$Yg),network.size(model$Yg))
-  for(i in 1:control$samplesize){
-    state<-samples[[i]]
+  for(i in 1:control$sample.size){
+    state<-sample[[i]]
     eta<-ergmm.eta(model,state)
     EY<-EY+EY.f(eta,model$fam.par)
   }
-  EY<-EY/control$samplesize
+  EY<-EY/control$sample.size
 
   if(MKL){
     min.MKL<-NA
     min.dev<-Inf
     model$Ym<-EY
     model$Ym[!observed.dyads(model$Yg)]<-NA
-    for(i in 1:control$samplesize){
-      state<-samples[[i]]
+    for(i in 1:control$sample.size){
+      state<-sample[[i]]
       dev<--ergmm.loglike(model,state,up.to.const=TRUE)
       if(dev<min.dev){
         min.dev<-dev

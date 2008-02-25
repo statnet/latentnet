@@ -23,7 +23,7 @@
  * that would waste (really) enormous amounts of memory.
  */
 
-void ERGMM_MCMC_wrapper(int *samples_stored, 
+void ERGMM_MCMC_wrapper(int *sample_size, 
 			int *interval,
 			   
 			int *n, 
@@ -61,7 +61,6 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 
 			double *Z_mcmc,
 			double *Z_rate_move,
-			double *Z_rate_move_all,
 
 			int *Z_K_mcmc,
 			double *Z_pK_mcmc,
@@ -130,7 +129,7 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 
   /* Since random effects are optional (can be NULL), we have to check before
      dereferincing pointers that deal with them. */
-  ERGMM_MCMC_init(*samples_stored, *interval,
+  ERGMM_MCMC_init(*sample_size, *interval,
 
 		  *n,*p,
 		  d ? *d : 0,
@@ -148,7 +147,7 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 		  Z_mean_prior_var ? *Z_mean_prior_var : 0,
 		  Z_pK_prior ? *Z_pK_prior : 0,
 		  Z_var_prior_df ? *Z_var_prior_df : 0,
-		  Z_mcmc, Z_rate_move, Z_rate_move_all, Z_K_mcmc, Z_pK_mcmc, Z_mean_mcmc, Z_var_mcmc,
+		  Z_mcmc, Z_rate_move, Z_K_mcmc, Z_pK_mcmc, Z_mean_mcmc, Z_var_mcmc,
 
 		  coef_start,
 		  coef_mcmc, coef_rate,    
@@ -174,7 +173,7 @@ void ERGMM_MCMC_wrapper(int *samples_stored,
 }
 
 /* Initializes the MCMC sampler and allocates memory. */
-void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval, 
+void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval, 
 
 		     unsigned int n,
 		     unsigned int p, unsigned int d, unsigned int G,
@@ -191,7 +190,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 		     double *Z_pK_start, double **Z_mean_start, double *Z_var_start, unsigned int *Z_K_start,
 		     double Z_var_prior, double Z_mean_prior_var, double Z_pK_prior,
 		     double Z_var_prior_df,
-		     double *Z_mcmc, double *Z_rate_move, double *Z_rate_move_all, int *K_mcmc,
+		     double *Z_mcmc, double *Z_rate_move, int *K_mcmc,
 		     double *Z_pK_mcmc,
 		     double *Z_mean_mcmc, double *Z_var_mcmc,
 
@@ -238,7 +237,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 				     RE_delta,
 				     group_deltas,
 				     group_prop_size,
-				     samples_stored,interval,
+				     sample_size,interval,
 				     accept_all
   };
 
@@ -308,7 +307,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
   };
   
   ERGMM_MCMC_ROutput outlists = {llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
-				 Z_mcmc, Z_rate_move, Z_rate_move_all,
+				 Z_mcmc, Z_rate_move,
 				 coef_mcmc,coef_rate,
 				 Z_mean_mcmc,Z_var_mcmc,Z_pK_mcmc,
 				 sender_mcmc,sender_var_mcmc,
@@ -340,7 +339,7 @@ void ERGMM_MCMC_init(unsigned int samples_stored, unsigned int interval,
 void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 		     ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_MCMCSettings *setting, ERGMM_MCMC_ROutput *outlists)
 {  
-  unsigned int n_accept_z=0, n_accept_transl_z=0, n_accept_b=0, pos=0;
+  unsigned int n_accept_z=0, n_accept_b=0, pos=0;
   unsigned int iter, total_iters = setting->sample_size*setting->interval;
 
   /* Note that indexing here starts with 1.
@@ -393,12 +392,10 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
       outlists->coef_rate[pos] = (double) ((double)n_accept_b)/((double)setting->interval);
       if(model->latent){
 	outlists->Z_rate_move[pos] = (double) ((double)n_accept_z)/((double)setting->interval*model->verts); 
-	outlists->Z_rate_move_all[pos] = (double) ((double)n_accept_transl_z)/((double)setting->interval); 
       }
 
       n_accept_z=0; 
       n_accept_b=0; 
-      n_accept_transl_z=0;
     }
 
   } // end main MCMC loop
