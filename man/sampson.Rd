@@ -4,8 +4,6 @@
 \docType{data}
 \title{Cumulative network of positive affection within a monastery as a ``network'' object}
 \description{
-%Sampson (1968) collected data on a variety of
-%interpersonal relations among 18 monks. 
 Sampson (1969) recorded
 the social interactions among a group of monks
 while resident as an experimenter on vision, and collected
@@ -20,32 +18,22 @@ is the data on positive affect relations (``liking''), in which each
 monk was asked if they had positive relations to each of the
 other monks.
 
-%The data are a measure reflecting
-%changes in group sentiment over time called ``liking''. It is 
-%gathered at three times: \code{samplk1} to \code{samplk3}.
 The data were gathered at three times to capture changes in group sentiment
 over time.
 They were represent three time points in the period during which a
 new cohort entered the monastery near the end of the study but
 before the major conflict began. 
-%Information about the senior monks was not included.
+
 Each member ranked only his top three choices on ``liking''.
-%A ranking of 3 indicates the highest or first choice and 1 the last choice.
 (Some subjects offered tied ranks for their top four choices).
 A tie from monk A to monk B exists if A
 nominated B as one of his three best friends at that that time point.
-%A tie is present in the data if the receiver was one of
-%his top three most liked monks at that point in time. 
 
 \code{samplike} is the time-aggregated network. 
-%A tie exists in this.network if the receiver was nominated at 
-%one or more of the three time points.
 It is the cumulative tie for ``liking'' over the three
 periods.  For this, a tie from monk A to monk B exists if A
 nominated B as one of his three best friends at any of the
 three time points.
-
-All networks are stored as \code{network} objects.
 
 This data is standard in the social network analysis
 literature, having been modeled by Holland and Leinhardt
@@ -72,9 +60,12 @@ package which is part of the \code{statnet} package.
  positions.}
  American Journal of Sociology, 81(4), 730-780.
 }
-%Wasserman, S. and Faust, K. (1994) \emph{Social Network
-%Analysis: Methods and Applications}, Cambridge University Press,
-%Cambridge, England.  }
+\examples{
+\dontrun{
+data(sampson)
+plot(samplike)
+}
+}
 \keyword{datasets}
 \keyword{cluster}
 \keyword{graphs}
