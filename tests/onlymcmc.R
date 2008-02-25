@@ -11,4 +11,4 @@ print(try(plot(onlymcmc)))
 plot(simulate(onlymcmc))
 with(onlymcmc,simulate(model,par=sample[[1]],prior=prior))
 
-heatmap(predict(monks.fit))
+heatmap(predict(onlymcmc))
