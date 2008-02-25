@@ -23,7 +23,6 @@
   An object of class
   \code{\link[=summary.ergmm.object]{summary.ergmm}}. A print method is available.
 }
-\author{ Pavel N. Krivitsky \email{pavel@stat.washington.edu} }
 \seealso{ \code{\link{ergmm.object}},
   \code{\link{ergmm}}
 }

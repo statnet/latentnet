@@ -33,7 +33,6 @@
   A \code{\link[coda]{mcmc.list}} object with the sample of the
   selected subset of the variables.
 }
-\author{ Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \seealso{ \code{\link{ergmm}},\code{\link[coda]{mcmc}},
   \code{\link[coda]{mcmc.list}}, \code{\link{mcmc.diagnostics.ergmm}} }
 \examples{

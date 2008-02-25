@@ -182,7 +182,6 @@
       \code{g} is directed.}
   }
 }
-\author{Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \seealso{
   \code{\link{ergmm}}
 }

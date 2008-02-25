@@ -59,7 +59,6 @@
   \code{\link{as.mcmc.ergmm}},
   \code{\link{as.mcmc.list.ergmm}}
 }
-\author{Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \keyword{graphs}
 \keyword{regression}
 \keyword{models}
