@@ -1,7 +1,9 @@
 /**********************************************************************/
 /* Routines for memory management similar in functionality to R_alloc */
-/* Used because it's easier to debug things this way.                 */
+/* Used because it's easier to debug memory problems this way.        */
+/* Turned off (using R_alloc instead) unless DEBUG is set.            */
 /**********************************************************************/
+#ifdef DEBUG
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -70,3 +72,4 @@ void P_free_all(){
 PMemNode *P_bookmark(){
   return PMemNodes;
 }
+#endif
