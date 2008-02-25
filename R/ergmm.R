@@ -1,4 +1,4 @@
-ergmm <- function(formula,response=NULL,family="Bernoulli.logit",fam.par=NULL,
+ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
                   control=ergmm.control(),
                   user.start=ergmm.par.blank(),
                   prior=ergmm.prior(),
