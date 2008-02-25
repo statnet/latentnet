@@ -71,7 +71,7 @@ ergmm.EY<-function(model,theta,NA.unobserved=TRUE){
   EY.fs[[model$familyID]](eta,fam.par=model$fam.par)
 }
 
-ergmm.loglike<-function(model,theta,given=ergmm.par.blank(),up.to.const=FALSE){
+ergmm.lpY<-function(model,theta,given=ergmm.par.blank(),up.to.const=FALSE){
   theta<-merge.lists(theta,given)
   Yg<-model$Yg
   Ym<-model$Ym
@@ -82,7 +82,7 @@ ergmm.loglike<-function(model,theta,given=ergmm.par.blank(),up.to.const=FALSE){
   return(sum(lpY))
 }
 
-ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
+ergmm.lpY.grad<-function(model,theta,given=ergmm.par.blank()){
   theta<-merge.lists(theta,given)
   n<-network.size(model$Yg)
   obs<-observed.dyads(model$Yg)
@@ -121,7 +121,7 @@ ergmm.loglike.grad<-function(model,theta,given=ergmm.par.blank()){
   grad
 }
   
-ergmm.loglike.C<-function(model,theta){
+ergmm.lpY.C<-function(model,theta){
   Y <- model$Ym
   n <- network.size(model$Yg)
 
@@ -414,7 +414,7 @@ find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.
 
 ergmm.lp<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV"),up.to.const=FALSE){
 
-  lpY<-if("lpY" %in% opt) ergmm.loglike(model,theta,
+  lpY<-if("lpY" %in% opt) ergmm.lpY(model,theta,
                                         given=given,up.to.const=up.to.const) else 0
   
   lpZ<-if("lpZ" %in% opt) ergmm.lpZ(theta,given=given) else 0
@@ -487,7 +487,7 @@ ergmm.lp.grad<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","l
                                         not.given("Z",theta,given)||
                                         not.given("sender",theta,given)||
                                         not.given("receiver",theta,given)||
-                                        not.given("sociality",theta,given)) ergmm.loglike.grad(model,theta,given=given),
+                                        not.given("sociality",theta,given)) ergmm.lpY.grad(model,theta,given=given),
                   if("lpZ" %in% opt) ergmm.lpZ.grad(theta,given=given),
                   if("lpRE" %in% opt) ergmm.lpRE.grad(theta,given=given),
                   if("lpBeta" %in% opt) ergmm.lpBeta.grad(theta,prior,given=given),

@@ -137,7 +137,7 @@ post.predict.R<-function(model,sample,control,MKL=FALSE){
     model$Ym[!observed.dyads(model$Yg)]<-NA
     for(i in 1:control$sample.size){
       state<-sample[[i]]
-      dev<--ergmm.loglike(model,state,up.to.const=TRUE)
+      dev<--ergmm.lpY(model,state,up.to.const=TRUE)
       if(dev<min.dev){
         min.dev<-dev
         min.MKL<-i
