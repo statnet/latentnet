@@ -65,7 +65,7 @@ package which is part of the \code{statnet} package.
  experimental and case study of relationships,} 
  Unpublished ph.d. dissertation, Department of Sociology, Cornell University.
 }
-\seealso{network, plot.network, ergmm}
+\seealso{network, \code{\link[network]{plot.network}}, \code{\link{ergmm}}}
 \references{
  White, H.C., Boorman, S.A. and Breiger, R.L. (1976).
  \emph{Social structure from multiple networks. I. Blockmodels of roles and

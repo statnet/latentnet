@@ -23,9 +23,11 @@
 \author{ Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \seealso{ \code{\link[=ergmm.object]{ergmm}} }
 \examples{
+\dontrun{
 data(sampson)
-monks.fit<-ergmm(samplike~latent(d=2,G=3))
+monks.fit<-ergmm(samplike~latent(d=2,G=3),tofit="mcmc")
 heatmap(predict(monks.fit))
+}
 }
 \keyword{graphs}
 \keyword{models}

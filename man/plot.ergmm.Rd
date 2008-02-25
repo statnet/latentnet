@@ -107,7 +107,7 @@
 \value{NULL
 
 }
-\seealso{ergmm, network, plot.network, plot, ergmm.add.contours}
+\seealso{\code{\link{ergmm}},\code{\link[=ergmm.object]{ergmm (object)}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
 \dontrun{
 #
@@ -116,30 +116,20 @@
 #
 data(sampson)
 #
-# Get the group labels
+# Using Sampson's Monk data, lets fit a latent clustering random effects model
 #
-samp.labs <- substr(get.vertex.attribute(samplike,"group"),1,1)
-#
-samp.fit <- ergmm(samplike ~ latent(d=2))
+samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
 #
-# Plot the fit
+# Plot the resulting fit.
 #
-plot(samp.fit,label=samp.labs, vertex.col="group")
-#
-# Using Sampson's Monk data, lets fit a latent clustering model
-#
-samp.fit <- ergmm(samplike ~ latent(d=2, G=3))
-#
-# See if we have convergence in the MCMC
-mcmc.diagnostics(samp.fit)
-#
-# Lets look at the goodness of fit:
-#
-plot(samp.fit,label=samp.labs, vertex.col="group")
-plot(samp.fit,pie=TRUE,label=samp.labs)
+plot(samp.fit,labels=TRUE,rand.eff="receiver")
+plot(samp.fit,pie=TRUE,rand.eff="receiver")
+plot(samp.fit,what="pmean",rand.eff="receiver")
+plot(samp.fit,what="cloud",rand.eff="receiver")
+plot(samp.fit,what="density",rand.eff="receiver")
 }
 }
 \keyword{graphs}

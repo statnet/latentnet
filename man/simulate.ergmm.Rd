@@ -47,12 +47,14 @@
   \item{\$formula}{The formula used to generate the sample.}
   \item{\$networks}{A list of the generated networks.}
 }
-\seealso{ergmm, network, print.network}
+\seealso{\code{\link{ergmm}}, \code{ network}, \code{\link[network]{print.network}}}
 \examples{
+\dontrun{
+#
+# Fit a short MCMC run: just the MCMC.
 #
 data(sampson)
 gest <- ergmm(samplike ~ latent(d=2,G=3))
-summary(gest)
 #
 # Draw from the posterior
 #
@@ -61,8 +63,9 @@ plot(g.sim)
 #
 # Draw from the first draw from the posterior
 #
-g.sim <- with(gest,simulate(model,par=samples[[1]],prior=prior))
+g.sim <- with(gest,simulate(model,par=sample[[1]],prior=prior))
 plot(g.sim)
+}
 }
 \keyword{graphs}
 \keyword{models}

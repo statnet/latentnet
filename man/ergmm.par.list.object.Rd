@@ -35,7 +35,7 @@
   first dimension.
 }
 \seealso{
-  \code{\link{ergmm.par}},\code{\link{ergmm}}
+  \code{\link{ergmm.par}}, \code{\link{ergmm}}
 }
 \author{Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \keyword{graphs}

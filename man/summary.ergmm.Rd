@@ -8,7 +8,7 @@
   point estimates and standard errors.
 }
 \usage{
-\method{summary}{ergmm}(object, point.est = c("pmean", "mkl"), quantiles = c(0.025, 0.975), se = TRUE,\dots)
+\method{summary}{ergmm}(object, point.est = c("pmean", "mkl"), quantiles = c(0.025, 0.975), se = FALSE,\dots)
 }
 
 \arguments{
@@ -28,6 +28,11 @@
   \code{\link{ergmm}}
 }
 \examples{
+\dontrun{
+data(sampson)
+samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
+summary(samp.fit)
+}
 }
 \keyword{graphs}
 \keyword{models}
