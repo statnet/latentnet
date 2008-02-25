@@ -96,7 +96,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 
 }
 
-R_INLINE double ERGMM_MCMC_etaij(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par,unsigned int i,unsigned int j){
+/*R_INLINE*/ double ERGMM_MCMC_etaij(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par,unsigned int i,unsigned int j){
   double eta=0;
   unsigned int k;
   if(model->latent) eta-=dvector_dist(par->Z[i],par->Z[j],model->latent);

@@ -167,7 +167,7 @@ int procr_transform(double **Z, double **Z_mean, double **Zo, int n, int d, int 
   return(FOUND);
 }
 
-R_INLINE void ergmm_par_pred(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
+/*R_INLINE*/ void ergmm_par_pred(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
   if(model->dir){
     for(unsigned i=0;i<model->verts;i++)
       for(unsigned j=0;j<model->verts;j++)
@@ -395,7 +395,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 }
 
 // Generate the next permutation using Johnson-Trotter Algorithm.
-R_INLINE int nextperm(unsigned int n, unsigned int *p, unsigned int *dir){
+/*R_INLINE*/ int nextperm(unsigned int n, unsigned int *p, unsigned int *dir){
   unsigned int tmpd;
   unsigned int tmpp=0;
   unsigned int imax=0;
@@ -440,7 +440,7 @@ R_INLINE int nextperm(unsigned int n, unsigned int *p, unsigned int *dir){
 } 
 
 
-R_INLINE void apply_perm(unsigned int *perm, ERGMM_MCMC_Par *to, double **pK, ERGMM_MCMC_Par *tmp, int n, int d, int G){
+/*R_INLINE*/ void apply_perm(unsigned int *perm, ERGMM_MCMC_Par *to, double **pK, ERGMM_MCMC_Par *tmp, int n, int d, int G){
   copy_dmatrix(to->Z_mean,tmp->Z_mean,G,d);
   copy_dvector(to->Z_var,tmp->Z_var,G);
   copy_dvector(to->Z_pK,tmp->Z_pK,G);
