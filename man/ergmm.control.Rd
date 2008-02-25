@@ -80,7 +80,6 @@ ergmm.control(sample.size=4000,
 \value{
   A list with the arguments as components.
 }
-\author{Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \seealso{ \code{\link{ergmm}} }
 \examples{
 \dontrun{

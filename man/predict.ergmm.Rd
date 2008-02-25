@@ -20,7 +20,6 @@
   A sociomatrix of predicted values. Note that predictions are made for
   unobserved values (whether structural zeros or unobserved dyads).
 }
-\author{ Pavel N. Krivitsky \email{pavel@stat.washington.edu}}
 \seealso{ \code{\link[=ergmm.object]{ergmm}} }
 \examples{
 \dontrun{
