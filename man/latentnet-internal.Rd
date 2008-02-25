@@ -116,9 +116,9 @@
 
 \alias{statsreeval.ergmm}
 
-\alias{ergmm.loglike}
-\alias{ergmm.loglike.C}
-\alias{ergmm.loglike.grad}
+\alias{ergmm.lpY}
+\alias{ergmm.lpY.C}
+\alias{ergmm.lpY.grad}
 \alias{ergmm.lp}
 \alias{ergmm.lpBeta}
 \alias{ergmm.lpBeta.grad}
