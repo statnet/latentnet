@@ -120,5 +120,4 @@ mcmc.diagnostics(samp.fit)
 #
 plot(samp.fit)
 }
-}
 \keyword{graphs}
