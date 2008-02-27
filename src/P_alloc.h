@@ -8,7 +8,6 @@
 #define P_free_after(bookmark)
 #endif
 
-#ifdef DEBUG
 struct PMemNode_struct{
   void *data;
   struct PMemNode_struct *next;
@@ -16,6 +15,7 @@ struct PMemNode_struct{
 
 typedef struct PMemNode_struct PMemNode;
 
+#ifdef DEBUG
 void *P_alloc(size_t nmemb, size_t size);
 void P_free_all();
 void P_free_after(PMemNode *bookmark);
