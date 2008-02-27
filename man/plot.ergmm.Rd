@@ -111,7 +111,6 @@
 }
 \seealso{\code{\link{ergmm}},\code{\link[=ergmm.object]{ergmm (object)}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
-\dontrun{
 #
 # Using Sampson's Monk data, lets fit a 
 # simple latent position model
@@ -132,7 +131,6 @@ plot(samp.fit,pie=TRUE,rand.eff="receiver")
 plot(samp.fit,what="pmean",rand.eff="receiver")
 plot(samp.fit,what="cloud",rand.eff="receiver")
 plot(samp.fit,what="density",rand.eff="receiver")
-}
 }
 \keyword{graphs}
 \keyword{hplot}
