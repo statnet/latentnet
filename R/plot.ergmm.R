@@ -243,6 +243,7 @@
       vertex.col <- cluster.col[trycol]
     }
   }
+  vertex.col<-rep(vertex.col,length.out=n)
 
   ## Set vertex sizes to correspond to random effect values.
   if(!is.null(rand.eff) && (rand.eff[1]=="total" || x$model[rand.eff[1]][[1]])){
@@ -253,6 +254,7 @@
     rand.eff.mul<-rand.eff.mul/mean(rand.eff.mul)
     vertex.cex<-vertex.cex*rand.eff.mul
   }
+  vertex.cex<-rep(vertex.cex,length.out=n)
 
   ## Find the bounds of the plotting region.
   xylim<-ergmm.plotting.region(Z.pos,if(plot.means) Z.mean,if(plot.vars) Z.var,!suppress.center,pad)
@@ -297,7 +299,7 @@
     if(!is.null(x$model$response)) xformula<-paste(xformula,"   (",x$model$response,")",sep="")
     title(main = xformula, line = 1, cex.main = 0.7)
   }
-
+  
   ## Plot pie charts.
   if(pie){
     piesize<-rep(ergmm.plotting.vertex.radius(vertex.cex,xylim,object.scale),length=n)
@@ -305,6 +307,12 @@
     for(i in 1:n){
       ergmm.drawpie(Z.pos[pie.order[i],],piesize[pie.order[i]],Z.pZK[pie.order[i],],n=50,cols=cluster.col)
     }
+  }
+
+  ## Mark the events with "bullets" (small circles).
+  if(is.bipartite(Yg)){
+    bip<-Yg %n% "bipartite"
+    points(Z.pos[-(1:bip),],pch=20,cex=vertex.cex[-(1:bip)],col=1)
   }
 
   ## Mark the center.

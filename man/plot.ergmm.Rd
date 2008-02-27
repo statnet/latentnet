@@ -105,10 +105,11 @@
   
   More information can be found by looking at the documentation of
   \code{\link{ergmm}}.
-}
-\value{NULL
 
+  For bipartite networks, the events are marked with a bullet (small
+  black circle) inside the plotting symbol.
 }
+\value{If applicable, invisibly returns the vertex positions plotted.}
 \seealso{\code{\link{ergmm}},\code{\link[=ergmm.object]{ergmm (object)}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
 #

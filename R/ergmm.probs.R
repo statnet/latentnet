@@ -11,13 +11,11 @@ lp.works<-function(name,theta,given){
   not.given(name, theta, given) && all(PRIOR_NAMES[[name]]%in%names(merge.lists(theta,given)))
 }
 
-bipartite.augment<-function(m,actors){
-  if(is.null(actors) || actors==FALSE) m
-  else{
-    events<-dim(m)[1]-actors
-    rbind(cbind(matrix(NA,actors,actors),m),
-                 cbind(t(m),matrix(NA,events,events)))
-  }
+bipartite.augment<-function(m){
+  actors<-dim(m)[1]
+  events<-dim(m)[2]
+  rbind(matrix(NA,actors,actors+events),
+        cbind(t(m),matrix(NA,events,events)))
 }
 
 getYm<-function(Yg,response=NULL){
@@ -29,13 +27,14 @@ getYm<-function(Yg,response=NULL){
       else as.matrix.network(Yg, response, matrix.type="adjacency")
     }
 
-  m[!observed.dyads(Yg)]<-NA
-  
   ## If bipartite, augment into a matrix of the form
   ##  N    m
   ## t(m)  N
   ## where N is a matrix of NAs of appropriate dimension.
-  bipartite.augment(m,get.network.attribute(Yg,"bipartite"))
+  if(is.bipartite(Yg)) m<-bipartite.augment(m)
+
+  m[!observed.dyads(Yg)]<-NA
+  m
 }
 
 ergmm.eta<-function(model,theta){
@@ -184,17 +183,19 @@ ergmm.lpY.C<-function(model,theta){
 
 observed.dyads<-function(Yg){
   observed.dyads<-get.network.attribute(Yg,"design")
-  if(is.null(observed.dyads))
-    observed.dyads<-matrix(TRUE,network.size(Yg),network.size(Yg))
+  if(is.null(observed.dyads)){
+    if(!is.bipartite(Yg))
+      observed.dyads<-matrix(TRUE,network.size(Yg),network.size(Yg))
+    else
+      observed.dyads<-bipartite.augment(!is.na(as.matrix.network(Yg,matrix.type="adjacency")))
+  }
   else{
-    observed.dyads<-bipartite.augment(as.matrix.network(observed.dyads,matrix.type="adjacency")==0,get.network.attribute(Yg,"bipartite"))
-    observed.dyads[is.na(observed.dyads)]<-FALSE
+    observed.dyads<-bipartite.augment(as.matrix.network(observed.dyads,matrix.type="adjacency")==0)
   }
-  
-  if(!is.bipartite(Yg)){
-    if(!is.directed(Yg)) observed.dyads[upper.tri(observed.dyads)]<-FALSE
-    if(!has.loops(Yg)) diag(observed.dyads)<-FALSE
-  }
+
+  observed.dyads[is.na(observed.dyads)]<-FALSE
+  if(!is.directed(Yg)) observed.dyads[upper.tri(observed.dyads)]<-FALSE
+  if(!is.bipartite(Yg) && !has.loops(Yg)) diag(observed.dyads)<-FALSE
   
   observed.dyads
 }
