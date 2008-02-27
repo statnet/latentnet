@@ -61,10 +61,8 @@ package which is part of the \code{statnet} package.
  American Journal of Sociology, 81(4), 730-780.
 }
 \examples{
-\dontrun{
 data(sampson)
 plot(samplike)
-}
 }
 \keyword{datasets}
 \keyword{cluster}
