@@ -3,7 +3,6 @@
 /* Used because it's easier to debug memory problems this way.        */
 /* Turned off (using R_alloc instead) unless DEBUG is set.            */
 /**********************************************************************/
-#ifdef DEBUG
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -12,18 +11,15 @@
 
 PMemNode *PMemNodes=NULL;
 #ifdef DEBUG
-R_INLINE void P_print_alloc(){
+/*R_INLINE*/ void P_print_alloc(){
   printf("%p",PMemNodes);
   if(PMemNodes) printf("(%p)",PMemNodes->data);
 }
-#endif /* DEBUG */
 
 void *P_alloc(size_t nmemb, size_t size){
-#ifdef DEBUG
   printf("P_alloc: ");
   P_print_alloc();
   printf(" -%uB-> ", nmemb*size);
-#endif /* DEBUG */
 
   PMemNode *memnode=(PMemNode *)calloc(1,sizeof(PMemNode));
   if(!memnode) return NULL;
@@ -36,32 +32,25 @@ void *P_alloc(size_t nmemb, size_t size){
   memnode->next=PMemNodes;
   PMemNodes=memnode;
 
-#ifdef DEBUG
   P_print_alloc();
   printf("\n");
-#endif /* DEBUG */
   return memnode->data;
 }
 
-R_INLINE void P_free_after(PMemNode *bookmark){
+/*R_INLINE*/ void P_free_after(PMemNode *bookmark){
   while(PMemNodes!=bookmark && PMemNodes){
 
-#ifdef DEBUG
     printf("P_free: ");
     P_print_alloc();
-#endif /* DEBUG */
 
     free(PMemNodes->data);
     PMemNode *temp=PMemNodes;
     PMemNodes=PMemNodes->next;
     free(temp);
 
-#ifdef DEBUG
     printf(" --> ");
     P_print_alloc();
     printf("\n");
-#endif /* DEBUG */
-
   }
 }
 
@@ -72,4 +61,5 @@ void P_free_all(){
 PMemNode *P_bookmark(){
   return PMemNodes;
 }
-#endif
+
+#endif /*DEBUG*/
