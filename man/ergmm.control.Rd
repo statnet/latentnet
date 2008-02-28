@@ -8,21 +8,21 @@
 }
 \usage{
 ergmm.control(sample.size=4000,
-                        burnin=10000,
-                        interval=10,
-                        threads=1,
-                        mle.maxit=100,
-                        Z.delta=0.6,
-                        RE.delta=0.6,
-                        group.deltas=0.4,
-                        pilot.runs=4,
-                        pilot.factor=0.8,
-                        pilot.discard.first=0.5,
-                        target.acc.rate=0.234,
-                        backoff.threshold=0.05,
-                        backoff.factor=0.1,
-                        accept.all=FALSE,
-                        store.burnin=FALSE)
+              burnin=10000,
+              interval=10,
+              threads=1,
+              mle.maxit=100,
+              Z.delta=0.6,
+              RE.delta=0.6,
+              group.deltas=0.4,
+              pilot.runs=4,
+              pilot.factor=0.8,
+              pilot.discard.first=0.5,
+              target.acc.rate=0.234,
+              backoff.threshold=0.05,
+              backoff.factor=0.1,
+              accept.all=FALSE,
+              store.burnin=FALSE)
 }
 \arguments{
   \item{sample.size}{The number of draws to be taken from the posterior distribution.}
