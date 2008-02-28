@@ -144,7 +144,7 @@ ergmm.lpY.C<-function(model,theta){
   if(length(theta$beta)!=model$p) stop("Incorrect length for the beta vector.")
 
   if(!is.null(theta$sociality)){
-    if(length(theta$sender)!=n) stop("Incorrect length for the vector of sociality effects.")
+    if(length(theta$sociality)!=n) stop("Incorrect length for the vector of sociality effects.")
   }
   if(!is.null(theta$sender)){
     if(length(theta$sender)!=n) stop("Incorrect length for the vector of sender effects.")

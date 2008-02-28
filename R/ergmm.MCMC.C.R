@@ -29,8 +29,8 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
   ## Figure out the design matrix.
   observed<-observed.dyads(model$Yg)
   
-  if((observed==(diag(n)==0) && is.directed(model$Yg)) ||
-     (observed==lower.tri(diag(n)) && !is.directed(model$Yg)))
+  if((all(observed==(diag(n)==0)) && is.directed(model$Yg)) ||
+     (all(observed==lower.tri(diag(n))) && !is.directed(model$Yg)))
     observed<-NULL
 
   ## Sanity checks: the following block of code checks that all dimensionalities and
