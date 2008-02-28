@@ -24,7 +24,7 @@
 \examples{
 data(sampson)
 monks.fit<-ergmm(samplike~latent(d=2,G=3),tofit="mcmc")
-heatmap(predict(monks.fit))
+heatmap(predict(monks.fit),Rowv=NA,Colv=NA)
 }
 \keyword{graphs}
 \keyword{models}

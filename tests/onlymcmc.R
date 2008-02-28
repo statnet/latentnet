@@ -11,4 +11,4 @@ print(try(plot(onlymcmc)))
 plot(simulate(onlymcmc))
 plot(with(onlymcmc,simulate(model,par=sample[[1]],prior=prior)))
 
-heatmap(predict(onlymcmc))
+heatmap(predict(onlymcmc),Rowv=NA,Colv=NA)

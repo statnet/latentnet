@@ -24,7 +24,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
     x.ac<-autocorr(x,lag=0:1)
     for(chain in seq(along=x.ac)){
       cat(paste("Chain",chain,"\n"))
-      didnt.mix<-colnames(x.ac[[chain]][2,,])[which(is.nan(x.ac[[chain]][2,,]))]
+      didnt.mix<-colnames(x.ac[[chain]][2,,])[which(is.nan(diag(x.ac[[chain]][2,,])))]
       if(any(is.nan(diag(x.ac[[chain]][2,,]))))
         cat(paste("WARNING: Variables",
                   paste(didnt.mix,collapse=", "),
@@ -47,7 +47,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
   if("raftery" %in% which.diags){
     rd<-try(raftery.diag(x,r=0.0125))
     if(inherits(rd,"try-error")){
-      cat("Raftery-Lewis diagnostic failed, likely due to some of the vairables not mixing at all.\n MCMC should be rerun.")
+      cat("Raftery-Lewis diagnostic failed, likely due to some of the vairables not mixing at all.\n MCMC should be rerun.\n")
       return(invisible(NULL))
     }
     print(rd)
