@@ -42,8 +42,6 @@ void MBC_MCMC_wrapper(int *sample_size,
   GetRNGstate();
   
   
-  /* Since random effects are optional (can be NULL), we have to check before
-     dereferincing pointers that deal with them. */
   MBC_MCMC_init(*sample_size, *interval,
 		
 		*n, *d, *G,

@@ -223,8 +223,8 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
 }
 
 /* updates coef, scale of Z, and shifts the random effects; also translates Z */
-unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,
-						  ERGMM_MCMC_MCMCSettings *setting){
+unsigned int ERGMM_MCMC_coef_up_scl_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,
+					       ERGMM_MCMC_MCMCSettings *setting){
   double acc_adjust=0;
   ERGMM_MCMC_Par *par=cur->prop;
   
