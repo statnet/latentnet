@@ -2,15 +2,14 @@
 \alias{latentnet}
 \title{Latent position and cluster models for networks}
 \description{
-  The package \code{latentnet} is used to fit latent cluster random effect
+  The package \code{latentnet} is used to fit latent cluster 
   models, where the probability of a network \eqn{g},
   on a set of nodes is a product of dyad probabilities, each of which is
   a GLM with linear component
-  \eqn{\eta_{i,j}=\sum_{k=1}^p \beta_k X_{i,j,k}+||Z_i-Z_j||+\delta_i+\gamma_j},
+  \eqn{\eta_{i,j}=\sum_{k=1}^p \beta_k X_{i,j,k}+||Z_i-Z_j||},
   where \eqn{X} is an array of dyad covariates, \eqn{\beta} is a vector
-  of covariate coefficients, \eqn{Z_i} is the latent space position of
-  node \eqn{i}, and \eqn{\delta} and \eqn{\gamma} are vectors of sender
-  and receiver effects.
+  of covariate coefficients and \eqn{Z_i} is the latent space position of
+  node \eqn{i}.
 
   The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>}
   where \code{g} is a \code{network} object

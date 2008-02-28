@@ -2,16 +2,10 @@ ergmm.initvals <- function(model,user.start,prior,control){
   if(control$verbose) cat("Generating initial values for MCMC:\n")
   need.to.fit<-list(beta=model$p>0 && is.null(user.start$beta), ## beta
                     Z=model$d>0 && is.null(user.start$Z), ## Z
-                    sender=model$sender && is.null(user.start$sender), ## sender
-                    receiver=model$receiver && is.null(user.start$receiver), ## receiver
-                    sociality=model$sociality && is.null(user.start$sociality),  ## sociality
                     Z.var=model$d>0 && is.null(user.start$Z.var),
                     Z.mean=model$G>0 && is.null(user.start$Z.mean),
                     Z.K=model$G>0 && is.null(user.start$Z.K),
-                    Z.pK=model$G>0 && is.null(user.start$pZ.K),
-                    sender.var=model$sender && is.null(user.start$sender.var), ## sender
-                    receiver.var=model$receiver && is.null(user.start$receiver.var), ## receiver
-                    sociality.var=model$sociality && is.null(user.start$sociality.var)
+                    Z.pK=model$G>0 && is.null(user.start$pZ.K)
                     )
 
   Yg<- model$Yg
@@ -74,32 +68,6 @@ ergmm.initvals <- function(model,user.start,prior,control){
 
   bayes.prop<-function(x) (sum(x,na.rm=TRUE)+1)/(length(na.omit(x))+2)
   
-  if(need.to.fit$sociality){
-    pm$sociality<-logit((apply(Ym01,1,bayes.prop)+apply(Ym01,2,bayes.prop))/2)
-    pm$sociality<-pm$sociality-mean(pm$sociality)
-  } else{
-    if(need.to.fit$sender){
-      pm$sender<-logit(apply(Ym01,1,bayes.prop))
-      pm$sender<-pm$sender-mean(pm$sender)
-    }
-    if(need.to.fit$receiver){
-      pm$receiver<-logit(apply(Ym01,2,bayes.prop))
-      pm$receiver<-pm$receiver-mean(pm$receiver)
-    }
-  }
-
-  if(need.to.fit$sociality.var){
-    pm$sociality.var<-var(pm$sociality)
-  }
-
-  if(need.to.fit$sender.var){
-    pm$sender.var<-var(pm$sender)
-  }
-
-  if(need.to.fit$receiver.var){
-    pm$receiver.var<-var(pm$receiver)
-  }
-
   if(control$verbose) cat("Finished.\n")
   
   if(control$verbose) cat("Finding the conditional posterior mode... ")

@@ -83,11 +83,6 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
   \emph{Model-Based Clustering for Social Networks.} Journal of the Royal
   Statistical Society: Series A, 2007, Vol. 170, Iss. 2; pp. 301-354.
   
-  Pavel N. Krivitsky, Mark S. Handcock, Adrian E. Raftery, and Peter
-  D. Hoff. \emph{Representing Degree Distributions, Clustering, and
-  Homophily in Social Networks With Latent Cluster Random Effects
-  Models.} Center for Statistics and Social Sciences Working Paper
-  no. 77, Aug 2007. 
 }
 \examples{
 
@@ -109,9 +104,9 @@ mcmc.diagnostics(samp.fit)
 #
 plot(samp.fit)
 #
-# Using Sampson's Monk data, lets fit a latent clustering random effects model
+# Using Sampson's Monk data, lets fit a latent clustering model.
 #
-samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
+samp.fit <- ergmm(samplike ~ latent(d=2, G=3))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)

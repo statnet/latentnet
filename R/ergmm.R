@@ -78,9 +78,8 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
           }
 
           backoff<-FALSE
-          if((model$d || model$sender || model$receiver || model$sociality) && mean(burnin.sample$Z.rate)<burnin.control$backoff.threshold) {
+          if((model$d) && mean(burnin.sample$Z.rate)<burnin.control$backoff.threshold) {
             burnin.control$Z.delta<-burnin.control$Z.delta*burnin.control$backoff.factor
-            burnin.control$RE.delta<-burnin.control$RE.delta*burnin.control$backoff.factor
             backoff<-TRUE
           }
           if(mean(burnin.sample$beta.rate)<burnin.control$backoff.threshold) {

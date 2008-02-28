@@ -76,24 +76,6 @@ sim.1.ergmm<-function(model,par,prior=list()){
                             ),nrow=nv)
   }
 
-  if(model$sociality && is.null(mypar$sociality)){
-    if(is.null(mypar$sociality.var))
-      mypar$sociality.var<-with(prior,sociality.var*sociality.var.df/rchisq(1,sociality.var.df))
-    model$sociality<-rnorm(nv,0,sqrt(mypar$sociality.var))
-  }
-
-  if(model$sender && is.null(mypar$sender)){
-    if(is.null(mypar$sender.var))
-      mypar$sender.var<-with(prior,sender.var*sender.var.df/rchisq(1,sender.var.df))
-    mypar$sender<-rnorm(nv,0,sqrt(mypar$sender.var))
-  }
-  
-  if(model$receiver && is.null(mypar$receiver)){
-    if(is.null(mypar$receiver.var))
-      mypar$receiver.var<-with(prior,receiver.var*receiver.var.df/rchisq(1,receiver.var.df))
-    mypar$receiver<-rnorm(nv,0,sqrt(mypar$receiver.var))
-  }
-
   eta<-ergmm.eta(model,mypar)
 
   sm<-rsm.fs[[model$familyID]](eta,model$fam.par)

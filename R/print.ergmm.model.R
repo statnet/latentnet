@@ -14,7 +14,4 @@ print.ergmm.model<-function(x,...){
       cat(" in",x$G,"clusters\n")
     }else cat("\n")
   }
-  if(x$sender) cat("- random sender effects\n")
-  if(x$receiver) cat("- random receiver effects\n")
-  if(x$sociality) cat("- random sociality effects\n")
 }

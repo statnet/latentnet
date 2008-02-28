@@ -68,9 +68,6 @@ as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
   as.mcmc.list.ergmm.par.list(if(burnin) x$burnin.samples[[burnin]] else x$sample,
                               if(is.null(which.vars)) list(llk=1,
                                                            beta=1:p,
-                                                           Z=cbind(rep(vertex.i,each=d),rep(1:d,length(vertex.i))),
-                                                           sender=vertex.i,
-                                                           receiver=vertex.i,
-                                                           sociality=vertex.i) else which.vars,
+                                                           Z=cbind(rep(vertex.i,each=d),rep(1:d,length(vertex.i)))) else which.vars,
                               start,thin)
 }

@@ -8,7 +8,6 @@
                           edge.col=8,
                           pie = FALSE,
                           labels=FALSE,
-                          rand.eff=NULL,
                           plot.means=TRUE,plot.vars=TRUE,
                           suppress.axes=FALSE,
                           jitter1D=1,curve1D=TRUE,suppress.center=FALSE,
@@ -245,15 +244,6 @@
   }
   vertex.col<-rep(vertex.col,length.out=n)
 
-  ## Set vertex sizes to correspond to random effect values.
-  if(!is.null(rand.eff) && (rand.eff[1]=="total" || x$model[rand.eff[1]][[1]])){
-    if(rand.eff=="total")
-      rand.eff.mul<-exp((summ["sender"][[1]]+summ["receiver"][[1]])/2)
-    else      
-      rand.eff.mul<-exp(summ[rand.eff][[1]]/2)
-    rand.eff.mul<-rand.eff.mul/mean(rand.eff.mul)
-    vertex.cex<-vertex.cex*rand.eff.mul
-  }
   vertex.cex<-rep(vertex.cex,length.out=n)
 
   ## Find the bounds of the plotting region.

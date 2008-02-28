@@ -20,8 +20,6 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
       stop("MLE was not computed for this fit.")
     }
     if(is.null(object$mle$cov)){
-      if(model$sender || model$receiver || model$sociality)
-        warning("Fitting random effects as fixed effects.")
       if(se){
         ## Refit the MLE (mostly for the Hessian)
         mle<-find.mle(model,object$mle,control=control,hessian=TRUE)
@@ -54,37 +52,13 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
         colnames(coef.table)<-c("Estimate",if(se) "Std. Error",if(se) "z value",if(se) "Pr(>|z|)")
         mle$coef.table<-coef.table
       }
-      mle$llk.bic<- -2*mle$llk + (p+n*d + (model$sender + model$receiver + model$sociality)*n )*log(sum(network.size(model$Yg)))
+      mle$llk.bic<- -2*mle$llk + (p+n*d)*log(sum(network.size(model$Yg)))
       if(G>0){
         mle<-c(mle,find.clusters(G,mle$Z))
         mle$mbc.bic<- -bic(if(d==1) "V" else "VII",mle$mbc.llk,n,d,G)
         mle$bic<-mle$llk.bic+mle$mbc.bic
       }
       else mle$bic<-mle$llk.bic
-
-      if(model$sender){
-        if(model$intercept){
-          mle$beta[1]<-mle$beta[1]-mean(mle$sender)
-          mle$sender<-mle$sender-mean(mle$sender)
-        }
-        mle$sender.var<-mean(mle$sender^2)
-      }
-        
-      if(model$receiver){
-        if(model$intercept){
-          mle$beta[1]<-mle$beta[1]-mean(mle$receiver)
-          mle$receiver<-mle$receiver-mean(mle$receiver)
-        }
-        mle$receiver.var<-mean(mle$receiver^2)
-      }
-
-      if(model$sociality){
-        if(model$intercept){
-          mle$beta[1]<-mle$beta[1]-mean(mle$sociality)
-          mle$sociality<-mle$sociality-mean(mle$sociality)
-        }
-        mle$sociality.var<-mean(mle$sociality^2)
-      }
 
       object$mle<-mle
     }
@@ -178,12 +152,6 @@ print.summary.ergmm<-function(x,...){
     cat("Covariate coefficients posterior means:\n")
     print(x$pmean$coef.table)
     cat("\n")
-    if(!is.null(x$pmean$sender.var))
-      cat("Sender effect variance: ",x$pmean$sender.var,".\n", sep="")
-    if(!is.null(x$pmean$receiver.var))
-      cat("Receiver effect variance: ",x$pmean$receiver.var,".\n", sep="")
-    if(!is.null(x$pmean$sociality.var))
-      cat("Sociality effect variance: ",x$pmean$sociality.var,".\n", sep="")
   }
 
   if(!is.null(x$mle)){

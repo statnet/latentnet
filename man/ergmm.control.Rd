@@ -8,21 +8,20 @@
 }
 \usage{
 ergmm.control(sample.size=4000,
-                        burnin=10000,
-                        interval=10,
-                        threads=1,
-                        mle.maxit=100,
-                        Z.delta=0.6,
-                        RE.delta=0.6,
-                        group.deltas=0.4,
-                        pilot.runs=4,
-                        pilot.factor=0.8,
-                        pilot.discard.first=0.5,
-                        target.acc.rate=0.234,
-                        backoff.threshold=0.05,
-                        backoff.factor=0.1,
-                        accept.all=FALSE,
-                        store.burnin=FALSE)
+              burnin=10000,
+              interval=10,
+              threads=1,
+              mle.maxit=100,
+              Z.delta=0.6,
+              group.deltas=0.4,
+              pilot.runs=4,
+              pilot.factor=0.8,
+              pilot.discard.first=0.5,
+              target.acc.rate=0.234,
+              backoff.threshold=0.05,
+              backoff.factor=0.1,
+              accept.all=FALSE,
+              store.burnin=FALSE)
 }
 \arguments{
   \item{sample.size}{The number of draws to be taken from the posterior distribution.}
@@ -38,13 +37,10 @@ ergmm.control(sample.size=4000,
     starting values, posterior modes, MLEs, MKL estimates, etc..}
   \item{Z.delta}{Standard deviation of the proposal for the jump in the
     individual latent space position, or its starting value for the tuner.}
-  \item{RE.delta}{Standard deviation of the proposal for the jump in the
-    individual random effects values, or its starting value for the
-    tuner.}
   \item{group.deltas}{A scalar, a vector, or a matrix of an
     appropriate size, giving the initial proposal structure for the
-    ``group proposal'' of a jump in covariate coefficients, scaling of
-    latent space positions, and a shift in random ffects. If a matrix of
+    ``group proposal'' of a jump in covariate coefficients and scaling of
+    latent space positions. If a matrix of
     an appropriate size is given, it is used as a matrix of coefficients
     for a correlated proposal. If a vector is given, an independent
     proposal is used with the corresponding elements being proposal
@@ -54,7 +50,7 @@ ergmm.control(sample.size=4000,
     sampling be used.}
   \item{pilot.runs}{Number of pilot runs into which to split the
     burn-in period. After each pilot run, the proposal standard
-    deviations and coefficients \code{Z.delta}, \code{RE.delta}, and
+    deviations and coefficients \code{Z.delta} and
     \code{group.deltas} are reevaluated. If set to \code{0}, disables
     adaptive sampling, and only makes a single burn-in run.}
   \item{pilot.factor}{Initial value for the factor by which the
@@ -84,7 +80,7 @@ ergmm.control(sample.size=4000,
 \examples{
 data(sampson)
 ## Shorter run than default.
-samp.fit<-ergmm(samplike~latent(d=2,G=3)+rreceiver,
+samp.fit<-ergmm(samplike~latent(d=2,G=3),
 control=ergmm.control(burnin=1000,sample.size= 2000,interval=5))
 }
 \keyword{graphs}
