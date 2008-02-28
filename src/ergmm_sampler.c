@@ -102,7 +102,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 
   /* The joint proposal coefficient matrix is square with side
      + covariate coefficients  : p
-     + latent space            : d +1
+     + latent space            : 1
      + sender                  : 1
      + receiver (no sociality) : 1
   */
@@ -126,9 +126,6 @@ void ERGMM_MCMC_wrapper(int *sample_size,
   /* R function enabling uniform RNG */
   GetRNGstate();
  
-
-  /* Since random effects are optional (can be NULL), we have to check before
-     dereferincing pointers that deal with them. */
   ERGMM_MCMC_init(*sample_size, *interval,
 
 		  *n,*p,
@@ -363,7 +360,7 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
     /* Update coef given this new value of Z and conditioned on everything else.
        Also propose to scale Z and shift random effects.
     */
-    if( ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(model,prior,cur,setting) ){
+    if( ERGMM_MCMC_coef_up_scl_Z_shift_RE(model,prior,cur,setting) ){
       n_accept_b++;
     }
 

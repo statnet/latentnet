@@ -11,7 +11,7 @@ void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsi
 #define ERGMM_MCMC_reject(model,cur) ERGMM_MCMC_prop_end(model,cur,cur->state,cur->prop, FALSE)
 void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Par *new, ERGMM_MCMC_Par *old, unsigned int copy_lpedge);
 unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,ERGMM_MCMC_MCMCSettings *setting);
-unsigned int ERGMM_MCMC_coef_up_scl_tr_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,ERGMM_MCMC_MCMCSettings *setting);
+unsigned int ERGMM_MCMC_coef_up_scl_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur,ERGMM_MCMC_MCMCSettings *setting);
 void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur);
 void ERGMM_MCMC_LV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur);
 void ERGMM_MCMC_REV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_MCMC_MCMCState *cur);
