@@ -20,3 +20,8 @@ plot(with(samp.fit,simulate(model,par=sample[[1]],prior=prior)))
 data(tribes)
 tribes.fit<-ergmm(tribes~latent(d=2,G=3),response="sign.012",family="binomial",fam.par=list(trials=2))
 plot(tribes.fit,edge.col=as.matrix(tribes,"gama",m="a")*3+as.matrix(tribes,"rova",m="a")*2,pie=TRUE)
+
+data(davis)
+davis.fit<-ergmm(davis~latent(d=2,G=2))
+mcmc.diagnostics(davis.fit)
+plot(davis.fit,pie=TRUE)
