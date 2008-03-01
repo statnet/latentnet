@@ -29,12 +29,25 @@ get.init.deltas<-function(model, control){
 }
 
 get.sample.deltas<-function(model,sample,control){
-  use.draws<-ceiling(length(sample)*control$pilot.discard.first):length(sample)
-  if(model$d) control$Z.delta<-control$Z.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
-  if(model$sender || model$receiver || model$sociality) control$RE.delta<-control$RE.delta*mean(sample$Z.rate[use.draws])/control$target.acc.rate
+  ## Convert the "stacked" list of draws into a list of threads:
+  samples<-if(control$threads>1) unstack.ergmm.par.list(sample) else list(sample)
+
+  Z.rate<-0
+  beta.rate<-0
+  cov.beta.ext<-0
   
-  control$pilot.factor<-control$pilot.factor*mean(sample$beta.rate[use.draws])/control$target.acc.rate
-  cov.beta.ext<-cov.beta.ext(model,sample[use.draws])
+  for(thread in 1:control$threads){
+    sample<-samples[[thread]]
+    use.draws<-ceiling(length(sample)*control$pilot.discard.first):(length(sample))
+    Z.rate<-Z.rate+mean(sample$Z.rate[use.draws])/control$threads
+    beta.rate<-beta.rate+mean(sample$beta.rate[use.draws])/control$threads
+    ## Note that this only measures the covariances _within_ the thread.
+    cov.beta.ext<-cov.beta.ext+cov.beta.ext(model,sample[use.draws])/control$threads
+  }
+
+  if(model$d) control$Z.delta<-control$Z.delta*Z.rate/control$target.acc.rate
+  if(model$sender || model$receiver || model$sociality) control$RE.delta<-control$RE.delta*Z.rate/control$target.acc.rate
+  control$pilot.factor<-control$pilot.factor*beta.rate/control$target.acc.rate
   
   ## Take the Choletsky decomposition of the empirical covariance matrix.
   control$group.deltas<-try(chol(cov.beta.ext)*control$pilot.factor)
