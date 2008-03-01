@@ -83,6 +83,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
           }
           if(mean(burnin.sample$beta.rate)<burnin.control$backoff.threshold) {
             burnin.control$group.deltas<-burnin.control$group.deltas*burnin.control$backoff.factor
+            burnin.control$pilot.factor<-burnin.control$pilot.factor*burnin.control$backoff.factor
             backoff<-TRUE
           }
           if(backoff){
