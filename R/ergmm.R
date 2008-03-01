@@ -60,7 +60,6 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
             burnin.sample<-ergmm.MCMC.C(model,burnin.state,prior,burnin.control,
                                         sample.size=burnin.size)$sample
             burnin.state<-burnin.sample[[burnin.size]]
-            if(control$store.burnin) burnin.samples[[pilot.run]]<-burnin.sample
           }else{
             ## Burn in multiple threads.
             burnin.sample<-ergmm.MCMC.snowFT(burnin.control$threads,burnin.control$threads,
@@ -73,10 +72,9 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
                                  function(thread) burnin.sample[[thread]][[burnin.size]],
                                  simplify=FALSE)
             burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
-            if(control$store.burnin) burnin.samples[[pilot.run]]<-burnin.sample
-            
           }
-
+          if(control$store.burnin) burnin.samples[[length(burnin.samples)+1]]<-burnin.sample
+            
           backoff<-FALSE
           if((model$d || model$sender || model$receiver || model$sociality) && mean(burnin.sample$Z.rate)<burnin.control$backoff.threshold) {
             burnin.control$Z.delta<-burnin.control$Z.delta*burnin.control$backoff.factor
