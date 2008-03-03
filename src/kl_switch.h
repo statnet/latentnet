@@ -8,9 +8,9 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 		      double *vQ,
 		      int *verbose);
 
-void klswitch_step1(ERGMM_MCMC_Par *sample, int S, int n, int d, int G, double **Q, double ***pK);
+void klswitch_step1(ERGMM_MCMC_Par *sample, int S, int n, int G, double **Q, double ***pK);
 int klswitch_step2(double **Q, ERGMM_MCMC_Par *sample, ERGMM_MCMC_Par *tmp, 
-		   int S, int n, int d, int G,
+		   unsigned int S, unsigned int n, unsigned int d, unsigned int G,
 		   unsigned int *perm, unsigned int *bestperm, unsigned int *dir,
 		   double ***pK);
 #endif

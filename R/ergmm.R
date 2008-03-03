@@ -11,7 +11,12 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
   control$verbose<-verbose
   control$tofit<-ergmm.tofit.resolve(tofit)
   
-  if(control$threads>1) require(snowFT)
+  if(control$threads>1||control$kl.threads>1){
+    with(control,
+         if(sample.size%%threads || (burnin/interval)%%threads)
+         stop("Please make the MCMC sample size and the ratio burnin/interval a multiple of the number of threads."))
+    require(snowFT)
+  }
   
   
   ## If the random seed has been specified, save the old seed, to

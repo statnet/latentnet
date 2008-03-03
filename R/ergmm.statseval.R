@@ -84,7 +84,12 @@ add.mkl.mbc.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
   }else Z<-x$mkl$Z
 
   if(x$control$verbose) cat("Fitting MBC conditional on MKL locations... ")
-  x$mkl$mbc<-bayesmbc(x$model$G,Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
+  x$mkl$mbc <- {
+    if(x$control$kl.threads==1)
+      bayesmbc(x$model$G,Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
+    else
+      bayesmbc.snowFT(x$control$kl.threads,x$model$G,Z,x$prior,Z.K.ref,verbose=x$control$verbose)$pmean
+  }
   if(x$control$verbose) cat("Finished.\n")
   x
 }
@@ -203,7 +208,12 @@ labelswitch.sample.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
     if(x$control$verbose) cat("Performing label-switching... ")
     require(mclust,quiet=TRUE)
     Q.start<-switch.Q.K(Z.K.ref,x$model$G)
-    x$sample<-klswitch.C(Q.start,x$sample,verbose=x$control$verbose)
+    x$sample <- {
+      if(x$control$kl.threads==1)
+        klswitch.C(Q.start,x$sample,verbose=x$control$verbose)
+      else
+        klswitch.snowFT(x$control$kl.threads,Q.start,x$sample,verbose=x$control$verbose)
+    }
     if(x$control$verbose) cat("Finished.\n")
   }
   x
