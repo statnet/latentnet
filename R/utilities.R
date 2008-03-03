@@ -25,3 +25,14 @@ extraneous.argcheck<-function(...){
   if(length(list(...)))stop("Extraneous arguments passed: ",
                             paste(list(...)))
 }
+
+
+thin.ergmm<-function(x,by){
+  if(x$control$threads>1) warning("Multithreaded run output. Stuff might be broken.")
+  S<-x$control$sample.size
+  s.kept<-seq(from=1,to=S,by=by)
+  x$sample<-x$sample[s.kept]
+  x$control$interval<-x$control$interval*by
+  x$control$sample.size<-length(s.kept)
+  x
+}
