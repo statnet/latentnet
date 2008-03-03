@@ -202,6 +202,28 @@ void Rpack_dmatrixs(double **A, unsigned int n, unsigned int m, double *to, unsi
       to[(i+n*j)*sample_size] = A[i][j];
 }
 
+void Rpack_d3array(double ***A, unsigned int n1, unsigned int n2, unsigned int n3, double *to){
+  for(unsigned int i1=0; i1<n1; i1++){
+    for(unsigned int i2=0; i2<n2; i2++){
+      for(unsigned int i3=0; i3<n3; i3++){
+	to[i1+(i2+i3*n2)*n1]=A[i1][i2][i3];
+      }
+    }    
+  }
+}
+
+double ***Runpack_d3array(double *vA, unsigned int n1, unsigned int n2, unsigned int n3, double ***A){
+  if(!A) A=d3array(n1,n2,n3);
+  for(unsigned int i1=0; i1<n1; i1++){
+    for(unsigned int i2=0; i2<n2; i2++){
+      for(unsigned int i3=0; i3<n3; i3++){
+	A[i1][i2][i3]=vA[i1+(i2+i3*n2)*n1];
+      }
+    }    
+  }
+  return(A);
+}
+
 /* Serializes a dvector into an array for returning to R.
    Note that the "top" offset needs to already be applied to "to".
  */
@@ -219,8 +241,6 @@ void Rpack_ivectors(int *a, unsigned int n, int *to, unsigned int sample_size){
   for(i=0;i<n;i++)
     to[sample_size*i]=a[i];
 }
-
-// free_* functions were here. I have switched to R's garbage collection, so they are not needed.
 
 /* prints to file stream*/
 void print_dvector(double *a, unsigned int n, FILE *stream) {

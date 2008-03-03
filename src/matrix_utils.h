@@ -17,6 +17,8 @@ double **Runpack_dmatrixs(double *vA, unsigned int n, unsigned int m, double **A
 
 int **Runpack_imatrix(int *vA, unsigned int n, unsigned int m, int **Aspace);
 void Rpack_dmatrixs(double **A, unsigned int n, unsigned int m, double *to, unsigned int sample_size);
+void Rpack_d3array(double ***A, unsigned int n1, unsigned int n2, unsigned int n3, double *to);
+double *** Runpack_d3array(double *vA, unsigned int n1, unsigned int n2, unsigned int n3, double ***A);
 void Rpack_dvectors(double *a, unsigned int n, double *to, unsigned int sample_size);
 void Rpack_ivectors(int *a, unsigned int n, int *to, unsigned int sample_size);
 

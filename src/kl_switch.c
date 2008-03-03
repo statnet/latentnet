@@ -8,6 +8,62 @@
 #include "matrix_utils.h"
 #include "mvnorm.h"
 
+ERGMM_MCMC_Par *klswitch_unpack(unsigned int S, unsigned int n, unsigned int d, unsigned int G,
+				double *vZ_mcmc, unsigned int Z_ref, double *vZ_mean_mcmc, double *vZ_var_mcmc,
+				int *vZ_K_mcmc, double *vZ_pK_mcmc, unsigned int verbose){
+  if(verbose>2) Rprintf("KLswitch: Allocating memory.\n");
+  ERGMM_MCMC_Par *sample = (ERGMM_MCMC_Par *) P_alloc(S,sizeof(ERGMM_MCMC_Par));
+  double ***Z_space=Z_ref ? d3array(1,n,d):d3array(S,n,d),
+    ***Z_mean_space=d3array(S,G,d), **Z_var_space=dmatrix(S,G),
+    **Z_pK_space = dmatrix(S, G);
+  unsigned int **Z_K_space= (unsigned int **) imatrix(S,n);
+
+  if(Z_ref) Runpack_dmatrix(vZ_mcmc, n, d, Z_space[0]);
+
+  for(unsigned int s=0; s<S; s++){
+    ERGMM_MCMC_Par *cur=sample+s;
+    if(Z_ref) cur->Z = Z_space[0];
+    else cur->Z = Runpack_dmatrixs(vZ_mcmc+s,n,d,Z_space[s],S);
+    cur->Z_mean = Runpack_dmatrixs(vZ_mean_mcmc+s,G,d,Z_mean_space[s],S);
+    cur->Z_var = Runpack_dvectors(vZ_var_mcmc+s,G,Z_var_space[s],S);
+    cur->Z_pK = Runpack_dvectors(vZ_pK_mcmc+s,G,Z_pK_space[s],S);
+    cur->Z_K = Runpack_ivectors(vZ_K_mcmc+s,n,Z_K_space[s],S);
+
+    if(verbose>2 && (s+1)%(S/(verbose))==0) Rprintf("KLswitch: Unpacking: Completed %u/%d.\n",s+1,S);
+  }
+
+  return(sample);
+}
+
+double ***klswitch_precalc_pK(unsigned int S, unsigned int n, unsigned int d, unsigned int G,
+			      ERGMM_MCMC_Par *sample, unsigned int verbose){
+  double ***pK=d3array(S,n,G);
+  for(unsigned int s=0; s<S; s++){
+    ERGMM_MCMC_Par *cur=sample+s;
+
+    /* Precalculate p(K|Z,mu,sigma).
+       This is a speed-memory trade-off:
+       we allocate approx. S*n*G*8 bytes so that we don't have to do
+       O(it*S*n*G*G!) (!=factorial) evaluations of MVN density.
+     */
+
+    for(unsigned int i=0; i<n; i++){
+      double pKsum=0;
+      for(unsigned int g=0; g<G; g++){
+	pK[s][i][g]=dindnormmu(d,cur->Z[i],
+			       cur->Z_mean[g],sqrt(cur->Z_var[g]),FALSE);
+	pK[s][i][g]*=cur->Z_pK[g];
+	pKsum+=pK[s][i][g];
+      }
+      for(unsigned int g=0; g<G; g++){
+	pK[s][i][g]/=pKsum;
+      }
+    }
+    if(verbose>2 && (s+1)%(S/(verbose))==0) Rprintf("KLswitch: Precalculating: Completed %u/%d.\n",s+1,S);
+  }
+  return(pK);
+}
+
 void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 		      double *vZ_mcmc, int *Z_ref, double *vZ_mean_mcmc, double *vZ_var_mcmc,
 		      int *vZ_K_mcmc, double *vZ_pK_mcmc,
@@ -18,7 +74,6 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   
 
   if(*verbose>1) Rprintf("KLswitch: Allocating memory.\n");
-  ERGMM_MCMC_Par *sample = (ERGMM_MCMC_Par *) P_alloc(*S,sizeof(ERGMM_MCMC_Par));
   unsigned int *perm=(unsigned int *)P_alloc(*G,sizeof(unsigned int)), *bestperm=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
   unsigned int *dir=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
   double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);
@@ -29,45 +84,12 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   tmp.Z_pK=dvector(*G);
   tmp.Z_K=ivector(*n);
 
-  double  ***pK=d3array(*S,*n,*G), 
-    ***Z_space=*Z_ref ? d3array(1,*n,*d):d3array(*S,*n,*d),
-    ***Z_mean_space=d3array(*S,*G,*d), **Z_var_space=dmatrix(*S,*G),
-    **Z_pK_space = dmatrix(*S, *G);
-  unsigned int **Z_K_space= (unsigned int **) imatrix(*S,*n);
-
-  if(*Z_ref) Runpack_dmatrix(vZ_mcmc, *n, *d, Z_space[0]);
-
   if(*verbose>1) Rprintf("KLswitch: Unpacking R input and precalculating pK.\n");
-
-  for(unsigned int s=0; s<*S; s++){
-    ERGMM_MCMC_Par *cur=sample+s;
-    if(*Z_ref) cur->Z = Z_space[0];
-    else cur->Z = Runpack_dmatrixs(vZ_mcmc+s,*n,*d,Z_space[s],*S);
-    cur->Z_mean = Runpack_dmatrixs(vZ_mean_mcmc+s,*G,*d,Z_mean_space[s],*S);
-    cur->Z_var = Runpack_dvectors(vZ_var_mcmc+s,*G,Z_var_space[s],*S);
-    cur->Z_pK = Runpack_dvectors(vZ_pK_mcmc+s,*G,Z_pK_space[s],*S);
-    cur->Z_K = Runpack_ivectors(vZ_K_mcmc+s,*n,Z_K_space[s],*S);
-
-    /* Precalculate p(K|Z,mu,sigma).
-       This is a speed-memory trade-off:
-       we allocate approx. S*n*G*8 bytes so that we don't have to do
-       O(it*S*n*G*G!) (!=factorial) evaluations of MVN density.
-     */
-
-    for(unsigned int i=0; i<*n; i++){
-      double pKsum=0;
-      for(unsigned int g=0; g<*G; g++){
-	pK[s][i][g]=dindnormmu(*d,cur->Z[i],
-			       cur->Z_mean[g],sqrt(cur->Z_var[g]),FALSE);
-	pK[s][i][g]*=cur->Z_pK[g];
-	pKsum+=pK[s][i][g];
-      }
-      for(unsigned int g=0; g<*G; g++){
-	pK[s][i][g]/=pKsum;
-      }
-    }
-    if(*verbose>2 && (s+1)%(*S/(*verbose))==0) Rprintf("KLswitch: Unpacking & precalculating: Completed %u/%d.\n",s+1,*S);
-  }
+  ERGMM_MCMC_Par *sample = klswitch_unpack(*S,*n,*d,*G,
+					   vZ_mcmc, *Z_ref, vZ_mean_mcmc, vZ_var_mcmc,
+					   vZ_K_mcmc, vZ_pK_mcmc,
+					   *verbose);
+  double ***pK = klswitch_precalc_pK(*S,*n,*d,*G,sample,*verbose);
 
   if(*verbose>1) Rprintf("KLswitch: Iterating between label-switching to Q and recalculating Q.\n");
 
@@ -82,7 +104,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
       if(*verbose>1) Rprintf("KLswitch: Iterating: Q converged after %u iterations.\n", it+1);
       break;
     }
-    klswitch_step1(sample, *S, *n, *d, *G, Q, pK);
+    klswitch_step1(sample, *S, *n, *G, Q, pK);
 
 
     if(*verbose>2) Rprintf("KLswitch: Iterating: Completed %u/%d.\n",it+1,*maxit);
@@ -179,7 +201,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 }
 
 // "Step 1": evaluate new Q.
-void klswitch_step1(ERGMM_MCMC_Par *sample, int S, int n, int d, int G, double **Q, double ***pK){
+void klswitch_step1(ERGMM_MCMC_Par *sample, int S, int n, int G, double **Q, double ***pK){
   for(unsigned int i=0; i<n; i++){
     for(unsigned int g=0; g<G; g++){ 
       Q[i][g]=0;
@@ -191,38 +213,73 @@ void klswitch_step1(ERGMM_MCMC_Par *sample, int S, int n, int d, int G, double *
   }
 }
 
+int klswitch_bestperm(double **Q, int n, int G,
+		      unsigned int *perm, unsigned int *bestperm, unsigned int *dir,
+		      double **pK){
+  int changed=FALSE;
+  for(unsigned int g=0;g<G;g++){
+    perm[g]=g+1;
+    dir[g]=0;
+  }
+  double bestkld=-1;
+  do{
+    double kld=0;
+    for(unsigned int i=0; i<n; i++){
+      for(unsigned int g=0; g<G; g++){
+	kld+=pK[i][perm[g]-1]*log(pK[i][perm[g]-1]/Q[i][g]);
+      }
+    }
+    if(bestkld<-0.5 || kld<bestkld){// Random tiebreaker==bad... || (kld==bestkld && unif_rand()<0.5)){
+      if(bestkld>=-0.5) changed=TRUE;
+      memcpy(bestperm,perm,G*sizeof(unsigned int));
+      bestkld=kld;
+    }
+  }while(nextperm(G,perm,dir));
+  return(changed);
+}
 
 // "Step 2": labelswitch to Q.
 int klswitch_step2(double **Q, ERGMM_MCMC_Par *sample, ERGMM_MCMC_Par *tmp, 
-		   int S, int n, int d, int G,
+		   unsigned int S, unsigned int n, unsigned int d, unsigned int G,
 		   unsigned int *perm, unsigned int *bestperm, unsigned int *dir,
 		   double ***pK){
   int changed=FALSE;
   for(unsigned int s=0; s<S;s++){
     ERGMM_MCMC_Par *cur=sample+s;
-    for(unsigned int g=0;g<G;g++){
-      perm[g]=g+1;
-      dir[g]=0;
+    if(klswitch_bestperm(Q,n,G,perm,bestperm,dir,pK[s])){
+      changed=TRUE;
+      // Now that we have our best permutation...
+      apply_perm(bestperm,cur,pK[s],tmp,n,d,G);
     }
-    double bestkld=-1;
-    do{
-      double kld=0;
-      for(unsigned int i=0; i<n; i++){
-	for(unsigned int g=0; g<G; g++){
-	  kld+=pK[s][i][perm[g]-1]*log(pK[s][i][perm[g]-1]/Q[i][g]);
-	}
-      }
-      if(bestkld<-0.5 || kld<bestkld){// Random tiebreaker==bad... || (kld==bestkld && unif_rand()<0.5)){
-	if(bestkld>=-0.5) changed=TRUE;
-	memcpy(bestperm,perm,G*sizeof(unsigned int));
-	bestkld=kld;
-      }
-    }while(nextperm(G,perm,dir));
-
-    // Now that we have our best permutation...
-
-    apply_perm(bestperm,cur,pK[s],tmp,n,d,G);
     R_CheckUserInterrupt();
   }
   return changed;
 }
+
+void klswitch_step2_wrapper(int *S, int *n, int *G, double *vQ, double *vpK, int *vbestperms){
+  unsigned int *perm=(unsigned int *)P_alloc(*G,sizeof(unsigned int)), *bestperm=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
+  unsigned int *dir=(unsigned int *)P_alloc(*G,sizeof(unsigned int));
+  double **Q=Runpack_dmatrix(vQ,*n,*G,NULL);
+  double ***pK = Runpack_d3array(vpK,*S,*n,*G,NULL);
+  for(unsigned int s=0; s<*S; s++){
+    if(klswitch_bestperm(Q, *n, *G, perm, bestperm, dir,pK[s])){
+      Rpack_ivectors(bestperm, *G, vbestperms+s, *S);
+    } // Otherwise, that row of vbestperms is set to all zeros.
+  }
+}
+
+
+void klswitch_pK_wrapper(int *S, int *n, int *d, int *G,
+			 double *vZ_mcmc, int *Z_ref, double *vZ_mean_mcmc, double *vZ_var_mcmc,
+			 int *vZ_K_mcmc, double *vZ_pK_mcmc,
+			 int *verbose, double *vpK){
+  if(*verbose>1) Rprintf("KLswitch: Unpacking R input and precalculating pK.\n");
+  ERGMM_MCMC_Par *sample = klswitch_unpack(*S,*n,*d,*G,
+					   vZ_mcmc, *Z_ref, vZ_mean_mcmc, vZ_var_mcmc,
+					   vZ_K_mcmc, vZ_pK_mcmc,
+					   *verbose);
+  double ***pK = klswitch_precalc_pK(*S,*n,*d,*G,sample,*verbose);
+
+  Rpack_d3array(pK,*S,*n,*G,vpK);
+}
+
