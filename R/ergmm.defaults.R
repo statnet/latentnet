@@ -19,7 +19,8 @@ ergmm.control<-function(sample.size=4000,
                         backoff.threshold=0.05,
                         backoff.factor=0.1,
                         accept.all=FALSE,
-                        store.burnin=FALSE){
+                        store.burnin=FALSE,
+                        refine.user.start=TRUE){
   control<-list()
   for(arg in names(formals(sys.function())))
     control[[arg]]<-get(arg)

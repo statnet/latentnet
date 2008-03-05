@@ -103,6 +103,20 @@ ergmm.initvals <- function(model,user.start,prior,control){
   if(control$verbose) cat("Finished.\n")
   
   if(control$verbose) cat("Finding the conditional posterior mode... ")
+  if(control$refine.user.start)
+    need.to.fit<-list(beta=model$p>0, ## beta
+                      Z=model$d>0, ## Z
+                      sender=model$sender, ## sender
+                      receiver=model$receiver, ## receiver
+                      sociality=model$sociality,  ## sociality
+                      Z.var=model$d>0,
+                      Z.mean=model$G>0,
+                      Z.K=model$G>0,
+                      Z.pK=model$G>0,
+                      sender.var=model$sender, ## sender
+                      receiver.var=model$receiver, ## receiver
+                      sociality.var=model$sociality
+                      )
   for(i in 1:control$mle.maxit){
     if(control$verbose>1) cat(i,"")
     pm.old<-pm
