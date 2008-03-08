@@ -54,8 +54,9 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
       for(pilot.run in 1:control$pilot.runs){
         if(burnin.control$verbose>1) cat(pilot.run,"")
         ## Set up a loop such that if a pilot run is catastrophically
-        ## bad (only accepts a very tiny fraction of proposals), the
-        ## proposals are "backed off" and the pilot run is redone.
+        ## bad (only accepts or rejects a very tiny fraction of
+        ## proposals), the proposals are "backed off" and the pilot
+        ## run is redone.
         backoff<-TRUE
         while(backoff){
           burnin.controls[[length(burnin.controls)+1]]<-burnin.control
@@ -79,23 +80,9 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
             burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
           }
           if(control$store.burnin) burnin.samples[[length(burnin.samples)+1]]<-burnin.sample
-            
-          backoff<-FALSE
-          if((model$d || model$sender || model$receiver || model$sociality) && mean(burnin.sample$Z.rate)<burnin.control$backoff.threshold) {
-            burnin.control$Z.delta<-burnin.control$Z.delta*burnin.control$backoff.factor
-            burnin.control$RE.delta<-burnin.control$RE.delta*burnin.control$backoff.factor
-            backoff<-TRUE
-          }
-          if(mean(burnin.sample$beta.rate)<burnin.control$backoff.threshold) {
-            burnin.control$group.deltas<-burnin.control$group.deltas*burnin.control$backoff.factor
-            burnin.control$pilot.factor<-burnin.control$pilot.factor*burnin.control$backoff.factor
-            backoff<-TRUE
-          }
-          if(backoff){
-            backoff.str<-"Pilot run had catastrophically low acceptance rates, and will be redone with smaller proposal variances. If you see this message several times in a row, it may be due to an unknown bug or a posterior distribution the algorithm cannot properly explore. Either way, please report it."
-            if(burnin.control$verbose) cat(paste(backoff.str,"\n",sep=""))
-            else warning(backoff.str)
-          }
+
+          burnin.control<-backoff.check(model,burnin.sample,burnin.control)
+          backoff<-burnin.control$backedoff
         }
         
         if(control$pilot.runs) burnin.control<-get.sample.deltas(model, burnin.sample, burnin.control)

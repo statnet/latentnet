@@ -66,3 +66,40 @@ cov.beta.ext<-function(model,sample){
                   if(model$sociality) apply(sample$sociality,1,mean)) # sociality eff.
   cov(beta.ext)
 }
+
+backoff.check<-function(model,sample,control){
+  bt <-control$backoff.threshold
+  if(bt>0.5) bt<-1-bt
+  
+  backoff<-FALSE
+  if((model$d || model$sender || model$receiver || model$sociality)){
+    if(mean(sample$Z.rate < bt)){
+      control$Z.delta<-control$Z.delta*control$backoff.factor
+      control$RE.delta<-control$RE.delta*control$backoff.factor
+      backoff<-TRUE
+    }
+    if(mean(sample$Z.rate > 1-bt)){
+      control$Z.delta<-control$Z.delta/control$backoff.factor
+      control$RE.delta<-control$RE.delta/control$backoff.factor
+      backoff<-TRUE
+    }
+  }
+  
+  if(mean(sample$beta.rate) < bt) {
+    control$group.deltas<-control$group.deltas*control$backoff.factor
+    control$pilot.factor<-control$pilot.factor*control$backoff.factor
+    backoff<-TRUE
+  }
+  if(mean(sample$beta.rate) > 1-bt) {
+    control$group.deltas<-control$group.deltas/control$backoff.factor
+    control$pilot.factor<-control$pilot.factor/control$backoff.factor
+    backoff<-TRUE
+  }
+  if(backoff){
+    backoff.str<-"Pilot run had catastrophically low (high) acceptance rates, and will be redone with smaller (bigger) proposal variances. If you see this message several times in a row, it may be due to an unknown bug or a posterior distribution the algorithm cannot properly explore. Either way, please report it."
+    if(control$verbose) cat(paste(backoff.str,"\n",sep=""))
+    else warning(backoff.str)
+  }
+  control$backedoff<-backoff
+  control
+}
