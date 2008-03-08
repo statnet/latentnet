@@ -71,32 +71,32 @@ backoff.check<-function(model,sample,control){
   bt <-control$backoff.threshold
   if(bt>0.5) bt<-1-bt
   
-  backoff<-FALSE
+  backoff<-0
   if((model$d || model$sender || model$receiver || model$sociality)){
     if(mean(sample$Z.rate < bt)){
       control$Z.delta<-control$Z.delta*control$backoff.factor
       control$RE.delta<-control$RE.delta*control$backoff.factor
-      backoff<-TRUE
+      backoff<--1
     }
     if(mean(sample$Z.rate > 1-bt)){
       control$Z.delta<-control$Z.delta/control$backoff.factor
       control$RE.delta<-control$RE.delta/control$backoff.factor
-      backoff<-TRUE
+      backoff<-+1
     }
   }
   
   if(mean(sample$beta.rate) < bt) {
     control$group.deltas<-control$group.deltas*control$backoff.factor
     control$pilot.factor<-control$pilot.factor*control$backoff.factor
-    backoff<-TRUE
+    backoff<--1
   }
   if(mean(sample$beta.rate) > 1-bt) {
     control$group.deltas<-control$group.deltas/control$backoff.factor
     control$pilot.factor<-control$pilot.factor/control$backoff.factor
-    backoff<-TRUE
+    backoff<-+1
   }
   if(backoff){
-    backoff.str<-"Pilot run had catastrophically low (high) acceptance rates, and will be redone with smaller (bigger) proposal variances. If you see this message several times in a row, it may be due to an unknown bug or a posterior distribution the algorithm cannot properly explore. Either way, please report it."
+    backoff.str<-paste("Pilot run had catastrophically",if(backoff<0) "low" else "high", "acceptance rates, and will be redone with",if(backoff<0) "smaller" else "bigger", "proposal variances. If you see this message several times in a row, it may be due to an unknown bug or a posterior distribution the algorithm cannot properly explore. Either way, please report it.",sep=" ")
     if(control$verbose) cat(paste(backoff.str,"\n",sep=""))
     else warning(backoff.str)
   }
