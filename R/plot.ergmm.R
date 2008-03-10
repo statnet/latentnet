@@ -1,4 +1,4 @@
-"plot.ergmm" <- function (x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
+plot.ergmm <- function (x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
                           what="mkl",
                           main = NULL, xlab=NULL, ylab=NULL, xlim=NULL,ylim=NULL,
                           object.scale=formals(plot.network.default)$object.scale,
@@ -221,6 +221,7 @@
   ## Transform coordinates for dimensions other than 2.
   if(d==1){    
     Z.pos<-coords.1D(Z.pos,curve1D,jitter1D)
+    Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
     if(curve1D){
       distances<-as.matrix(dist(Z.pos))
       distances<-distances/max(distances)
@@ -229,6 +230,7 @@
     ## Plot the first two principal components.
     prc<-prcomp(Z.pos)
     Z.pos<-predict(prc,Z.pos)[,1:2]
+    Z.mean<-predict(prc,Z.mean)[,1:2]
   }
 
   ## Set default vertex color.
@@ -319,11 +321,6 @@
   if(!suppress.center)
     points(cbind(0,0),pch="+")
   Z.mean<-if(G>0)Z.mean else cbind(0,0)
-  if(x$model$d==1)
-    Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
-  else if(x$model$d>2){
-    Z.mean<-predict(prc,Z.mean)
-  }
 
   ## Mark the cluster means.
   if(plot.means)
