@@ -1,5 +1,5 @@
 if(!exists("gof", mode="function")){
-  gof <- function(object, ...){
+  gof <- function(object, ...)
     UseMethod("gof")
 }
 
