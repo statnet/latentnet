@@ -1,5 +1,6 @@
-gof <- function(object, ...){
- UseMethod("gof")
+if(!exists("gof", mode="function")){
+  gof <- function(object, ...){
+    UseMethod("gof")
 }
 
 gof.ergmm <- function (object, ..., nsim=100,
