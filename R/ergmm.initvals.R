@@ -103,7 +103,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   if(control$verbose) cat("Finished.\n")
   
   if(control$verbose) cat("Finding the conditional posterior mode... ")
-  if(control$refine.user.start)
+  if(control$refine.user.start){
     need.to.fit<-list(beta=model$p>0, ## beta
                       Z=model$d>0, ## Z
                       sender=model$sender, ## sender
@@ -117,11 +117,13 @@ ergmm.initvals <- function(model,user.start,prior,control){
                       receiver.var=model$receiver, ## receiver
                       sociality.var=model$sociality
                       )
+    user.start<-ergmm.par.blank()
+  }
   for(i in 1:control$mle.maxit){
     if(control$verbose>1) cat(i,"")
     pm.old<-pm
     pm<-find.mpe(model,pm,
-                 given=if(control$refine.user.start) as.ergmm.par.list(list(Z.K=pm$Z.K)) else merge.lists(as.ergmm.par.list(list(Z.K=pm$Z.K)),user.start),
+                 given=merge.lists(as.ergmm.par.list(list(Z.K=pm$Z.K)),user.start),
                  prior=prior,control=control,fit.vars=need.to.fit)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit$Z.K)pm$Z.K<-find.clusters(G,pm$Z)$Z.K
