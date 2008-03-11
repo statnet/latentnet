@@ -41,7 +41,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if("Z" %in% names(pm)) {
     i.keep<-mahalanobis(pm$Z,0,cov(pm$Z))<20
-    pm$Z[!i.keep,]<-0
+    if(need.to.fit$Z) pm$Z[!i.keep,]<-0
   }
 
   if(need.to.fit$Z.K){
