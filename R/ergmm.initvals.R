@@ -121,7 +121,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
     if(control$verbose>1) cat(i,"")
     pm.old<-pm
     pm<-find.mpe(model,pm,
-                 given=if(control$refine.user.start) as.ergmm.par.list(list(Z.K=pm$Z.K) else  merge.lists(as.ergmm.par.list(list(Z.K=pm$Z.K)),user.start),
+                 given=if(control$refine.user.start) as.ergmm.par.list(list(Z.K=pm$Z.K)) else merge.lists(as.ergmm.par.list(list(Z.K=pm$Z.K)),user.start),
                  prior=prior,control=control,fit.vars=need.to.fit)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit$Z.K)pm$Z.K<-find.clusters(G,pm$Z)$Z.K
