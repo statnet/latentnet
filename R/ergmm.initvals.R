@@ -69,7 +69,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   if(need.to.fit$beta){
     if(model$intercept)
       pm$beta<-logit(mean(Ym01,na.rm=TRUE))+if(!is.null(pm$Z))mean(as.matrix(dist(pm$Z))) else 0
-    pm$beta<-c(pm$beta,rep(0,p-model$intercept))
+    pm$beta<-c(pm$beta,if(model$intercept) prior$beta.mean[-1] else prior$beta.mean)
   }
 
   bayes.prop<-function(x) (sum(x,na.rm=TRUE)+1)/(length(na.omit(x))+2)
