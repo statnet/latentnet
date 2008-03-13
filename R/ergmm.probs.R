@@ -101,12 +101,13 @@ ergmm.lpY.grad<-function(model,theta,given=ergmm.par.blank()){
     Z.invdist<-1/Z.invdist
 
     grad$Z<-matrix(0,n,d)
-    for(k in 1:d)
+    for(k in 1:d){
       Z.normdiff.k<-sapply(1:n,function(j)
                            sapply(1:n,function(i)
                                   theta$Z[i,k]-theta$Z[j,k]))*Z.invdist
-    grad$Z[,k]<-grad$Z[,k]+
-      -sapply(1:n,function(i) crossprod(Z.normdiff.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
+      grad$Z[,k]<-grad$Z[,k]+
+        -sapply(1:n,function(i) crossprod(Z.normdiff.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
+    }
   }
 
   if(not.given("sociality",theta,given))
@@ -500,6 +501,7 @@ ergmm.lp.grad<-function(model,theta,prior,given=ergmm.par.blank(),opt=c("lpY","l
 ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=ergmm.par.blank(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
   which.vars$Z.K<-FALSE
   which.vars<-reg.fit.vars(which.vars)
+  for(var in names(which.vars)) if(!(var %in% names(theta))) which.vars[[var]]<-FALSE
 
   v<-pack.optim(theta,which.vars)
   dlpdv<-numeric(length(v))
