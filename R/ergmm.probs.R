@@ -102,12 +102,11 @@ ergmm.lpY.grad<-function(model,theta,given=ergmm.par.blank()){
 
     grad$Z<-matrix(0,n,d)
     for(k in 1:d)
-      for(i in 1:n)
-        for(j in 1:n)
-          if(obs[i,j]){
-            grad$Z[i,k]<-grad$Z[i,k]+-(theta$Z[i,k]-theta$Z[j,k])*Z.invdist[i,j]*dlpY.deta[i,j]
-            grad$Z[j,k]<-grad$Z[j,k]+-(theta$Z[j,k]-theta$Z[i,k])*Z.invdist[j,i]*dlpY.deta[i,j]
-          }
+      Z.normdiff.k<-sapply(1:n,function(j)
+                           sapply(1:n,function(i)
+                                  theta$Z[i,k]-theta$Z[j,k]))*Z.invdist
+    grad$Z[,k]<-grad$Z[,k]+
+      -sapply(1:n,function(i) crossprod(Z.normdiff.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
   }
 
   if(not.given("sociality",theta,given))
