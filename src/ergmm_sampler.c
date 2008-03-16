@@ -103,11 +103,11 @@ void ERGMM_MCMC_wrapper(int *sample_size,
   /* The joint proposal coefficient matrix is square with side
      + covariate coefficients  : p
      + latent space            : 1
-     + sender                  : 1
-     + receiver (no sociality) : 1
+     + sender                  : n
+     + receiver (no sociality) : n
   */
 
-  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (sender_start ? 1 : 0) + (receiver_start&&!*sociality ? 1 : 0);
+  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (sender_start ? 1 : 0) + *n*(receiver_start&&!*sociality ? 1 : 0);
   double **group_deltas = Runpack_dmatrix(deltas+GROUP_DELTAS_START, group_prop_size, group_prop_size, NULL);
 
 

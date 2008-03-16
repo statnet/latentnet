@@ -1,5 +1,5 @@
 get.init.deltas<-function(model, control){
-  nterms<-model$p+(if(model$d) 1 else 0)+model$sender+model$receiver+model$sociality
+  nterms<-model$p+(if(model$d) 1 else 0)+network.size(model$Yg)*(model$sender+model$receiver+model$sociality)
 
   ## If proposal coefficient matrix is given, leave it alone.
   if(is.matrix(control$group.deltas)){
@@ -21,7 +21,7 @@ get.init.deltas<-function(model, control){
     group.deltas.scale<-control$group.deltas
     control$group.deltas<-1/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))
     if(model$d) control$group.deltas<-c(control$group.deltas, 0.05)
-    control$group.deltas<-c(control$group.deltas,rep(1,model$sender+model$receiver+model$sociality))
+    control$group.deltas<-c(control$group.deltas,rep(1/network.size(model$Yg),network.size(model$Yg)*(model$sender+model$receiver+model$sociality)))
     control$group.deltas<-diag(group.deltas.scale*control$group.deltas*2/(1+nterms),nrow=nterms)
   }
 
@@ -57,13 +57,13 @@ get.sample.deltas<-function(model,sample,control){
 
 ## Compute the empirical covariance of coefficients, latent scale, and random effect means.
 cov.beta.ext<-function(model,sample){
-  ## Construct the "extended" beta: not just the coefficients, but also the scale and the average
-  ## value of each random effect.
+  ## Construct the "extended" beta: not just the coefficients, but also the scale of latent space and all random effects.
   beta.ext<-cbind(if(model$p) sample$beta, # covariate coefs
                   if(model$d) log(apply(sqrt(apply(sample$Z^2,1:2,sum)),1,mean)), # scale of Z
-                  if(model$sender) apply(sample$sender,1,mean), # sender eff.
-                  if(model$receiver) apply(sample$receiver,1,mean), # receiver eff.
-                  if(model$sociality) apply(sample$sociality,1,mean)) # sociality eff.
+                  if(model$sender) sample$sender, # sender eff.
+                  if(model$receiver) sample$receiver, # receiver eff.
+                  if(model$sociality) sample$sociality # sociality eff.
+                  )
   cov(beta.ext)
 }
 

@@ -274,13 +274,13 @@ unsigned int ERGMM_MCMC_coef_up_scl_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_M
 
   // Propose to shift random effects.
   if(par->sender){
-    randeff_translate(par->sender,model->verts,
-		      cur->deltas[prop_pos++]);
+    for(unsigned int i=0; i<model->verts; i++)
+      par->sender[i]+=cur->deltas[prop_pos++];
   }
   
   if(par->receiver && !model->sociality){
-    randeff_translate(par->receiver,model->verts,
-		      cur->deltas[prop_pos++]);
+    for(unsigned int i=0; i<model->verts; i++)
+      par->receiver[i]+=cur->deltas[prop_pos++];
   }
 
   /* Calculate the log-likelihood-ratio.
