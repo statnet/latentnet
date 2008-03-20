@@ -109,7 +109,7 @@ void MBC_MCMC_init(unsigned int sample_size,
 			    G // clusters
   };
 
-  ERGMM_MCMC_MCMCSettings setting = {0,0,NULL,0, // deltas
+  ERGMM_MCMC_MCMCSettings setting = {0,0,NULL,NULL,NULL,0,0,0, // deltas
 				     sample_size,interval,
 				     FALSE // accept_all
   };
