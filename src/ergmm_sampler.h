@@ -59,6 +59,11 @@ void ERGMM_MCMC_wrapper(int *sample_size, int *interval,
 			int *sociality,
 			int *vobserved_ties,
 			double *deltas,
+			double *coef_eff_sender,
+			int *coef_eff_sender_size,
+			double *coef_eff_receiver,
+			int *coef_eff_receiver_size,
+
 			int *accept_all);
 
 void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval, 
@@ -98,6 +103,11 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 		     double Z_delta,
 		     double RE_delta,
 		     double **group_deltas, unsigned int group_prop_size,
+		     double **coef_eff_sender,
+		     unsigned int coef_eff_sender_size,
+		     double **coef_eff_receiver,
+		     unsigned int coef_eff_receiver_size,
+
 		     unsigned int accept_all);
 
 void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,

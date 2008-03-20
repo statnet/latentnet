@@ -90,7 +90,13 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 
 			int *sociality,
 			int *vobserved_ties,
+
 			double *deltas,
+			double *vcoef_eff_sender,
+			int *coef_eff_sender_size,
+			double *vcoef_eff_receiver,
+			int *coef_eff_receiver_size,
+
 			int *accept_all){
   int i=0,j=0,k=0;
   double **Z_start = vZ_start ? Runpack_dmatrix(vZ_start,*n,*d, NULL) : NULL;
@@ -103,12 +109,14 @@ void ERGMM_MCMC_wrapper(int *sample_size,
   /* The joint proposal coefficient matrix is square with side
      + covariate coefficients  : p
      + latent space            : 1
-     + sender                  : n
-     + receiver (no sociality) : n
+     + sender                  : ~p
+     + receiver (no sociality) : ~p
   */
 
-  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (sender_start ? 1 : 0) + *n*(receiver_start&&!*sociality ? 1 : 0);
+  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (sender_start ? 1 : 0) + (vcoef_eff_sender?*coef_eff_sender_size:0)+(vcoef_eff_receiver?*coef_eff_receiver_size:0);
   double **group_deltas = Runpack_dmatrix(deltas+GROUP_DELTAS_START, group_prop_size, group_prop_size, NULL);
+  double **coef_eff_sender = vcoef_eff_sender? Runpack_dmatrix(vcoef_eff_sender, *coef_eff_sender_size, *n, NULL) : NULL;
+  double **coef_eff_receiver = vcoef_eff_receiver? Runpack_dmatrix(vcoef_eff_receiver, *coef_eff_receiver_size, *n, NULL) : NULL;
 
 
   // set up all of the covariate matrices if covariates are involed 
@@ -162,6 +170,8 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 		  *sociality,
 		  observed_ties,
 		  deltas[0],deltas[1],group_deltas,group_prop_size,
+		  coef_eff_sender,coef_eff_sender_size?*coef_eff_sender_size:0,
+		  coef_eff_receiver,coef_eff_receiver_size?*coef_eff_receiver_size:0,
 		  *accept_all);
 
   PutRNGstate();
@@ -208,6 +218,11 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 		     double RE_delta,
 		     double **group_deltas,
 		     unsigned int group_prop_size,
+		     double **coef_eff_sender,
+		     unsigned int coef_eff_sender_size,
+		     double **coef_eff_receiver,
+		     unsigned int coef_eff_receiver_size,
+
 		     unsigned int accept_all)
 {
   unsigned int i;
@@ -233,7 +248,11 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
   ERGMM_MCMC_MCMCSettings setting = {Z_delta,
 				     RE_delta,
 				     group_deltas,
+				     coef_eff_sender,
+				     coef_eff_receiver,
 				     group_prop_size,
+				     coef_eff_sender_size,
+				     coef_eff_receiver_size,
 				     sample_size,interval,
 				     accept_all
   };

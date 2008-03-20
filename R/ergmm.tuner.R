@@ -1,5 +1,14 @@
+nterms.model<-function(model){
+  (model$p
+   +(if(model$d) 1 else 0)
+   +if(model$sender) nrow(model$beta.eff.sender) else 0
+   +if(model$receiver) nrow(model$beta.eff.receiver) else 0
+   +if(model$sociality) nrow(model$beta.eff.sociality) else 0
+   )
+}
+
 get.init.deltas<-function(model, control){
-  nterms<-model$p+(if(model$d) 1 else 0)+network.size(model$Yg)*(model$sender+model$receiver+model$sociality)
+  nterms<-nterms.model(model)
 
   ## If proposal coefficient matrix is given, leave it alone.
   if(is.matrix(control$group.deltas)){
@@ -21,7 +30,7 @@ get.init.deltas<-function(model, control){
     group.deltas.scale<-control$group.deltas
     control$group.deltas<-1/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))
     if(model$d) control$group.deltas<-c(control$group.deltas, 0.05)
-    control$group.deltas<-c(control$group.deltas,rep(1/network.size(model$Yg),network.size(model$Yg)*(model$sender+model$receiver+model$sociality)))
+    control$group.deltas<-c(control$group.deltas,rep(1/model$p,model$p*(model$sender+model$receiver+model$sociality)))
     control$group.deltas<-diag(group.deltas.scale*control$group.deltas*2/(1+nterms),nrow=nterms)
   }
 
@@ -39,7 +48,7 @@ get.sample.deltas<-function(model,sample,control){
   for(thread in 1:control$threads){
     sample<-samples[[thread]]
     use.draws<-ceiling(length(sample)*control$pilot.discard.first):(length(sample))
-    Z.rate<-Z.rate+mean(sample$Z.rate[use.draws])/control$threads
+    Z.rate<-if(!is.null(sample$Z.rate))Z.rate+mean(sample$Z.rate[use.draws])/control$threads else 0.5
     beta.rate<-beta.rate+mean(sample$beta.rate[use.draws])/control$threads
     ## Note that this only measures the covariances _within_ the thread.
     cov.beta.ext<-cov.beta.ext+cov.beta.ext(model,sample[use.draws])/control$threads
@@ -57,12 +66,13 @@ get.sample.deltas<-function(model,sample,control){
 
 ## Compute the empirical covariance of coefficients, latent scale, and random effect means.
 cov.beta.ext<-function(model,sample){
+  n<-network.size(model$Yg)
   ## Construct the "extended" beta: not just the coefficients, but also the scale of latent space and all random effects.
   beta.ext<-cbind(if(model$p) sample$beta, # covariate coefs
                   if(model$d) log(apply(sqrt(apply(sample$Z^2,1:2,sum)),1,mean)), # scale of Z
-                  if(model$sender) sample$sender, # sender eff.
-                  if(model$receiver) sample$receiver, # receiver eff.
-                  if(model$sociality) sample$sociality # sociality eff.
+                  if(model$sender) tcrossprod(sample$sender,model$beta.eff.sender)/n, # sender eff.
+                  if(model$receiver) tcrossprod(sample$receiver,model$beta.eff.receiver)/n, # receiver eff.
+                  if(model$sociality) tcrossprod(sample$sociality,model$beta.eff.sociality/n) # sociality eff.
                   )
   cov(beta.ext)
 }

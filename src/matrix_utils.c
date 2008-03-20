@@ -625,3 +625,24 @@ void dvector_scale_by(double *v, unsigned int n, double by){
   return 0;
 }
 
+/*
+// Perform Gram-Schmidt orthogonalization on a matrix in-place.
+double **Gram_Schmidt_rows(double **A, unsigned n, unsigned m){
+  for(unsigned int k1=1; k1<n; k++)
+    for(unsigned int k2=0; k2<k1; k++){
+      double utu = dvector_dotprod(A[k2],A[k2],m);
+      if(utu==0) break; // Avoid division by 0.
+      double GS_coef=dvector_dotprod(A[k1],A[k2])/utu;
+      for(unsigned int i=0; i<m; i++)
+	A[k1][i] -= GS_coef*A[k2][i];
+    }
+  return(A);
+}
+
+double dvector_dotprod(double *x, double *y, unsigned int n){
+  double prod=0;
+  for(unsigned int i=0; i<n; i++)
+    prod += x[i]*y[i];
+  return(prod);
+}
+*/

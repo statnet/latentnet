@@ -155,6 +155,10 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              observed=as.integer(observed),
 
              deltas=with(control,as.numeric(c(Z.delta,RE.delta,group.deltas))),
+             beta.eff.sender=as.double(c(model$beta.eff.sender,model$beta.eff.sociality)),
+             beta.eff.sender.size=as.integer(nrow(rbind(model$beta.eff.sender,model$beta.eff.sociality))),
+             beta.eff.receiver=as.double(model$beta.eff.receiver),
+             beta.eff.receiver.size=as.integer(nrow(model$beta.eff.receiver)),
 
              accept.all=control$accept.all,
              

@@ -34,7 +34,9 @@ typedef struct {
 typedef struct {
   double Z_delta, RE_delta;
   double **group_deltas;
-  unsigned int group_prop_size;
+  double **coef_eff_sender, **coef_eff_receiver;
+  unsigned int group_prop_size, coef_eff_sender_size, coef_eff_receiver_size;
+
   unsigned int sample_size, interval;
   unsigned int accept_all; // debugging option: accept all MH proposals
 } ERGMM_MCMC_MCMCSettings;
