@@ -85,8 +85,8 @@ get.beta.eff<-function(model){
         }
   ## Rows of 0s will break the tuner, and don't actually help, so, we drop them.
   for(re in names(out)){
-    no.eff<-which(apply(out[[re]],1,function(x) isTRUE(all.equal(x,rep(0,n)))))
-    out[[re]]<-out[[re]][!no.eff,]
+    no.eff<-apply(out[[re]],1,function(x) isTRUE(all.equal(x,rep(0,n))))
+    out[[re]]<-out[[re]][!no.eff,,drop=FALSE]
   }
   
   out

@@ -1,9 +1,9 @@
 nterms.model<-function(model){
   (model$p
    +(if(model$d) 1 else 0)
-   +if(model$sender) nrow(model$beta.eff.sender) else 0
-   +if(model$receiver) nrow(model$beta.eff.receiver) else 0
-   +if(model$sociality) nrow(model$beta.eff.sociality) else 0
+   +(if(model$sender) nrow(model$beta.eff.sender) else 0)
+   +(if(model$receiver) nrow(model$beta.eff.receiver) else 0)
+   +(if(model$sociality) nrow(model$beta.eff.sociality) else 0)
    )
 }
 
