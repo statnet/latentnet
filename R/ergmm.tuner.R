@@ -30,7 +30,7 @@ get.init.deltas<-function(model, control){
     group.deltas.scale<-control$group.deltas
     control$group.deltas<-1/sapply(1:model$p,function(i) sqrt(mean((model$X[[i]][observed.dyads(model$Yg)])^2)))
     if(model$d) control$group.deltas<-c(control$group.deltas, 0.05)
-    control$group.deltas<-c(control$group.deltas,rep(1/model$p,model$p*(model$sender+model$receiver+model$sociality)))
+    control$group.deltas<-c(control$group.deltas,rep(1/model$p,nterms-length(control$group.deltas)))
     control$group.deltas<-diag(group.deltas.scale*control$group.deltas*2/(1+nterms),nrow=nterms)
   }
 
