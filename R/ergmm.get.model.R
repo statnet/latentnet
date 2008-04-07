@@ -31,7 +31,7 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
   model<-fam.par.check(model)
   
   if(model$intercept){
-    model<-InitErgmm.latentcov(model,matrix(1,network.size(Yg),network.size(Yg)),"density")
+    model<-InitErgmm.latentcov(model,matrix(1,network.size(Yg),network.size(Yg)),"edges")
   }
               
   for (term in as.list(attr(terms,"variables"))[-(1:2)]){
