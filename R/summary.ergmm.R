@@ -118,7 +118,7 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
       pmean$cov<-beta.cov
       pmean$cor<-cov2cor(beta.cov)
       
-      beta.q0<-apply(sample$beta,2,function(x) mean(x<=0))
+      beta.q0<-apply(sample$beta,2,function(x) min(mean(x<=0),mean(x>=0)))
       
       coef.table<-data.frame(pmean$beta,
                            t(apply(sample$beta,2,function(x)quantile(x,quantiles))),
@@ -176,7 +176,7 @@ print.summary.ergmm<-function(x,...){
        
   if(!is.null(x$pmean)){
     cat("Covariate coefficients posterior means:\n")
-    print(x$pmean$coef.table)
+    printCoefmat(as.matrix(x$pmean$coef.table),P.values=TRUE,has.Pvalue=TRUE)
     cat("\n")
     if(!is.null(x$pmean$sender.var))
       cat("Sender effect variance: ",x$pmean$sender.var,".\n", sep="")
@@ -188,7 +188,7 @@ print.summary.ergmm<-function(x,...){
 
   if(!is.null(x$mle)){
     cat("Covariate coefficients MLE:\n")
-    print(x$mle$coef.table)
+    printCoefmat(as.matrix(x$mle$coef.table),P.values=length(names(x$mle$coef.table))>1)
     cat("\n")
 
     cat("Overall BIC:       ", x$mle$bic,"\n")
