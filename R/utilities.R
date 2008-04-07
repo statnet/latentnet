@@ -36,3 +36,9 @@ thin.ergmm<-function(x,by){
   x$control$sample.size<-length(s.kept)
   x
 }
+
+xtabs.ergmm<-function(x,ref){
+  ref->Reference
+  apply(attr(x$sample,"Q"),1,which.max)->Fitted
+  xtabs(~Reference+Fitted)
+}
