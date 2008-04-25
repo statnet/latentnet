@@ -10,6 +10,8 @@
                           cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
                           vertex.col=NULL, print.formula=TRUE,
                           edge.col=8,
+                          Z.ref=NULL,
+                          Z.K.ref=NULL,
                           pie = FALSE,
                           labels=FALSE,
                           rand.eff=NULL,
@@ -84,7 +86,12 @@
   \item{labels}{Whether vertex labels should be displayed. Defaults to
     \code{FALSE}.}
   \item{print.formula}{Whether the formula based on which the \code{x}
-    was fitted should be printed under the main title. Defaults to \code{TRUE}.}
+    was fitted should be printed under the main title. Defaults to
+    \code{TRUE}.}
+  \item{Z.ref}{If given, rotates the the latent positions to the nearest
+    configuration to this one before plotting.}
+  \item{Z.K.ref}{If given, relabels the clusters to the nearest
+    configuration to this one before plotting.}
   \item{density.par}{A list of optional parameters for density plots:
     \describe{
       \item{\code{totaldens}}{Whether the overal density of latent space

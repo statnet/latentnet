@@ -31,7 +31,7 @@
 \alias{ergmm.labelswitch}
 \alias{klswitch.C}
 \alias{labelswitch.sample.ergmm}
-\alias{nearest.perm}
+\alias{which.perm.nearest}
 \alias{ergmm.MCMCacf} 
 \alias{ergmm.permutation}
 \alias{ergmm.statseval}

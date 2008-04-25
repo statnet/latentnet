@@ -10,6 +10,8 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                        cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
                        vertex.col=NULL, print.formula=TRUE,
                        edge.col=8,
+                       Z.ref=NULL,
+                       Z.K.ref=NULL,
                        pie = FALSE,
                        labels=FALSE,
                        rand.eff=NULL,
@@ -240,6 +242,19 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                     deparse(substitute(x)),sep="")
   }else stop("Invalid latent space position estimate type.")
 
+  if(!is.null(Z.ref)){
+    R<-procOPA(Z.ref,Z.pos,scale=FALSE,reflect=TRUE)$R
+    Z.pos<-Z.pos%*%R
+    Z.mean<-Z.mean%*%R
+  }
+  if(!is.null(Z.K.ref)){
+    perm<-which.nearest.perm(Z.K.ref,Z.K)
+    Z.K<-order(perm)[Z.K]
+    Z.pZK<-Z.pZK[,perm]
+    Z.mean<-Z.mean[perm,]
+    Z.var<-Z.var[perm]
+  }
+  
   ## Transform coordinates for dimensions other than 2 (or 3, when using rgl).
   if(d==1){    
     Z.pos<-coords.1D(Z.pos,curve1D,jitter1D)
@@ -277,10 +292,10 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   ## Set vertex sizes to correspond to random effect values.
   if(!is.null(rand.eff) && (rand.eff[1]=="total" || x$model[rand.eff[1]][[1]])){
     if(rand.eff=="total")
-      rand.eff.mul<-exp((summ["sender"][[1]]+summ["receiver"][[1]])/2)
+      rand.eff.mul<-exp((summ["sender"][[1]]+summ["receiver"][[1]]))
     else      
-      rand.eff.mul<-exp(summ[rand.eff][[1]]/2)
-    rand.eff.mul<-rand.eff.mul/mean(rand.eff.mul)
+      rand.eff.mul<-exp(summ[rand.eff][[1]])
+    rand.eff.mul<-sqrt(rand.eff.mul/exp(mean(log(rand.eff.mul))))
     vertex.cex<-vertex.cex*rand.eff.mul
   }
   vertex.cex<-rep(vertex.cex,length.out=n)
