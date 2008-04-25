@@ -42,3 +42,20 @@ xtabs.ergmm<-function(x,ref){
   apply(attr(x$sample,"Q"),1,which.max)->Fitted
   xtabs(~Reference+Fitted)
 }
+
+clust.homogeneity<-function(x,ref,soft=TRUE,marg=FALSE){
+  if(soft){
+    G<-x$model$G
+    p.K<-sapply(sort(unique(ref)),function(g.ref){
+      Z.K.g.ref<-x$sample$Z.K[,ref==g.ref,drop=FALSE]
+      n.g.ref<-dim(Z.K.g.ref)[2]
+      mean(sapply(2:n.g.ref,function(i) mean(sapply(1:(i-1),function(j) mean(Z.K.g.ref[,i]==Z.K.g.ref[,j])))))
+    }
+           )
+  }else{
+    p.K<-apply(xtabs.ergmm(x,ref),1,function(y)sum((y/sum(y))^2))    
+  }
+
+  if(marg) weighted.mean(p.K,tabulate(ref)*(tabulate(ref)-1))
+  else p.K
+}
