@@ -196,7 +196,7 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
 
 proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   if(!is.null(x$sample) && x$model$d>0){
-    if(x$control$verbose) cat("Performing Procrustes tranformation... ")
+    if(x$control$verbose) cat("Performing Procrustes transformation... ")
     x$sample<-proc.Z.mean.C(x$sample,Z.ref,verbose=x$control$verbose)
     if(x$control$verbose) cat("Finished.\n")
   }
