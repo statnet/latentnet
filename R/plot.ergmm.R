@@ -12,6 +12,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                        edge.col=8,
                        Z.ref=NULL,
                        Z.K.ref=NULL,
+                       zoom.on=NULL,
                        pie = FALSE,
                        labels=FALSE,
                        rand.eff=NULL,
@@ -248,7 +249,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     Z.mean<-Z.mean%*%R
   }
   if(!is.null(Z.K.ref)){
-    perm<-which.nearest.perm(Z.K.ref,Z.K)
+    perm<-which.perm.nearest(Z.K.ref,Z.K)
     Z.K<-order(perm)[Z.K]
     Z.pZK<-Z.pZK[,perm]
     Z.mean<-Z.mean[perm,]
@@ -301,7 +302,8 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   vertex.cex<-rep(vertex.cex,length.out=n)
 
   ## Find the bounds of the plotting region.
-  xylim<-ergmm.plotting.region(Z.pos,if(plot.means) Z.mean,if(plot.vars) Z.var,!suppress.center,pad)
+  xylim<-ergmm.plotting.region(if(!is.null(zoom.on)) Z.pos[zoom.on,] else Z.pos,
+                                  if(plot.means && is.null(zoom.on)) Z.mean,if(plot.vars && is.null(zoom.on)) Z.var,!suppress.center && is.null(zoom.on),pad)
   if(is.null(xlim)) xlim<-xylim$xlim else xylim$xlim<-xlim
   if(is.null(ylim)) ylim<-xylim$ylim else xylim$ylim<-ylim
   if(is.null(zlim)) zlim<-xylim$zlim else xylim$zlim<-zlim
