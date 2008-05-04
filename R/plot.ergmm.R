@@ -336,6 +336,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     options(warn=old.warn)
   }else{
     plot3d(Z.pos,type="s",col=if(is.null(vertex.col)) 0 else vertex.col,radius=vertex.cex*vertex.3d.cex,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
+    if(labels) text3d(Z.pos,texts=Yg %v% "vertex.names")
   }
 
   if(!use.rgl){
