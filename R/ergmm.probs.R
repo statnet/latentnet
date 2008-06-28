@@ -367,9 +367,9 @@ find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.
   
   fit.vars<-reg.fit.vars(fit.vars)
 
-  control$fnscale=-1
-  control$maxit<-control$mle.maxit
-  control$trace<-max(0,control$verbose-2)
+  optim.control<-list(fnscale=-1,
+                      maxit=control$mle.maxit,
+                      trace=max(0,control$verbose-2))
   
   optim.fs<-mk.lp.optim.fs(fit.vars,model,prior=prior,given=given,opt=opt)
   
@@ -395,7 +395,7 @@ find.mpe<-function(model,start,given=ergmm.par.blank(),prior=list(),control,fit.
                       receiver.var=sqrt(.Machine$double.eps),
                       sociality.var=sqrt(.Machine$double.eps)),
                       fit.vars=fit.vars),
-                    control=control,hessian=hessian)
+                    control=optim.control,hessian=hessian)
             ##  )
 
   if(inherits(vmpe,"try-error")) return(NULL)
