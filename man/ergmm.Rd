@@ -12,7 +12,7 @@
 }
 \usage{
 ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
-      control=ergmm.control(), user.start=ergmm.par.blank(), prior=ergmm.prior(),
+      control=ergmm.control(), user.start=ergmm.par(), prior=ergmm.prior(),
       tofit=c("mcmc", "mkl", "mkl.mbc", "procrustes",
       "klswitch"), Z.ref=NULL, Z.K.ref=NULL, seed=NULL,
       verbose=FALSE)

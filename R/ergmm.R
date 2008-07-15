@@ -1,6 +1,6 @@
 ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
                   control=ergmm.control(),
-                  user.start=ergmm.par.blank(),
+                  user.start=ergmm.par(),
                   prior=ergmm.prior(),
                   tofit=c("mcmc","mkl","mkl.mbc","procrustes","klswitch"),
                   Z.ref=NULL,

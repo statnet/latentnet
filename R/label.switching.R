@@ -9,30 +9,33 @@ klswitch.C <- function(Q.start,sample,Z=NULL,maxit=100,verbose=0)
   S <- dim(sample$Z.mean)[1]
   G <- dim(sample$Z.mean)[2]
 
-  if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
-  
-  Cret <- .C("klswitch_wrapper",
-             maxit = as.integer(maxit),
-             S = as.integer(S),
-             n = as.integer(n),
-             d = as.integer(d),
-             G = as.integer(G),
-             Z = if(Z.ref) as.double(Z) else as.double(sample$Z),
-             Z.ref=as.integer(Z.ref),
+  if(G>1){
+    if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
+    
+    Cret <- .C("klswitch_wrapper",
+               maxit = as.integer(maxit),
+               S = as.integer(S),
+               n = as.integer(n),
+               d = as.integer(d),
+               G = as.integer(G),
+               Z = if(Z.ref) as.double(Z) else as.double(sample$Z),
+               Z.ref=as.integer(Z.ref),
              Z.mean = as.double(sample$Z.mean),
-             Z.var = as.double(sample$Z.var),
-             Z.K = as.integer(sample$Z.K),
-             Z.pK = as.double(sample$Z.pK),
-             Q = as.double(Q.start),
-             verbose=as.integer(verbose),
-             PACKAGE="latentnet")
-  
-  sample$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))
-  sample$Z.var<-matrix(Cret$Z.var,S,G)
-  sample$Z.K<-matrix(Cret$Z.K,S,n)
-  sample$Z.pK<-matrix(Cret$Z.pK,S,G)
-  attr(sample,"Q")<-array(Cret$Q,dim=c(1,n,G))[1,,]
-
+               Z.var = as.double(sample$Z.var),
+               Z.K = as.integer(sample$Z.K),
+               Z.pK = as.double(sample$Z.pK),
+               Q = as.double(Q.start),
+               verbose=as.integer(verbose),
+               PACKAGE="latentnet")
+    
+    sample$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))
+    sample$Z.var<-matrix(Cret$Z.var,S,G)
+    sample$Z.K<-matrix(Cret$Z.K,S,n)
+    sample$Z.pK<-matrix(Cret$Z.pK,S,G)
+    attr(sample,"Q")<-array(Cret$Q,dim=c(1,n,G))[1,,]
+  }else{
+    attr(sample,"Q")<-matrix(1,n,1)
+  }
   sample
 }
 

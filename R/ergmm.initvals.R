@@ -117,7 +117,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
                       receiver.var=model$receiver, ## receiver
                       sociality.var=model$sociality
                       )
-    user.start<-ergmm.par.blank()
+    user.start<-ergmm.par()
   }
   for(i in 1:control$mle.maxit){
     if(control$verbose>1) cat(i,"")
