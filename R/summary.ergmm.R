@@ -54,13 +54,6 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
         colnames(coef.table)<-c("Estimate",if(se) "Std. Error",if(se) "z value",if(se) "Pr(>|z|)")
         mle$coef.table<-coef.table
       }
-      mle$llk.bic<- -2*mle$llk + (p+n*d + (model$sender + model$receiver + model$sociality)*n )*log(sum(network.size(model$Yg)))
-      if(G>0){
-        mle<-c(mle,find.clusters(G,mle$Z))
-        mle$mbc.bic<- -bic(if(d==1) "V" else "VII",mle$mbc.llk,n,d,G)
-        mle$bic<-mle$llk.bic+mle$mbc.bic
-      }
-      else mle$bic<-mle$llk.bic
 
       if(model$sender){
         if(model$intercept){
@@ -149,6 +142,10 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
     summ$pmode<-object$pmode
   }
 
+  if(!is.null(object$mkl)){
+    summ$bic<-bic.ergmm(object)
+  }
+
   class(summ)<-'summary.ergmm'
   summ
 }
@@ -190,11 +187,21 @@ print.summary.ergmm<-function(x,...){
     cat("Covariate coefficients MLE:\n")
     printCoefmat(as.matrix(x$mle$coef.table),P.values=length(names(x$mle$coef.table))>1)
     cat("\n")
-
-    cat("Overall BIC:       ", x$mle$bic,"\n")
-    if(model$G>0){
-      cat("Likelihood BIC:    ", x$mle$llk.bic,"\n")
-      cat("Clustering BIC:    ", x$mle$mbc.bic,"\n")
+  }
+  if(!is.null(x$bic)){
+    cat("Overall BIC:       ", x$bic$overall,"\n")
+    cat("Likelihood BIC:    ", x$bic$Y,"\n")
+    if(model$d>0){
+      cat("Latent space/clustering BIC:    ", x$bic$Z,"\n")
+    }
+    if(model$sender){
+      cat("Sender effect BIC:    ", x$bic$sender,"\n")
+    }
+    if(model$receiver){
+      cat("Receiver effect BIC:    ", x$bic$receiver,"\n")
+    }
+    if(model$sociality){
+      cat("Sociality effect BIC:    ", x$bic$sociality,"\n")
     }
     cat("\n")
   }
@@ -209,4 +216,40 @@ print.summary.ergmm<-function(x,...){
     print(x$pmode$coef.table)
     cat("\n\n")
   }
+}
+
+bic.ergmm<-function(object){
+  if(is.null(object$mkl)){
+    stop("MKL estimates were not computed for this fit.")
+  }
+
+  n<-network.size(object$model$Yg)
+  
+  condZRE<-with(object,find.mle(object$model,mkl,given=ergmm.par(Z=mkl$Z,sender=mkl$sender,receiver=mkl$receiver,sociality=mkl$sociality),control=object$control))
+
+  bic<-with(object$model,list(Y = -2*condZRE$llk + (p+n*d + (sender + receiver + sociality)*n )*log(n),
+                              Z =
+                              if(d>0){
+                                if(G>0){
+                                  mbc.llk<-NULL
+                                  Gsub<--1
+                                  while(is.null(mbc.llk)){
+                                    Gsub<-Gsub+1
+                                    mbc.llk<-find.clusters(G-Gsub,object$mkl$Z)$mbc.llk
+                                  }
+                                  if(Gsub) warning(paste("Bad clustering: treating",Gsub,"clusters as empty."))
+                                  -bic(if(d==1) "V" else "VII",mbc.llk,n,d,G)
+                                } else {
+                                  -2*sum(dnorm(object$mkl$Z,0,sqrt(mean(condZRE$Z^2)*d),log=TRUE))+1*log(n*d)
+                                }
+                              } else 0,
+                              sender=if(sender) -2*sum(dnorm(condZRE$sender,0,sqrt(mean(condZRE$sender^2)),log=TRUE))+1*log(n) else 0,
+                              receiver=if(receiver) -2*sum(dnorm(condZRE$receiver,0,sqrt(mean(condZRE$receiver^2)),log=TRUE))+1*log(n) else 0,
+                              sociality=if(sociality) -2*sum(dnorm(condZRE$sociality,0,sqrt(mean(condZRE$sociality^2)),log=TRUE))+1*log(n) else 0
+                              )
+            )
+  
+  bic$overall<-sum(unlist(bic))
+  
+  bic
 }

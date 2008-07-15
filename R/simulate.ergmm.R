@@ -27,7 +27,7 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
   return(l)
 }
 
-simulate.ergmm.model<-function(object,nsim=1,seed=NULL,par,prior=ergmm.par.blank(),...){
+simulate.ergmm.model<-function(object,nsim=1,seed=NULL,par,prior=ergmm.par(),...){
   extraneous.argcheck(...)
   
   ## If the random seed has been specified, save the old seed, to

@@ -20,13 +20,17 @@ seldrop<-function(x,i){
   array(c(x),dim=dim(x)[-i])
 }
 
-ergmm.par.blank<-function(){
-  x<-list()
+ergmm.par<-function(...){
+  x<-list(...)
   class(x)<-"ergmm.par"
   x
 }
 
-as.ergmm.par.list<-function(x){
+as.ergmm.par<-function(x,...){
+  UseMethod(x)
+}
+
+as.ergmm.par.list<-function(x,...){
   class(x)<-"ergmm.par"
   x
 }
