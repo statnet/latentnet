@@ -5,6 +5,7 @@
 % Genuinely internal
 %
 
+\alias{nterms.model}
 \alias{ergmm.tofit.resolve}
 \alias{extraneous.argcheck}
 \alias{inv.fit.vars}
@@ -55,6 +56,8 @@
 \alias{ergmm.midarrow}
 \alias{ergmm.plotting.region}
 \alias{ergmm.plotting.vertex.radius} 
+\alias{tetrahedra3d}
+\alias{tetrahedron3d}
 
 \alias{ergmm.fit.deps}
 \alias{ergmm.geodesicmatrix}
@@ -94,10 +97,15 @@
 \alias{run.proposal}
 \alias{run.proposal.snowFT}
 \alias{run.proposal.snowFT.slave}
+\alias{bayesmbc.snowFT}
+\alias{klswitch.snowFT}
+\alias{klswitch.step2.snowFT.slave}
 
 \alias{seldrop}
 \alias{sim.1.ergmm}
 \alias{switch.Q.K}
+\alias{labelswitch.K}
+\alias{get.beta.eff}
 
 \alias{post.predict.C}
 \alias{post.predict.R}
@@ -150,6 +158,9 @@
 \alias{add.mcmc.pmode.pmode.ergmm}
 \alias{add.mkl.mbc.ergmm}
 \alias{add.mkl.pos.ergmm}
+
+\alias{xtabs.ergmm}
+\alias{clust.homogeneity}
 
 \description{
   Internal latentnet functions.
