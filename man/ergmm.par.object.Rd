@@ -1,6 +1,7 @@
 \name{ergmm.par.object}
 \alias{ergmm.par}
 \alias{ergmm.par.object}
+\alias{as.ergmm.par}
 \alias{[[.ergmm.par}
 \alias{$.ergmm.par}
 \alias{ergmm.par}

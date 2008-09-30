@@ -11,6 +11,7 @@ ergmm.control(sample.size=4000,
               burnin=10000,
               interval=10,
               threads=1,
+              kl.threads=1,
               mle.maxit=100,
               Z.delta=0.6,
               RE.delta=0.6,
@@ -22,7 +23,8 @@ ergmm.control(sample.size=4000,
               backoff.threshold=0.05,
               backoff.factor=0.1,
               accept.all=FALSE,
-              store.burnin=FALSE)
+              store.burnin=FALSE,
+              refine.user.start=TRUE)
 }
 \arguments{
   \item{sample.size}{The number of draws to be taken from the posterior distribution.}
@@ -33,7 +35,9 @@ ergmm.control(sample.size=4000,
     advantage of any multiprocessing or distributed computing
     capabilities that may be available. Currently, only PVM (via
     \code{rpvm}) has been tested. Note, also, that PVM daemon needs to
-    be started before the package is loaded. } 
+    be started before the package is loaded. }
+  \item{kl.threads}{If greather than 1, uses an experimental parallelized
+    label-switching algorithm. This is not guaranteed to work. }
   \item{mle.maxit}{Maximum number of iterations for computing the
     starting values, posterior modes, MLEs, MKL estimates, etc..}
   \item{Z.delta}{Standard deviation of the proposal for the jump in the
@@ -76,6 +80,8 @@ ergmm.control(sample.size=4000,
     unconditionally. Use only in debugging proposal distributions!}
   \item{store.burnin}{If \code{TRUE}, the samples from the burnin are
     also stored and returned, to be used in MCMC diagnostics.}
+  \item{refine.user.start}{If \code{TRUE}, the values passed to
+    \code{\link{ergmm}} in the \code{user.start} argument can be updated by the mode-finding algorithm.}
 }
 \value{
   A list with the arguments as components.

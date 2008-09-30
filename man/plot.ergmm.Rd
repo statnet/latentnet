@@ -1,22 +1,27 @@
 \name{plot.ergmm}
 \alias{plot.ergmm}
+\alias{plot3d.ergmm}
 \title{Plotting Method for class ERGMM}
 \usage{
 \method{plot}{ergmm}(x, \dots, vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
                           what="mkl",
-                          main = NULL, xlab=NULL, ylab=NULL, xlim=NULL,ylim=NULL,
+                          main = NULL, xlab=NULL, ylab=NULL, zlab=NULL,
+                          xlim=NULL, ylim=NULL, zlim=NULL,
                           object.scale=formals(plot.network.default)$object.scale,
                           pad=formals(plot.network.default)$pad,
                           cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
-                          vertex.col=NULL, print.formula=TRUE,
-                          edge.col=8,
-                          Z.ref=NULL,
-                          Z.K.ref=NULL,
+                          vertex.col = NULL, print.formula = TRUE,
+                          edge.col = 8,
+                          Z.ref = NULL,
+                          Z.K.ref = NULL,
+                          zoom.on = NULL,
                           pie = FALSE,
                           labels=FALSE,
                           rand.eff=NULL,
-                          plot.means=TRUE,plot.vars=TRUE,suppress.axes=FALSE,
-                          jitter1D=1,curve1D=TRUE,suppress.center=FALSE,density.par=list())
+                          plot.means = TRUE, plot.vars = TRUE,
+                          suppress.axes = FALSE,
+                          jitter1D=1, curve1D=TRUE, use.rgl=FALSE,
+                          suppress.center=FALSE,density.par=list())
 
 }
 \description{
@@ -83,6 +88,8 @@
     edge.col,xlab,ylab}{Arguments passed to
     \code{\link[pkg:network]{plot.network}}, whose defaults differ from
     those of \code{\link[pkg:network]{plot.network}}.}
+  \item{zlim,zlab}{Limits and labels for the third latent space
+    dimension or principal component, if \code{use.rgl=TRUE}.}
   \item{labels}{Whether vertex labels should be displayed. Defaults to
     \code{FALSE}.}
   \item{print.formula}{Whether the formula based on which the \code{x}
@@ -92,6 +99,13 @@
     configuration to this one before plotting.}
   \item{Z.K.ref}{If given, relabels the clusters to the nearest
     configuration to this one before plotting.}
+  \item{use.rgl}{Whether the package rgl should be used to plot fits for
+    latent space dimension 3 or higher in 3D. Defaults to
+    \code{FALSE}. If set to \code{TRUE} and a 3-dimensional plot is
+    produced, edges are not plotted and
+    argument \code{pie} has no effect.}
+  \item{zoom.on}{If given a list of vertex indices, sets the plotting
+    region to the smallest that can fit those vertices.}
   \item{density.par}{A list of optional parameters for density plots:
     \describe{
       \item{\code{totaldens}}{Whether the overal density of latent space
