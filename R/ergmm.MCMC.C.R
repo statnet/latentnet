@@ -225,7 +225,8 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
                               prior.l=prior.l,
                               control.l=control.l,
                               sample.size.l=sample.size.l,
-                              interval.l=interval.l)
+                              interval.l=interval.l,
+                              seed=floor(runif(6,0,.Machine$integer.max)))
   mcmc.mle<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
                                          function(i) mcmc.out.l[[i]]$mcmc.mle$llk))]]$mcmc.mle
   mcmc.pmode<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
