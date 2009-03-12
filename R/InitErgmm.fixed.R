@@ -10,19 +10,19 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
     xm<-as.matrix.network(x,matrix.type="adjacency",attrname)
     cn<-attrname
   }else if(is.character(x)){
-    xm<-as.matrix.network(model$Yg,matrix.type="adjacency",x)
+    xm<-as.matrix.network(model[["Yg"]],matrix.type="adjacency",x)
     cn<-x
   }else{
     xm<-as.matrix(x)
-    cn<-if(!is.null(attrname)) attrname else paste("matrix",length(model$X)+1)
+    cn<-if(!is.null(attrname)) attrname else paste("matrix",length(model[["X"]])+1)
   }
 
-  model$p<-model$p+1
-  model$X<-c(model$X,list(xm))
-  model$coef.names<-c(model$coef.names, cn)
+  model[["p"]]<-model[["p"]]+1
+  model[["X"]]<-c(model[["X"]],list(xm))
+  model[["coef.names"]]<-c(model[["coef.names"]], cn)
 
-  model$prior$beta.mean<-c(model$prior$beta.mean,mean)
-  model$prior$beta.var<-c(model$prior$beta.var,var)
+  model[["prior"]][["beta.mean"]]<-c(model[["prior"]][["beta.mean"]],mean)
+  model[["prior"]][["beta.var"]]<-c(model[["prior"]][["beta.var"]],var)
 
   model
 }
@@ -34,7 +34,7 @@ InitErgmm.absdiff<-function (model, attrname,
     stop(paste("absdiff() model term expected between 1 and 3 arguments, got ", 
                                    nargs() - 1, sep = ""), call. = FALSE)
 
-  x<-model$Yg %v% attrname
+  x<-model[["Yg"]] %v% attrname
   if(!is.vector(x)||!is.numeric(x))
     stop(paste("Attribute for absdiff() must be a numeric vector."))
   xm<-as.matrix(dist(x))
@@ -50,7 +50,7 @@ InitErgmm.nodematch<-function (model, attrname, diff=FALSE, mean=0, var=9)
         stop(paste("nodematch() model term expected between 1 and 4 arguments, got ", 
                    nargs() - 1, sep = ""), call. = FALSE)
 
-  x<-as.factor(model$Yg %v% attrname)
+  x<-as.factor(model[["Yg"]] %v% attrname)
   if(!diff){
     xm<-as.matrix(dist(as.numeric(x)))==0
     cn<-paste('nodematch',attrname,sep=".")
@@ -78,11 +78,11 @@ InitErgmm.sendercov<-function (model, attrname, force.factor=FALSE, mean=0, var=
   if (!(nargs() %in% 2:5))
     stop(paste("sendercov() model term expected between 1 and 4 arguments, got ", 
                                    nargs() - 1, sep = ""), call. = FALSE)
-  if (!is.directed(model$Yg))
+  if (!is.directed(model[["Yg"]]))
     stop("Sender covariates are not allowed with an undirected network; use 'socialitycov'", call.=FALSE)
 
-  n<-network.size(model$Yg)
-  x<-model$Yg %v% attrname
+  n<-network.size(model[["Yg"]])
+  x<-model[["Yg"]] %v% attrname
   if(is.numeric(x) && ! force.factor){
     # Numeric covariate.
     xm<-matrix(x,n,n,byrow=FALSE)
@@ -109,11 +109,11 @@ InitErgmm.receivercov<-function (model, attrname, force.factor=FALSE, mean=0, va
   if (!(nargs() %in% 2:5))
     stop(paste("receivercov() model term expected between 1 and 3 arguments, got ", 
                                    nargs() - 1, sep = ""), call. = FALSE)
-  if (!is.directed(model$Yg))
+  if (!is.directed(model[["Yg"]]))
     stop("Receiver covariates are not allowed with an undirected network; use 'socialitycov'", call.=FALSE)
 
-  n<-network.size(model$Yg)
-  x<-model$Yg %v% attrname
+  n<-network.size(model[["Yg"]])
+  x<-model[["Yg"]] %v% attrname
   if(is.numeric(x) && ! force.factor){
     # Numeric covariate.
     xm<-matrix(x,n,n,byrow=TRUE)
@@ -141,8 +141,8 @@ InitErgmm.socialitycov<-function (model, attrname, force.factor=FALSE, mean=0, v
     stop(paste("socialitycov() model term expected between 1 and 4 arguments, got ", 
                                    nargs() - 1, sep = ""), call. = FALSE)
 
-  n<-network.size(model$Yg)
-  x<-model$Yg %v% attrname
+  n<-network.size(model[["Yg"]])
+  x<-model[["Yg"]] %v% attrname
   if(is.numeric(x) && ! force.factor){
     # Numeric covariate.
     xm<-matrix(x,n,n,byrow=FALSE)+matrix(x,n,n,byrow=TRUE)

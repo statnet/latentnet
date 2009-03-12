@@ -17,20 +17,7 @@
   partial matching is performed.
   
   The structure of \code{ergmm.par} is a list which may include some of the following:
-  \tabular{ll}{
-    \code{beta}\tab Numeric vector of covariate coefficients. \cr
-    \code{Z.K}\tab Integer vector of cluster assignments. \cr
-    \code{Z.mean}\tab Numeric matrix with rows being cluster means. \cr
-    \code{Z.var}\tab Depending on the model, either a numeric vector with
-    within-cluster variances or a numeric scalar with the overal latent space variance. \cr
-    \code{Z.pK}\tab Numeric vector of probabilities of a vertex being
-    in a particular cluster. \cr
-    \code{Z}\tab Numeric matrix with rows being latent space positions. \cr
-    \code{sender, receiver, sociality}\tab Numeric vector of values of each
-    vertex's respective random effect.\cr
-    \code{sender.var, receiver.var, sociality.var}\tab Numeric scalar
-    with the respective random effect's variance.\cr
-  }
+
   In some cases (such as when representing MCMC or optimization output),
   the object may also have some of the following:
   \tabular{ll}{

@@ -1,4 +1,4 @@
-"robust.inverse" <- function (H, tol = sqrt(.Machine$double.eps)) 
+"robust.inverse" <- function (H, tol = sqrt(.Machine[["double.eps"]])) 
 {
     iH <- try(solve(H), silent=TRUE)
     if(inherits(iH,"try-error")){
@@ -8,14 +8,14 @@
         H <- as.matrix(H)
      Hsvd <- svd(H)
      if (is.complex(H)) 
-        Hsvd$u <- Conj(Hsvd$u)
-     Positive <- Hsvd$d > max(tol * Hsvd$d[1], 0)
+        Hsvd[["u"]] <- Conj(Hsvd[["u"]])
+     Positive <- Hsvd[["d"]] > max(tol * Hsvd[["d"]][1], 0)
      if (all(Positive)) 
-        Hsvd$v %*% (1/Hsvd$d * t(Hsvd$u))
+        Hsvd[["v"]] %*% (1/Hsvd[["d"]] * t(Hsvd[["u"]]))
      else if (!any(Positive)) 
         array(0, dim(H)[2:1])
-     else Hsvd$v[, Positive, drop = FALSE] %*% ((1/Hsvd$d[Positive]) * 
-         t(Hsvd$u[, Positive, drop = FALSE]))
+     else Hsvd[["v"]][, Positive, drop = FALSE] %*% ((1/Hsvd[["d"]][Positive]) * 
+         t(Hsvd[["u"]][, Positive, drop = FALSE]))
     }else{
      iH
     }

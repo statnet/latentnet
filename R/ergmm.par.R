@@ -20,18 +20,8 @@ seldrop<-function(x,i){
   array(c(x),dim=dim(x)[-i])
 }
 
-ergmm.par<-function(...){
-  x<-list(...)
-  class(x)<-"ergmm.par"
-  x
-}
-
-as.ergmm.par<-function(x,...){
-  UseMethod(x)
-}
-
 as.ergmm.par.list<-function(x,...){
-  class(x)<-"ergmm.par"
+  class(x)<-"ergmm.par.list"
   x
 }
 
@@ -56,7 +46,7 @@ length.ergmm.par.list<-function(x){
   else dim(x[[names(x)[1]]])[1]
 }
 
-"[[.ergmm.par.list"<-"$.ergmm.par.list"<-function(x,i){
+`[[.ergmm.par.list`<-`$.ergmm.par.list`<-function(x,i){
   ## Delete its class, to keep it from recursing.
   tmp<-class(x)
   class(x)<-NULL
@@ -77,14 +67,9 @@ length.ergmm.par.list<-function(x){
         else if(length(dim(x[[name]]))==3) l[[name]]<-seldrop(x[[name]][i,,,drop=FALSE],1)
       }
     }
-    class(l)<-"ergmm.par"
     class(x)<-tmp
     return(l)
   }
-}
-
-"[[.ergmm.par"<-"$.ergmm.par"<-function(x,i){
-  x[i][[1]]
 }
 
 stack.ergmm.par.list.list<-function(x,...){

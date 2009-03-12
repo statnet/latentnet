@@ -5,7 +5,7 @@
 \title{Draw from the distribution of an Exponential Random Graph Mixed Model}
 \usage{
 \method{simulate}{ergmm}(object, nsim = 1, seed = NULL,\dots)
-\method{simulate}{ergmm.model}(object,nsim=1,seed=NULL,par,prior=ergmm.par(),\dots)
+\method{simulate}{ergmm.model}(object,nsim=1,seed=NULL,par,prior=list(),\dots)
 }
 \description{
   If passed a \code{\link[=ergmm.object]{ergmm}} fit object, \code{simulate} is used to simulate networks from the posterior of an exponetial random graph mixed model fit. Alternatively, a \code{\link[=ergmm.model.object]{ergmm.model}} object can be passed to simulate based on a particular parametr configuration.
@@ -23,11 +23,11 @@
  \item{seed}{random seed to use; defaults to using the current state of
    the random number generator}
  
- \item{par}{an object of class \code{\link[=ergmm.par.object]{ergmm.par}}
+ \item{par}{a list
    with the parameter configuration based on which to simulate}
 
- \item{prior}{an object of class
-   \code{\link[=ergmm.par.object]{ergmm.par}} with the prior distribution
+ \item{prior}{a list
+   with the prior distribution
    parameters that deviate from their defaults}
 
  \item{\dots}{Additional arguments. Currently unused.}

@@ -2,36 +2,36 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
 {
   extraneous.argcheck(...)
   ## Just for convenience.
-  sample<-object$sample
-  model<-object$model
-  control<-object$control
-  d<-model$d
-  p<-model$p
-  G<-model$G
-  n<-network.size(model$Yg)
-  sample.size<-control$sample.size
+  sample<-object[["sample"]]
+  model<-object[["model"]]
+  control<-object[["control"]]
+  d<-model[["d"]]
+  p<-model[["p"]]
+  G<-model[["G"]]
+  n<-network.size(model[["Yg"]])
+  sample.size<-control[["sample.size"]]
   
 
   summ<-list(ergmm=object,model=model)
 
   ## Compute the two-stage MLE point estimates.
   if("mle" %in% point.est){
-    if(is.null(object$mle)){
+    if(is.null(object[["mle"]])){
       stop("MLE was not computed for this fit.")
     }
-    if(is.null(object$mle$cov)){
-      if(model$sender || model$receiver || model$sociality)
+    if(is.null(object[["mle"]][["cov"]])){
+      if(model[["sender"]] || model[["receiver"]] || model[["sociality"]])
         warning("Fitting random effects as fixed effects.")
       if(se){
         ## Refit the MLE (mostly for the Hessian)
-        mle<-find.mle(model,object$mle,control=control,hessian=TRUE)
+        mle<-find.mle(model,object[["mle"]],control=control,hessian=TRUE)
       }
-      else mle<-object$mle
+      else mle<-object[["mle"]]
 
-      if(d>0) mle$Z<-scale(mle$Z,scale=FALSE)
+      if(d>0) mle[["Z"]]<-scale(mle[["Z"]],scale=FALSE)
       if(p>0){
         if(se){
-          beta.hess<-mle$hessian[1:p,1:p]
+          beta.hess<-mle[["hessian"]][1:p,1:p]
           
           beta.cov <- try(robust.inverse(-beta.hess), silent=TRUE)
           if(inherits(beta.cov,"try-error")){
@@ -39,57 +39,57 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
             beta.cov <- diag(1/diag(-beta.hess))
           }
         
-        colnames(beta.cov) <- rownames(beta.cov) <- model$coef.names
+        colnames(beta.cov) <- rownames(beta.cov) <- model[["coef.names"]]
         
-        mle$cov<-beta.cov
-        mle$cor<-cov2cor(beta.cov)
+        mle[["cov"]]<-beta.cov
+        mle[["cor"]]<-cov2cor(beta.cov)
         
-        z.values<-mle$beta/sqrt(diag(mle$cov))
-        coef.table<-data.frame(mle$beta,sqrt(diag(mle$cov)),
+        z.values<-mle[["beta"]]/sqrt(diag(mle[["cov"]]))
+        coef.table<-data.frame(mle[["beta"]],sqrt(diag(mle[["cov"]])),
                                z.values,pnorm(abs(z.values),0,1,lower.tail=FALSE),
-                             row.names=model$coef.names)
+                             row.names=model[["coef.names"]])
         }
-        else coef.table<-data.frame(mle$beta,
-                                    row.names=model$coef.names)
+        else coef.table<-data.frame(mle[["beta"]],
+                                    row.names=model[["coef.names"]])
         colnames(coef.table)<-c("Estimate",if(se) "Std. Error",if(se) "z value",if(se) "Pr(>|z|)")
-        mle$coef.table<-coef.table
+        mle[["coef.table"]]<-coef.table
       }
 
-      if(model$sender){
-        if(model$intercept){
-          mle$beta[1]<-mle$beta[1]-mean(mle$sender)
-          mle$sender<-mle$sender-mean(mle$sender)
+      if(model[["sender"]]){
+        if(model[["intercept"]]){
+          mle[["beta"]][1]<-mle[["beta"]][1]-mean(mle[["sender"]])
+          mle[["sender"]]<-mle[["sender"]]-mean(mle[["sender"]])
         }
-        mle$sender.var<-mean(mle$sender^2)
+        mle[["sender.var"]]<-mean(mle[["sender"]]^2)
       }
         
-      if(model$receiver){
-        if(model$intercept){
-          mle$beta[1]<-mle$beta[1]-mean(mle$receiver)
-          mle$receiver<-mle$receiver-mean(mle$receiver)
+      if(model[["receiver"]]){
+        if(model[["intercept"]]){
+          mle[["beta"]][1]<-mle[["beta"]][1]-mean(mle[["receiver"]])
+          mle[["receiver"]]<-mle[["receiver"]]-mean(mle[["receiver"]])
         }
-        mle$receiver.var<-mean(mle$receiver^2)
+        mle[["receiver.var"]]<-mean(mle[["receiver"]]^2)
       }
 
-      if(model$sociality){
-        if(model$intercept){
-          mle$beta[1]<-mle$beta[1]-mean(mle$sociality)
-          mle$sociality<-mle$sociality-mean(mle$sociality)
+      if(model[["sociality"]]){
+        if(model[["intercept"]]){
+          mle[["beta"]][1]<-mle[["beta"]][1]-mean(mle[["sociality"]])
+          mle[["sociality"]]<-mle[["sociality"]]-mean(mle[["sociality"]])
         }
-        mle$sociality.var<-mean(mle$sociality^2)
+        mle[["sociality.var"]]<-mean(mle[["sociality"]]^2)
       }
 
-      object$mle<-mle
+      object[["mle"]]<-mle
     }
-    summ$mle<-object$mle
+    summ[["mle"]]<-object[["mle"]]
   }
 
   ## Compute the posterior mean point estimates.
   if("pmean" %in% point.est){
-    if(is.null(object$sample)){
+    if(is.null(object[["sample"]])){
       stop("MCMC was not was not run for this fit.")
     }
-    if(is.null(object$pmean)){
+    if(is.null(object[["pmean"]])){
       pmean<-list()
       for(name in names(sample)){
         if(is.null(sample[[name]])) next
@@ -101,49 +101,49 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
         }
       }
       if(G>0){
-        pmean$Z.pZK<-t(apply(sample$Z.K,2,tabulate,G))/sample.size
-        pmean$Z.K<-apply(pmean$Z.pZK,1,which.max)
+        pmean[["Z.pZK"]]<-t(apply(sample[["Z.K"]],2,tabulate,G))/sample.size
+        pmean[["Z.K"]]<-apply(pmean[["Z.pZK"]],1,which.max)
       }
     
-      beta.cov<-cov(sample$beta)
-      colnames(beta.cov) <- rownames(beta.cov) <- model$coef.names
+      beta.cov<-cov(sample[["beta"]])
+      colnames(beta.cov) <- rownames(beta.cov) <- model[["coef.names"]]
       
-      pmean$cov<-beta.cov
-      pmean$cor<-cov2cor(beta.cov)
+      pmean[["cov"]]<-beta.cov
+      pmean[["cor"]]<-cov2cor(beta.cov)
       
-      beta.q0<-apply(sample$beta,2,function(x) min(mean(x<=0),mean(x>=0)))
+      beta.q0<-apply(sample[["beta"]],2,function(x) min(mean(x<=0),mean(x>=0)))
       
-      coef.table<-data.frame(pmean$beta,
-                           t(apply(sample$beta,2,function(x)quantile(x,quantiles))),
+      coef.table<-data.frame(pmean[["beta"]],
+                           t(apply(sample[["beta"]],2,function(x)quantile(x,quantiles))),
                            beta.q0,
-                           row.names=model$coef.names)
+                           row.names=model[["coef.names"]])
       colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"Quantile of 0")
-      pmean$coef.table<-coef.table
-      object$pmean<-pmean
+      pmean[["coef.table"]]<-coef.table
+      object[["pmean"]]<-pmean
     }
-    summ$pmean<-object$pmean
+    summ[["pmean"]]<-object[["pmean"]]
   }
   ## Compute the MKL point estimates.
   if("mkl" %in% point.est){
-    if(is.null(object$mkl)){
+    if(is.null(object[["mkl"]])){
       stop("MKL was not produced for this fit.")
     }
-    mkl<-summ$mkl<-object$mkl
-    coef.table<-data.frame(mkl$beta,
-                           row.names=model$coef.names)
+    mkl<-summ[["mkl"]]<-object[["mkl"]]
+    coef.table<-data.frame(mkl[["beta"]],
+                           row.names=model[["coef.names"]])
     colnames(coef.table)<-c("Estimate")
-    summ$mkl$coef.table<-coef.table
+    summ[["mkl"]][["coef.table"]]<-coef.table
   }
 
   if("pmode" %in% point.est){
-    if(is.null(object$pmode)){
+    if(is.null(object[["pmode"]])){
       stop("Conditional posterior mode was not computed for this fit.")
     }
-    summ$pmode<-object$pmode
+    summ[["pmode"]]<-object[["pmode"]]
   }
 
-  if(!is.null(object$mkl)){
-    summ$bic<-bic.ergmm(object)
+  if(!is.null(object[["mkl"]])){
+    summ[["bic"]]<-bic.ergmm(object)
   }
 
   class(summ)<-'summary.ergmm'
@@ -152,82 +152,82 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
 
 print.summary.ergmm<-function(x,...){
   ## For convenience
-  model<-x$model
-  control<-x$ergmm$control
+  model<-x[["model"]]
+  control<-x[["ergmm"]][["control"]]
   
   cat("\n==========================\n")
   cat("Summary of model fit\n")
   cat("==========================\n\n")
 
   cat("Formula:   ")
-  print(model$formula)
+  print(model[["formula"]])
   cat("Attribute: ")
-  if(is.null(model$response)) cat("edges") else cat(model$response)
+  if(is.null(model[["response"]])) cat("edges") else cat(model[["response"]])
   cat("\n")
-  cat("Model:    ",model$family,"\n")
+  cat("Model:    ",model[["family"]],"\n")
   
   digits = max(3, getOption("digits") - 3)
   
-  cat ("MCMC sample of size ", control$sample.size, ", draws are ",
-       control$interval," iterations apart, after burnin of ",control$burnin, " iterations.\n",sep="")
+  cat ("MCMC sample of size ", control[["sample.size"]], ", draws are ",
+       control[["interval"]]," iterations apart, after burnin of ",control[["burnin"]], " iterations.\n",sep="")
        
-  if(!is.null(x$pmean)){
+  if(!is.null(x[["pmean"]])){
     cat("Covariate coefficients posterior means:\n")
-    printCoefmat(as.matrix(x$pmean$coef.table),P.values=TRUE,has.Pvalue=TRUE)
+    printCoefmat(as.matrix(x[["pmean"]][["coef.table"]]),P.values=TRUE,has.Pvalue=TRUE)
     cat("\n")
-    if(!is.null(x$pmean$sender.var))
-      cat("Sender effect variance: ",x$pmean$sender.var,".\n", sep="")
-    if(!is.null(x$pmean$receiver.var))
-      cat("Receiver effect variance: ",x$pmean$receiver.var,".\n", sep="")
-    if(!is.null(x$pmean$sociality.var))
-      cat("Sociality effect variance: ",x$pmean$sociality.var,".\n", sep="")
+    if(!is.null(x[["pmean"]][["sender.var"]]))
+      cat("Sender effect variance: ",x[["pmean"]][["sender.var"]],".\n", sep="")
+    if(!is.null(x[["pmean"]][["receiver.var"]]))
+      cat("Receiver effect variance: ",x[["pmean"]][["receiver.var"]],".\n", sep="")
+    if(!is.null(x[["pmean"]][["sociality.var"]]))
+      cat("Sociality effect variance: ",x[["pmean"]][["sociality.var"]],".\n", sep="")
   }
 
-  if(!is.null(x$mle)){
+  if(!is.null(x[["mle"]])){
     cat("Covariate coefficients MLE:\n")
-    printCoefmat(as.matrix(x$mle$coef.table),P.values=length(names(x$mle$coef.table))>1)
+    printCoefmat(as.matrix(x[["mle"]][["coef.table"]]),P.values=length(names(x[["mle"]][["coef.table"]]))>1)
     cat("\n")
   }
-  if(!is.null(x$bic)){
-    cat("Overall BIC:       ", x$bic$overall,"\n")
-    cat("Likelihood BIC:    ", x$bic$Y,"\n")
-    if(model$d>0){
-      cat("Latent space/clustering BIC:    ", x$bic$Z,"\n")
+  if(!is.null(x[["bic"]])){
+    cat("Overall BIC:       ", x[["bic"]][["overall"]],"\n")
+    cat("Likelihood BIC:    ", x[["bic"]][["Y"]],"\n")
+    if(model[["d"]]>0){
+      cat("Latent space/clustering BIC:    ", x[["bic"]][["Z"]],"\n")
     }
-    if(model$sender){
-      cat("Sender effect BIC:    ", x$bic$sender,"\n")
+    if(model[["sender"]]){
+      cat("Sender effect BIC:    ", x[["bic"]][["sender"]],"\n")
     }
-    if(model$receiver){
-      cat("Receiver effect BIC:    ", x$bic$receiver,"\n")
+    if(model[["receiver"]]){
+      cat("Receiver effect BIC:    ", x[["bic"]][["receiver"]],"\n")
     }
-    if(model$sociality){
-      cat("Sociality effect BIC:    ", x$bic$sociality,"\n")
+    if(model[["sociality"]]){
+      cat("Sociality effect BIC:    ", x[["bic"]][["sociality"]],"\n")
     }
     cat("\n")
   }
 
-  if(!is.null(x$mkl)){
+  if(!is.null(x[["mkl"]])){
     cat("Covariate coefficients MKL:\n")
-    print(x$mkl$coef.table)
+    print(x[["mkl"]][["coef.table"]])
     cat("\n\n")
   }
-  if(!is.null(x$pmode)){
+  if(!is.null(x[["pmode"]])){
     cat("Covariate coefficients posterior mode:\n")
-    print(x$pmode$coef.table)
+    print(x[["pmode"]][["coef.table"]])
     cat("\n\n")
   }
 }
 
 bic.ergmm<-function(object){
-  if(is.null(object$mkl)){
+  if(is.null(object[["mkl"]])){
     stop("MKL estimates were not computed for this fit.")
   }
 
-  n<-network.size(object$model$Yg)
+  n<-network.size(object[["model"]][["Yg"]])
   
-  condZRE<-with(object,find.mle(object$model,mkl,given=ergmm.par(Z=mkl$Z,sender=mkl$sender,receiver=mkl$receiver,sociality=mkl$sociality),control=object$control))
+  condZRE<-with(object,find.mle(object[["model"]],mkl,given=list(Z=mkl[["Z"]],sender=mkl[["sender"]],receiver=mkl[["receiver"]],sociality=mkl[["sociality"]]),control=object[["control"]]))
 
-  bic<-with(object$model,list(Y = -2*condZRE$llk + (p+n*d + (sender + receiver + sociality)*n )*log(n),
+  bic<-with(object[["model"]],list(Y = -2*condZRE[["llk"]] + (p+n*d + (sender + receiver + sociality)*n )*log(n),
                               Z =
                               if(d>0){
                                 if(G>0){
@@ -235,21 +235,21 @@ bic.ergmm<-function(object){
                                   Gsub<--1
                                   while(is.null(mbc.llk)){
                                     Gsub<-Gsub+1
-                                    mbc.llk<-find.clusters(G-Gsub,object$mkl$Z)$mbc.llk
+                                    mbc.llk<-find.clusters(G-Gsub,object[["mkl"]][["Z"]])[["mbc.llk"]]
                                   }
                                   if(Gsub) warning(paste("Bad clustering: treating",Gsub,"clusters as empty."))
                                   -bic(if(d==1) "V" else "VII",mbc.llk,n,d,G)
                                 } else {
-                                  -2*sum(dnorm(object$mkl$Z,0,sqrt(mean(condZRE$Z^2)*d),log=TRUE))+1*log(n*d)
+                                  -2*sum(dnorm(object[["mkl"]][["Z"]],0,sqrt(mean(condZRE[["Z"]]^2)*d),log=TRUE))+1*log(n*d)
                                 }
                               } else 0,
-                              sender=if(sender) -2*sum(dnorm(condZRE$sender,0,sqrt(mean(condZRE$sender^2)),log=TRUE))+1*log(n) else 0,
-                              receiver=if(receiver) -2*sum(dnorm(condZRE$receiver,0,sqrt(mean(condZRE$receiver^2)),log=TRUE))+1*log(n) else 0,
-                              sociality=if(sociality) -2*sum(dnorm(condZRE$sociality,0,sqrt(mean(condZRE$sociality^2)),log=TRUE))+1*log(n) else 0
+                              sender=if(sender) -2*sum(dnorm(condZRE[["sender"]],0,sqrt(mean(condZRE[["sender"]]^2)),log=TRUE))+1*log(n) else 0,
+                              receiver=if(receiver) -2*sum(dnorm(condZRE[["receiver"]],0,sqrt(mean(condZRE[["receiver"]]^2)),log=TRUE))+1*log(n) else 0,
+                              sociality=if(sociality) -2*sum(dnorm(condZRE[["sociality"]],0,sqrt(mean(condZRE[["sociality"]]^2)),log=TRUE))+1*log(n) else 0
                               )
             )
   
-  bic$overall<-sum(unlist(bic))
+  bic[["overall"]]<-sum(unlist(bic))
   
   bic
 }

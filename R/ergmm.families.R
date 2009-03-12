@@ -1,6 +1,6 @@
 ### family-specific functions
 
-# Here, nlog.double.eps=-log(.Machine$double.eps) defined in .First.lib is used to
+# Here, nlog.double.eps=-log(.Machine[["double.eps"]]) defined in .First.lib is used to
 # decide when exp(eta)==exp(eta)+1
 
 ## Bernoulli logit
@@ -23,20 +23,20 @@ EY.Bernoulli.logit<-function(eta,fam.par=NULL) 1/(1+exp(-eta))
 ## Binomial logit
 
 lpY.binomial.logit<-function(Y,eta,fam.par){
-  ifelse(eta>=nlog.double.eps,eta*(Y-fam.par$trials)+lchoose(fam.par$trials,Y),
-         eta*Y-fam.par$trials*log1p(exp(eta))+lchoose(fam.par$trials,Y))
+  ifelse(eta>=nlog.double.eps,eta*(Y-fam.par[["trials"]])+lchoose(fam.par[["trials"]],Y),
+         eta*Y-fam.par[["trials"]]*log1p(exp(eta))+lchoose(fam.par[["trials"]],Y))
 }
 lpYc.binomial.logit<-function(Y,eta,fam.par){
-  ifelse(eta>=nlog.double.eps,eta*(Y-fam.par$trials),
-         eta*Y-fam.par$trials*log1p(exp(eta)))
+  ifelse(eta>=nlog.double.eps,eta*(Y-fam.par[["trials"]]),
+         eta*Y-fam.par[["trials"]]*log1p(exp(eta)))
 }
 pY.binomial.logit<-function(Y,eta,fam.par) exp(lpY.binomial.logit(Y,eta,fam.par))
 dlpY.deta.binomial.logit<-function(Y,eta,fam.par) (Y-EY.binomial.logit(eta,fam.par))
 rsm.binomial.logit<-function(eta,fam.par){
   n<-dim(eta)[1]
-  matrix(rbinom(n*n,fam.par$trials,EY.binomial.logit(eta,fam.par)/fam.par$trials),n,n)
+  matrix(rbinom(n*n,fam.par[["trials"]],EY.binomial.logit(eta,fam.par)/fam.par[["trials"]]),n,n)
 }
-EY.binomial.logit<-function(eta,fam.par) fam.par$trials/(1+exp(-eta))
+EY.binomial.logit<-function(eta,fam.par) fam.par[["trials"]]/(1+exp(-eta))
 
 ## Poisson log
 
@@ -113,15 +113,15 @@ EY.fs<-c(EY.Bernoulli.logit,
          EY.Poisson.log)
 
 fam.par.check<-function(model){
-  if(model$familyID==2){
-    if(is.null(model$fam.par$trials))
+  if(model[["familyID"]]==2){
+    if(is.null(model[["fam.par"]][["trials"]]))
       stop("Binomial family requires parameter `trials'.")
-    model$iconsts<-model$fam.par$trials
+    model[["iconsts"]]<-model[["fam.par"]][["trials"]]
   }
-  if(model$familyID==5){
-    if(is.null(model$fam.par$trials))
+  if(model[["familyID"]]==5){
+    if(is.null(model[["fam.par"]][["trials"]]))
       stop("Binomial (cont) family requires parameter `trials'.")
-    model$dconsts<-model$fam.par$trials
+    model[["dconsts"]]<-model[["fam.par"]][["trials"]]
   }
   model
 }

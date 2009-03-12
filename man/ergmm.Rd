@@ -12,7 +12,7 @@
 }
 \usage{
 ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
-      control=ergmm.control(), user.start=ergmm.par(), prior=ergmm.prior(),
+      control=ergmm.control(), user.start=list(), prior=ergmm.prior(),
       tofit=c("mcmc", "mkl", "mkl.mbc", "procrustes",
       "klswitch"), Z.ref=NULL, Z.K.ref=NULL, seed=NULL,
       verbose=FALSE)
@@ -46,7 +46,7 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
     configuration. If this is done, the remaining paramters are fitted
     conditional on those supplied.}
   \item{prior}{The prior parameters for the model being fitted in the
-    form of a named list or an \link[=ergmm.par.object]{ergmm.par}. See \link{terms.ergmm} for the names to use.
+    form of a named list. See \link{terms.ergmm} for the names to use.
     If given, will override those given in the
     formula terms, making it useful as a convenient way to store and reproduce a
     prior distribution. The list or prior parameters can also be

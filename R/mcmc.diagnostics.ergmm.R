@@ -13,7 +13,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
                                    vertex.i=c(1),...){
   extraneous.argcheck(...)
   
-  if(is.null(x$sample)) stop("MCMC was not run for this ERGMM fit.")
+  if(is.null(x[["sample"]])) stop("MCMC was not run for this ERGMM fit.")
 
   x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
   oldask=par("ask")
@@ -58,14 +58,14 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
 as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,
                              vertex.i=c(1)){
-  n<-network.size(x$model$Yg)
-  G<-x$model$G
-  d<-x$model$d
-  p<-x$model$p
-  start<-x$control$burnin
-  thin<-x$control$interval
+  n<-network.size(x[["model"]][["Yg"]])
+  G<-x[["model"]][["G"]]
+  d<-x[["model"]][["d"]]
+  p<-x[["model"]][["p"]]
+  start<-x[["control"]][["burnin"]]
+  thin<-x[["control"]][["interval"]]
 
-  as.mcmc.list.ergmm.par.list(if(burnin) x$burnin.samples[[burnin]] else x$sample,
+  as.mcmc.list.ergmm.par.list(if(burnin) x[["burnin.samples"]][[burnin]] else x[["sample"]],
                               if(is.null(which.vars)) list(llk=1,
                                                            beta=1:p,
                                                            Z=cbind(rep(vertex.i,each=d),rep(1:d,length(vertex.i))),

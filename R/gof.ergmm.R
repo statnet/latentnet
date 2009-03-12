@@ -8,7 +8,7 @@ gof.ergmm <- function (object, ..., nsim=100,
 		      verbose=FALSE) {
 
   require(ergm,quiet=TRUE)
-  formula <- object$model$formula
+  formula <- object[["model"]][["formula"]]
 
   trms <- ergm.getterms(formula)
   if(length(trms)>2){
@@ -17,7 +17,7 @@ gof.ergmm <- function (object, ..., nsim=100,
     stop("A network object on the RHS of the formula argument must be given")
   }
 
-  nsim <- max(nsim, dim(object$Z)[3])
+  nsim <- max(nsim, dim(object[["Z"]])[3])
 
   all.gof.vars <- all.vars(GOF)
 
@@ -134,28 +134,28 @@ gof.ergmm <- function (object, ..., nsim=100,
     }
 
     if ('model' %in% all.gof.vars) {
-     sim.model[i,] <- summary(update(formula,SimNetworkSeriesObj$networks[[i]] ~ .))
+     sim.model[i,] <- summary(update(formula,SimNetworkSeriesObj[["networks"]][[i]] ~ .))
     }
 
     if ('distance' %in% all.gof.vars) {
-     sim.dist[i,] <- ergm.geodistdist(SimNetworkSeriesObj$networks[[i]])
+     sim.dist[i,] <- ergm.geodistdist(SimNetworkSeriesObj[["networks"]][[i]])
     }
     if ('idegree' %in% all.gof.vars) {
      mesp <- paste("c(",paste(0:(n-1),collapse=","),")",sep="")
-     gi <- SimNetworkSeriesObj$networks[[i]]
+     gi <- SimNetworkSeriesObj[["networks"]][[i]]
      sim.ideg[i,] <- summary(as.formula(paste('gi ~ idegree(',mesp,')',sep="")),drop=FALSE)
-#    temp <- table(degreedist(SimNetworkSeriesObj$networks[[i]], print=verbose)[1,])
+#    temp <- table(degreedist(SimNetworkSeriesObj[["networks"]][[i]], print=verbose)[1,])
 #    sim.ideg[i,] <- c(temp, rep(0, n-length(temp)))
     }
     if ('odegree' %in% all.gof.vars) {
      mesp <- paste("c(",paste(0:(n-1),collapse=","),")",sep="")
-     gi <- SimNetworkSeriesObj$networks[[i]]
+     gi <- SimNetworkSeriesObj[["networks"]][[i]]
      sim.odeg[i,] <- summary(as.formula(paste('gi ~ odegree(',mesp,')',sep="")),drop=FALSE)
     }
     if ('degree' %in% all.gof.vars) {
-     gi <- SimNetworkSeriesObj$networks[[i]]
+     gi <- SimNetworkSeriesObj[["networks"]][[i]]
      if(is.bipartite(gi)){
-      temp <- degreedist(gi, print=FALSE)$event
+      temp <- degreedist(gi, print=FALSE)[["event"]]
       sim.deg[i,] <- c(temp,rep(0,n-length(temp)))
      }else{
       mesp <- paste("c(",paste(0:(n-1),collapse=","),")",sep="")
@@ -163,17 +163,17 @@ gof.ergmm <- function (object, ..., nsim=100,
      }
     }
     if ('espartners' %in% all.gof.vars) {
-     gi <- SimNetworkSeriesObj$networks[[i]]
+     gi <- SimNetworkSeriesObj[["networks"]][[i]]
      mesp <- paste("c(",paste(0:(network.size(gi)-2),collapse=","),")",sep="")
      sim.espart[i,] <- summary(as.formula(paste('gi ~ esp(',mesp,')',sep="")), drop=FALSE)
     }
     if ('dspartners' %in% all.gof.vars) {
-     gi <- SimNetworkSeriesObj$networks[[i]]
+     gi <- SimNetworkSeriesObj[["networks"]][[i]]
      mesp <- paste("c(",paste(0:(network.size(gi)-2),collapse=","),")",sep="")
      sim.dspart[i,] <- summary(as.formula(paste('gi ~ dsp(',mesp,')',sep="")), drop=FALSE)
     }
     if ('triadcensus' %in% all.gof.vars) {
-     gi <- SimNetworkSeriesObj$networks[[i]]
+     gi <- SimNetworkSeriesObj[["networks"]][[i]]
      sim.triadcensus[i,] <- summary(as.formula(paste('gi',triadcensus.formula,sep="")), drop=FALSE)
     }
   }
