@@ -1,0 +1,5 @@
+2.3
+	Removed ergmm.par class --- it has been rendered obsolete by
+	changes in R's handling of partial matching in [[ operator.
+
+	Added a print.ergmm and show.ergmm function.
