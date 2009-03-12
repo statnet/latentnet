@@ -1,6 +1,6 @@
 ergmm.geodesicmatrix<-function(model){
-  Yg<-model$Yg
-  Ym<-model$Ym
+  Yg<-model[["Yg"]]
+  Ym<-model[["Ym"]]
   # For the purpose of geodesic distance, dichotomize the network about its mean.
   Ym<-Ym>mean(Ym,na.rm=TRUE)
   Ym[is.na(Ym)]<-0
@@ -26,7 +26,7 @@ ergmm.geodesicmatrix.edgelist <- function(edgelist, n=max(edgelist), directed=FA
 # Now everything is ready.  Call the C code.
   ans<-.C("geodesic_matrix", as.integer(t(edgelist)), as.integer(n),
     as.integer(nodelist), as.integer(dim(edgelist)[1]), colors=integer(n),
-    gmat=integer(n*n), queue=integer(n), PACKAGE="latentnet") $ gmat
+    gmat=integer(n*n), queue=integer(n), PACKAGE="latentnet")$gmat
   ans[ans==n]<-Inf # length n really means no path exists
   ans=matrix(ans,n,n,byrow=TRUE) # byrow=TRUE is only important when directed==TRUE
   ans

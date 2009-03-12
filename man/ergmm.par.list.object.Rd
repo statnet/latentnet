@@ -17,17 +17,14 @@
   mixed model.
 }
 \details{
-  An \code{ergmm.par} object is essentially a named list of lists of parameter
-  values. Individual parameters can be accessed with \code{[[} (with
-  a character index) or \code{$} operators. \code{[[} operator with a
-  numeric or integer index returns an
-  \code{\link[=ergmm.par.object]{ergmm.par}} object with the the
+  \code{[[} operator with a
+  numeric or integer index returns a
+  list with the the
   configuration with that index. \code{[} operator given a numeric
   vector returns a \code{ergmm.par.list} object with the subset of
   configurations with the indices given.
   
-  The structure of \code{ergmm.par} is derived from the structure of
-  \code{\link[=ergmm.par.object]{ergmm.par}}, with each entry having an
+  The structure of \code{ergmm.par.list} is derived from named lists, with each entry having an
   additional dimension (always the first one), indexed by
   configuration. That is, scalars become vectors, vectors become
   matrixes with the original vectors in rows, and matrixes become
@@ -35,7 +32,7 @@
   first dimension.
 }
 \seealso{
-  \code{\link{ergmm.par}}, \code{\link{ergmm}}
+  \code{\link{ergmm}}
 }
 \keyword{graphs}
 \keyword{utilities}

@@ -3,7 +3,8 @@
 \alias{ergmm.terms}
 \title{Model Terms for Latent Space Random Graph Model}
 \description{
-  Model terms that can be used in an \code{\link{ergmm}} formula.
+  Model terms that can be used in an \code{\link{ergmm}} formula and
+  their parameter names.
 }
 \section{Model Terms}{
   The \code{\link{latentnet}} package itself allows only
@@ -56,6 +57,17 @@
 	  distribution of cluster assignment probabilities. To set it in
 	  the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.pK}.}
       }
+      The following parameters are associated with this term:
+      \describe{
+	\item{\code{Z}}{ Numeric matrix with rows being latent space
+	  positions.}
+	\item{\code{Z.K} (when \eqn{\code{G}>0})}{ Integer vector of cluster assignments. }
+	\item{\code{Z.mean} (when \eqn{\code{G}>0})}{ Numeric matrix with rows being cluster means. }
+	\item{\code{Z.var}  (when \eqn{\code{G}>0})}{ Depending on the model, either a numeric vector with
+	  within-cluster variances or a numeric scalar with the overal latent space variance. }
+	\item{\code{Z.pK}  (when \eqn{\code{G}>0})}{ Numeric vector of probabilities of a vertex being
+	  in a particular cluster.} 
+      }
     }
     \item{\code{rsender(var=1, var.df=3)}}{\emph{Random sender effect.}
       Adds a random sender effect to the model, with normal prior centered
@@ -70,7 +82,14 @@
 	\item{\code{var.df}}{The degrees of freedom
 	  parameter for the scale-inverse-chi-squared prior distribution
 	  of the sender effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
-	  \code{sender.var.df}.}
+	  \code{sender.var.df}.
+	}
+      }
+      The following parameters are associated with this term:
+      \describe{
+	\item{\code{sender}}{ Numeric vector of values of each
+	  vertex's random sender effect.}
+	\item{\code{sender.var}}{ Random sender effect's variance.}
       }
     }
     \item{\code{rreceiver(var=1, var.df=3)}}{\emph{Random receiver effect.}
@@ -88,6 +107,12 @@
 	  of the receiver effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
 	  \code{receiver.var.df}.}
       }
+      The following parameters are associated with this term:
+      \describe{
+	\item{\code{receiver}}{ Numeric vector of values of each
+	  vertex's random receiver effect.}
+	\item{\code{receiver.var}}{ Random receiver effect's variance.}
+      }
     }
     \item{\code{rsociality(var=1, var.df=3)}}{\emph{Random sociality effect.}
       Adds a random sociality effect to the model, with normal prior centered
@@ -104,6 +129,12 @@
 	  of the sociality effect variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
 	  \code{sociality.var.df}.}
       }
+      The following parameters are associated with this term:
+      \describe{
+	\item{\code{sociality}}{ Numeric vector of values of each
+	  vertex's random sociality effect.}
+	\item{\code{sociality.var}}{ Random sociality effect's variance.}
+      }
     }
   }
   
@@ -113,6 +144,8 @@
   of the term. For those formula terms that add more than one covariate,
   a vector can be given for mean and variance. If not, the vectors given
   will be repeated until the needed length is reached.
+
+  Each parameter in this section adds one element to \code{beta} vector.
   \describe{
     \item{\code{latentcov(x, attrname=NULL, mean=0, var=9)}}{\emph{Edge covariates for the
 	latent model.}

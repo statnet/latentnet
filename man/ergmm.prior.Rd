@@ -24,8 +24,8 @@ ergmm.prior(..., adjust.beta.var = TRUE)
 }
 
 \value{
-  An object of class \link[=ergmm.par.object]{ergmm.par} with the
-  arguments as components.
+  A list with the
+  arguments as elements.
 }
 
 \seealso{\code{\link{ergmm}}, \code{\link{terms.ergmm}}}

@@ -29,7 +29,7 @@ ergmm.control<-function(sample.size=4000,
 
 ergmm.prior<-function(...,adjust.beta.var=TRUE){
   prior<-list(...)
-  prior$adjust.beta.var<-adjust.beta.var
+  prior[["adjust.beta.var"]]<-adjust.beta.var
   as.ergmm.par.list(prior)
 }
 

@@ -3,11 +3,11 @@ klswitch.C <- function(Q.start,sample,Z=NULL,maxit=100,verbose=0)
   
   Z.ref<-!is.null(Z)
 
-  n <- if(Z.ref) dim(Z)[1] else dim(sample$Z)[2]
+  n <- if(Z.ref) dim(Z)[1] else dim(sample[["Z"]])[2]
   
-  d <- dim(sample$Z.mean)[3]
-  S <- dim(sample$Z.mean)[1]
-  G <- dim(sample$Z.mean)[2]
+  d <- dim(sample[["Z.mean"]])[3]
+  S <- dim(sample[["Z.mean"]])[1]
+  G <- dim(sample[["Z.mean"]])[2]
 
   if(G>1){
     if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
@@ -18,21 +18,21 @@ klswitch.C <- function(Q.start,sample,Z=NULL,maxit=100,verbose=0)
                n = as.integer(n),
                d = as.integer(d),
                G = as.integer(G),
-               Z = if(Z.ref) as.double(Z) else as.double(sample$Z),
+               Z = if(Z.ref) as.double(Z) else as.double(sample[["Z"]]),
                Z.ref=as.integer(Z.ref),
-             Z.mean = as.double(sample$Z.mean),
-               Z.var = as.double(sample$Z.var),
-               Z.K = as.integer(sample$Z.K),
-               Z.pK = as.double(sample$Z.pK),
+             Z.mean = as.double(sample[["Z.mean"]]),
+               Z.var = as.double(sample[["Z.var"]]),
+               Z.K = as.integer(sample[["Z.K"]]),
+               Z.pK = as.double(sample[["Z.pK"]]),
                Q = as.double(Q.start),
                verbose=as.integer(verbose),
                PACKAGE="latentnet")
     
-    sample$Z.mean<-array(Cret$Z.mean,dim=c(S,G,d))
-    sample$Z.var<-matrix(Cret$Z.var,S,G)
-    sample$Z.K<-matrix(Cret$Z.K,S,n)
-    sample$Z.pK<-matrix(Cret$Z.pK,S,G)
-    attr(sample,"Q")<-array(Cret$Q,dim=c(1,n,G))[1,,]
+    sample[["Z.mean"]]<-array(Cret[["Z.mean"]],dim=c(S,G,d))
+    sample[["Z.var"]]<-matrix(Cret[["Z.var"]],S,G)
+    sample[["Z.K"]]<-matrix(Cret[["Z.K"]],S,n)
+    sample[["Z.pK"]]<-matrix(Cret[["Z.pK"]],S,G)
+    attr(sample,"Q")<-array(Cret[["Q"]],dim=c(1,n,G))[1,,]
   }else{
     attr(sample,"Q")<-matrix(1,n,1)
   }
@@ -49,10 +49,10 @@ labelswitch.K <- function(Z.K,perm)
 
 klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
   Z.ref<-!is.null(Z)
-  n <- if(Z.ref) dim(Z)[1] else dim(sample$Z)[2]
-  d <- dim(sample$Z.mean)[3]
-  S <- dim(sample$Z.mean)[1]
-  G <- dim(sample$Z.mean)[2]
+  n <- if(Z.ref) dim(Z)[1] else dim(sample[["Z"]])[2]
+  d <- dim(sample[["Z.mean"]])[3]
+  S <- dim(sample[["Z.mean"]])[1]
+  G <- dim(sample[["Z.mean"]])[2]
 
   if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
   
@@ -64,17 +64,17 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
              n = as.integer(n),
              d = as.integer(d),
              G = as.integer(G),
-             Z = if(Z.ref) as.double(Z) else as.double(sample$Z),
+             Z = if(Z.ref) as.double(Z) else as.double(sample[["Z"]]),
              Z.ref = as.integer(Z.ref),
-             Z.mean = as.double(sample$Z.mean),
-             Z.var = as.double(sample$Z.var),
-             Z.K = as.integer(sample$Z.K),
-             Z.pK = as.double(sample$Z.pK),
+             Z.mean = as.double(sample[["Z.mean"]]),
+             Z.var = as.double(sample[["Z.var"]]),
+             Z.K = as.integer(sample[["Z.K"]]),
+             Z.pK = as.double(sample[["Z.pK"]]),
              verbose = as.integer(verbose),
              pK = double(S*n*G),
              PACKAGE="latentnet")
 
-  pK<-array(Cret$pK,dim=c(S,n,G))
+  pK<-array(Cret[["pK"]],dim=c(S,n,G))
 
   pK.l<-list()
   for(thread in 1:threads){
@@ -97,10 +97,10 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
                            pK.l=pK.l)
     }
     
-    Z.K<-sample$Z.K
-    Z.pK<-sample$Z.pK
-    Z.mean<-sample$Z.mean
-    Z.var<-sample$Z.var
+    Z.K<-sample[["Z.K"]]
+    Z.pK<-sample[["Z.pK"]]
+    Z.mean<-sample[["Z.mean"]]
+    Z.var<-sample[["Z.var"]]
     
     for(thread in 1:threads){
       from.s<-1+(thread-1)*S/threads
@@ -121,10 +121,10 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
       pK.l[[thread]]<-pK
     }
     
-    sample$Z.K<-Z.K
-    sample$Z.pK<-Z.pK
-    sample$Z.mean<-Z.mean
-    sample$Z.var<-Z.var
+    sample[["Z.K"]]<-Z.K
+    sample[["Z.pK"]]<-Z.pK
+    sample[["Z.mean"]]<-Z.mean
+    sample[["Z.var"]]<-Z.var
 
     Q<-t(apply(Z.K,2,tabulate,nbins=G))/S
     if(verbose>2)
@@ -156,7 +156,7 @@ klswitch.step2.snowFT.slave<-function(i,lib,Q,pK.l){
              best.perms = integer(S*G),
              PACKAGE="latentnet")
 
-  matrix(Cret$best.perms,nrow=S,ncol=G)
+  matrix(Cret[["best.perms"]],nrow=S,ncol=G)
 }
 
 switch.Q.K<-function(K,G,smooth=1/G){

@@ -39,8 +39,7 @@
   \item{x}{an R object of class \code{\link[=ergmm.object]{ergmm}}.
     See documentation for \code{\link{ergmm}}.}
 
-  \item{what}{Character vector, integer, or an object of class
-    \code{\link[=ergmm.par.object]{ergmm.par}} that specifies
+  \item{what}{Character vector, integer, or a list that specifies
     the point estimates to be used. Can be one of the follwoing:
     \describe{
       \item{\code{"mkl"}}{This is the defult. Plots the Minimum Kulblack-Leibler
@@ -57,7 +56,8 @@
     with their cluster colors.}
       \item{\code{"density"}}{Plots density and contours of the posterior
 	latent positions, and, in cluster models, each cluster.}
-      \item{\code{\link[=ergmm.par.object]{ergmm.par}}}{Plots the configuration contained in \code{ergmm.fit}.}
+      \item{\code{list}}{Plots the
+    configuration contained in the list.}
       \item{integer}{Plots the configuration of \code{ergm.fit}'th
 	stored MCMC iteration.}
     }

@@ -11,7 +11,7 @@
   \item{object}{ An obejct of class \code{\link[=ergmm.object]{ergmm}}. }
   \item{type}{ One of "mkl", "start", "mle", "pmean", "mkl",
     "pmode", "post", an index of the iteration to use, or a
-    \code{\link{ergmm.par}} object, for the configuration of parameters based on
+    list, for the configuration of parameters based on
     which the prediction is made. An exception is "post", which computes
     the expected dyad values integrated over the posterior. }
   \item{\dots}{Additional arguments. Currently unused.}
