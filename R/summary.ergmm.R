@@ -46,7 +46,7 @@ summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,
         
         z.values<-mle[["beta"]]/sqrt(diag(mle[["cov"]]))
         coef.table<-data.frame(mle[["beta"]],sqrt(diag(mle[["cov"]])),
-                               z.values,pnorm(abs(z.values),0,1,lower.tail=FALSE),
+                               z.values,2*pnorm(abs(z.values),0,1,lower.tail=FALSE),
                              row.names=model[["coef.names"]])
         }
         else coef.table<-data.frame(mle[["beta"]],
