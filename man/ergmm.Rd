@@ -32,7 +32,7 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
     \code{g} is used.}
   \item{family}{A character vector that is one of "Bernoulli" (the default),
     "binomial", or "Poisson", specifying the conditional distribution of
-    each edge value. See \code{Details} for more information.}
+    each edge value.}
   \item{fam.par}{For those families that require additional parameters,
     a list.}
   \item{control}{The MCMC parameters that do not affect the posterior
