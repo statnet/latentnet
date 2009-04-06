@@ -1,5 +1,6 @@
 \name{ergmm.control}
 \alias{ergmm.control}
+\alias{control.ergmm}
 \title{Auxiliary for Controlling ERGMM Fitting}
 \description{
   Auxiliary function as user interface for \code{ergmm}
@@ -7,7 +8,7 @@
   set parameters that affect the sampling but do not affect the posterior distribution.
 }
 \usage{
-ergmm.control(sample.size=4000,
+control.ergmm(sample.size=4000,
               burnin=10000,
               interval=10,
               threads=1,

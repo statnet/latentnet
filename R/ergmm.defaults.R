@@ -3,7 +3,7 @@
 ## for glm.
 
 ## Variables affecting the sampling process but not the posterior distribution.
-ergmm.control<-function(sample.size=4000,
+ergmm.control<-control.ergmm<-function(sample.size=4000,
                         burnin=10000,
                         interval=10,
                         threads=1,
