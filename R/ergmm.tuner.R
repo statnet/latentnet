@@ -106,7 +106,7 @@ backoff.check<-function(model,sample,control){
     backoff<-+1
   }
   if(backoff){
-    backoff.str<-paste("Pilot run had catastrophically",if(backoff<0) "low" else "high", "acceptance rates, and will be redone with",if(backoff<0) "smaller" else "bigger", "proposal variances. If you see this message several times in a row, it may be due to an unknown bug or a posterior distribution the algorithm cannot properly explore. Either way, please report it.",sep=" ")
+    backoff.str<-paste("Pilot run had catastrophically",if(backoff<0) "low" else "high", "acceptance rates, and will be redone with",if(backoff<0) "smaller" else "bigger", "proposal variances. If you see this message several times in a row, it may be due to too much variability in acceptance rate, an unknown bug or a posterior distribution the algorithm cannot properly explore. Increase burn-in period, and if that does not help, please report it.",sep=" ")
     if(control[["verbose"]]) cat(paste(backoff.str,"\n",sep=""))
     else warning(backoff.str)
   }
