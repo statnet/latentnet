@@ -141,8 +141,8 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              sender.var=if(model[["sociality"]]) as.double(start[["sociality.var"]]) else as.double(start[["sender.var"]]),
              receiver.var=as.double(start[["receiver.var"]]),
              
-             prior.sender.var=as.double(prior[["sender.var"]]),
-             prior.sender.var.df=as.double(prior[["sender.var.df"]]),
+             prior.sender.var=if(model[["sociality"]]) as.double(prior[["sociality.var"]]) else as.double(prior[["sender.var"]]),
+             prior.sender.var.df=if(model[["sociality"]]) as.double(prior[["sociality.var.df"]]) else as.double(prior[["sender.var.df"]]),
              prior.receiver.var=as.double(prior[["receiver.var"]]),
              prior.receiver.var.df=as.double(prior[["receiver.var.df"]]),
              
