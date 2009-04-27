@@ -39,7 +39,7 @@
 data(tribes)
 tribes.fit<-ergmm(tribes~latent(d=2,G=3),response="sign.012",family="binomial.logit",fam.par=list(trials=2))
 # Edge color must be set manually, for green ties to represent alliance
-# and for ed ties to represent enmity.
+# and for red ties to represent enmity.
 plot(tribes.fit,edge.col=as.matrix(tribes,"gama",m="a")*3+as.matrix(tribes,"rova",m="a")*2,pie=TRUE)
 }
 \keyword{datasets}
