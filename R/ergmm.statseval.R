@@ -107,8 +107,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     
     if(x[["control"]][["verbose"]]) cat("Using the highest-likelihood iteration to seed another MLE fit... ")
     mle2 <- find.mle.loop(x[["model"]],x[["mcmc.mle"]],control=x[["control"]])
-    if(x[["model"]][["d"]]>0)
-      mle2[["Z"]]<-scale(mle2[["Z"]],scale=FALSE)
+    mle2<-scale(x[["model"]],mle2)
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
   else mle2<-list(llk=-Inf)
@@ -117,9 +116,9 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   
   if(mle2[["llk"]]>mle1[["llk"]]) x[["mle"]]<-mle2 else x[["mle"]]<-mle1
   
-  if(x[["model"]][["d"]]>0){
-    x[["mle"]][["Z"]]<-scale(x[["mle"]][["Z"]],scale=FALSE)
-    
+  x[["mle"]]<-scale(x[["model"]],x[["mle"]])
+
+  if(x[["model"]][["d"]]){
     if(!require(shapes,quietly=TRUE)){
       stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
     }
@@ -188,7 +187,7 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
       stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
     }
   }
-  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-scale(x[["mkl"]][["Z"]],scale=FALSE)
+  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-scale(x[["model"]],x[["mkl"]])
   if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-procOPA(Z.ref,x[["mkl"]][["Z"]],scale=FALSE,reflect=TRUE)[["Bhat"]]
   if(x[["control"]][["verbose"]]) cat("Finished.\n")
   x
@@ -242,4 +241,35 @@ best.avail.Z.K.ref.ergmm<-function(x){
   if(!is.null(x[["start"]][["Z.K"]])) return(x[["start"]][["Z.K"]])
   
   return(find.clusters(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
+}
+
+scale<-function (x,...) 
+  UseMethod("scale")
+
+scale.ergmm.model<-function(model,theta){
+  if(!is.null(theta[["Z"]])){
+    Z.center<-colMeans(theta[["Z"]])
+    theta[["Z"]]<-sweep(theta[["Z"]],2,Z.center,check.margin=FALSE)
+    if(!is.null(theta[["Z.mean"]]))
+      theta[["Z.mean"]]<-sweep(theta[["Z.mean"]],2,Z.center,check.margin=FALSE)
+  }
+  if(model[["intercept"]]){
+    shift<-0
+
+    if(!is.null(theta[["sociality"]])){
+      shift.mul<-1+is.directed(model[["Yg"]])
+      shift<-shift+mean(theta[["sociality"]])*shift.mul
+      theta[["sociality"]]<-theta[["sociality"]]-mean(theta[["sociality"]])
+    }
+    
+    for(eff in c("sender","receiver")){
+      if(!is.null(theta[[eff]])){
+        shift<-shift+mean(theta[[eff]])
+        theta[[eff]]<-theta[[eff]]-mean(theta[[eff]])
+      }
+    }
+
+    theta[["beta"]][1]<-theta[["beta"]][1]+shift
+  }
+  theta
 }
