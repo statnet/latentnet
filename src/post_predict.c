@@ -92,6 +92,7 @@ void post_pred_wrapper(int *S,
 			  0, // lpcoef
 			  0 // lpRE
     };
+    if(model.sociality) par.receiver=par.sender;
     ergmm_par_pred(&model,&par);
   }
 
