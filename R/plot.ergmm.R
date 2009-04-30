@@ -16,6 +16,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                        pie = FALSE,
                        labels=FALSE,
                        rand.eff=NULL,
+                       rand.eff.cap=NULL,
                        plot.means=TRUE,plot.vars=TRUE,
                        suppress.axes=FALSE,
                        jitter1D=1,curve1D=TRUE,
@@ -296,7 +297,8 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       rand.eff.mul<-exp((summ["sender"][[1]]+summ["receiver"][[1]]))
     else      
       rand.eff.mul<-exp(summ[rand.eff][[1]])
-    rand.eff.mul<-sqrt(rand.eff.mul/exp(mean(log(rand.eff.mul))))
+    if(!is.null(rand.eff.cap)) rand.eff.mul<-pmax(pmin(rand.eff.mul,exp(rand.eff.cap)),exp(-rand.eff.cap))
+    rand.eff.mul<-sqrt(rand.eff.mul)
     vertex.cex<-vertex.cex*rand.eff.mul
   }
   vertex.cex<-rep(vertex.cex,length.out=n)
