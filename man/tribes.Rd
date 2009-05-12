@@ -3,8 +3,8 @@
 \docType{data}
 \title{Read Highland Tribes}
 \description{
-  A network of political alliances (``gama'') and enmities (``rova'')
-  among the 16 tribes of Eastern Central Highlands of New Guinea,
+  A network of political alliances and enmities
+  among the 16 Gahuku-Gama sub-tribes of Eastern Central Highlands of New Guinea,
   documented by Read (1954).
 }
 \usage{data(tribes)}
@@ -12,9 +12,10 @@
   An undirected \code{\link[network]{network}} object with no loops, having the following attributes:
   \describe{
     \item{\code{\%v\% "vertex.names"}}{Character attribute with names of tribes.}
-    \item{\code{\%e\% "gama"}}{Logical attribute indicating an
+    \item{\code{\%e\% "pos"}}{Logical attribute indicating an
       alliance relationship.}
-    \item{\code{\%e\% "rova"}}{Logical attribute indicating a hostile relationship.}
+    \item{\code{\%e\% "neg"}}{Logical attribute indicating a hostile
+      relationship ("rova").}
     \item{\code{\%e\% "sign"}}{Numeric attribute coding -1 for enmity, 0
       for no relationship, and 1 for alliance.}
     \item{\code{\%e\% "sign.012"}}{Numeric attribute coding 0 for enmity, 1
@@ -28,7 +29,8 @@
   This network shows 3 clusters.
 }
 \source{
-  \url{http://vlado.fmf.uni-lj.si/pub/networks/data/UciNet/UciData.htm#gama}
+  \url{http://vlado.fmf.uni-lj.si/pub/networks/data/UciNet/UciData.htm#gama},
+  with corrections from Read (1954).
 }
 \references{
   Taken from UCINET IV, which cites the following:
@@ -40,7 +42,7 @@ data(tribes)
 tribes.fit<-ergmm(tribes~latent(d=2,G=3),response="sign.012",family="binomial.logit",fam.par=list(trials=2))
 # Edge color must be set manually, for green ties to represent alliance
 # and for red ties to represent enmity.
-plot(tribes.fit,edge.col=as.matrix(tribes,"gama",m="a")*3+as.matrix(tribes,"rova",m="a")*2,pie=TRUE)
+plot(tribes.fit,edge.col=as.matrix(tribes,"ps",m="a")*3+as.matrix(tribes,"neg",m="a")*2,pie=TRUE)
 }
 \keyword{datasets}
 \keyword{multivariate}
