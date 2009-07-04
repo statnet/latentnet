@@ -22,9 +22,9 @@ tribes.fit<-ergmm(tribes~latent(d=2,G=3),response="sign.012",family="binomial",f
 plot(tribes.fit,edge.col=as.matrix(tribes,"gama",m="a")*3+as.matrix(tribes,"rova",m="a")*2,pie=TRUE)
 
 data(davis)
-davis.fit<-ergmm(davis~latent(d=2,G=2))
+davis.fit<-ergmm(davis~latent(d=2,G=2)+rsociality)
 mcmc.diagnostics(davis.fit)
-plot(davis.fit,pie=TRUE)
+plot(davis.fit,pie=TRUE,rand.eff="sociality")
 
 tribes.fit3<-ergmm(tribes~latent(d=3,G=3),response="sign.012",family="binomial",fam.par=list(trials=2))
 plot(tribes.fit3,pie=TRUE)
