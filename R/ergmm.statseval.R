@@ -243,15 +243,19 @@ best.avail.Z.K.ref.ergmm<-function(x){
   return(find.clusters(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
 }
 
+# We are overriding the generic for "scale" to make it more flexible.
 scale<-function (x,...) 
   UseMethod("scale")
 
 scale.ergmm.model<-function(model,theta){
   if(!is.null(theta[["Z"]])){
-    Z.center<-colMeans(theta[["Z"]])
-    theta[["Z"]]<-sweep(theta[["Z"]],2,Z.center,check.margin=FALSE)
-    if(!is.null(theta[["Z.mean"]]))
+    if(!is.null(theta[["Z.mean"]])){
+      Z.center<-colMeans(theta[["Z.mean"]])
       theta[["Z.mean"]]<-sweep(theta[["Z.mean"]],2,Z.center,check.margin=FALSE)
+    }else{
+      Z.center<-colMeans(theta[["Z"]])
+    }
+    theta[["Z"]]<-sweep(theta[["Z"]],2,Z.center,check.margin=FALSE)
   }
   if(model[["intercept"]]){
     shift<-0
