@@ -107,7 +107,7 @@
 \alias{switch.Q.K}
 \alias{labelswitch.K}
 \alias{get.beta.eff}
-\alias{scale.ergm.model}
+\alias{scale.ergmm.model}
 \alias{scale}
 
 \alias{post.predict.C}
@@ -149,6 +149,7 @@
 \alias{ergmm.eta}
 \alias{ergmm.EY}
 \alias{lp.works}
+\alias{lpsum}
 
 \alias{cov.beta.ext}
 \alias{get.init.deltas}

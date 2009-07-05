@@ -99,7 +99,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     if(x[["control"]][["verbose"]]) cat("Using the conditional posterior mode to seed an MLE fit... ")
     mle1<-find.mle.loop(x[["model"]],x[["start"]],control=x[["control"]])
     if(x[["control"]][["verbose"]]) cat(" Finished.\n")
-  }else mle1<-list(llk=-Inf)
+  }else mle1<-list(lpY=-Inf)
   
   if(!is.null(x[["mcmc.mle"]])){
     ## Use the iteration with the highest probability to seed another
@@ -110,11 +110,11 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     mle2<-scale(x[["model"]],mle2)
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
-  else mle2<-list(llk=-Inf)
-  if(is.null(mle2)) mle2<-list(llk=-Inf)
+  else mle2<-list(lpY=-Inf)
+  if(is.null(mle2)) mle2<-list(lpY=-Inf)
   
   
-  if(mle2[["llk"]]>mle1[["llk"]]) x[["mle"]]<-mle2 else x[["mle"]]<-mle1
+  if(mle2[["lpY"]]>mle1[["lpY"]]) x[["mle"]]<-mle2 else x[["mle"]]<-mle1
   
   x[["mle"]]<-scale(x[["model"]],x[["mle"]])
 
@@ -172,7 +172,7 @@ find.pmode.loop<-function(model,start,prior,control){
   for(i in 1:control[["mle.maxit"]]){
     if(control[["verbose"]]>1) cat(i,"")
     pmode.old<-pmode
-    pmode<-find.mpe(model,pmode,prior=prior,given=as.ergmm.par.list(list(Z.K=pmode[["Z.K"]])),control=control)
+    pmode<-find.mpe(model,pmode,prior=prior,given=list(Z.K=pmode[["Z.K"]]),control=control)
     if(model[["G"]]>1) pmode[["Z.K"]]<-find.clusters(model[["G"]],pmode[["Z"]])[["Z.K"]]
     if(all.equal(pmode.old,pmode)[1]==TRUE) break
   }
@@ -247,7 +247,8 @@ best.avail.Z.K.ref.ergmm<-function(x){
 scale<-function (x,...) 
   UseMethod("scale")
 
-scale.ergmm.model<-function(x,theta){
+scale.ergmm.model<-function(x,theta,...){
+  extraneous.argcheck(...)
   if(!is.null(theta[["Z"]])){
     if(!is.null(theta[["Z.mean"]])){
       Z.center<-colMeans(theta[["Z.mean"]])

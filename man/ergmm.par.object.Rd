@@ -26,7 +26,7 @@
     probability/density of network, the covariate coefficients, the
     latent space positions and parameters, and the random effects and
     their variances, conditional on cluster assignments. \cr
-    \code{llk}: \eqn{\log p(Y|\dots)}\tab Depending on the model, the log-probability or
+    \code{lpY}: \eqn{\log p(Y|\dots)}\tab Depending on the model, the log-probability or
     log-density of the network conditional on all the parameters. \cr
     \code{lpZ}: \eqn{\log p(Z|\mu,\sigma,K)} \tab Log-density of latent space positions conditional on
     latent space or cluster parameters and cluster assignments. \cr

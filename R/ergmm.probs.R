@@ -174,11 +174,11 @@ ergmm.lpY.C<-function(model,theta){
             
             observed=as.integer(observed),
 
-            llk=double(1),
+            lpY=double(1),
             PACKAGE="latentnet")
   
 
-  ret[["llk"]]
+  ret[["lpY"]]
 }
 
 observed.dyads<-function(Yg){
@@ -344,7 +344,7 @@ find.mle<-function(model,start,given=list(),control,
     fit.vars[[name]]<-not.given(name,start,given)
   mpe<-find.mpe(model,start,given=given,control=control,
                 hessian=hessian,mlp=mllk,opt="lpY",fit.vars=fit.vars)
-  if(mllk) mpe[["llk"]]<-mpe[["mlp"]]
+  if(mllk) mpe[["lpY"]]<-mpe[["mlp"]]
   mpe
 }
 
@@ -629,4 +629,8 @@ ergmm.lpLV.grad<-function(theta,prior,given=list()){
   if(not.given("Z.var",theta,given)) deriv[["Z.var"]]<-prior[["Z.var.df"]]*prior[["Z.var"]]/theta[["Z.var"]]^2/2-(prior[["Z.var.df"]]/2+1)/theta[["Z.var"]]
   if(not.given("Z.mean",theta,given)) deriv[["Z.mean"]]<--theta[["Z.mean"]]/prior[["Z.mean.var"]]
   deriv
+}
+
+lpsum<-function(theta,which=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+  sum(sapply(which,function(lp) if(is.null(theta[[lp]])) 0 else theta[[lp]]))
 }

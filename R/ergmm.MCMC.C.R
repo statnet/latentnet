@@ -103,7 +103,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              
              vX=as.double(unlist(model[["X"]])),  
              
-             llk.mcmc=double(sample.size+RESERVED),
+             lpY.mcmc=double(sample.size+RESERVED),
              lpZ.mcmc=if(!is.null(start[["Z"]]))double(sample.size+RESERVED) else double(0),
              lpbeta.mcmc=if(p>0)double(sample.size+RESERVED) else double(0),
              lpRE.mcmc=if(model[["sender"]]||model[["sociality"]]||model[["receiver"]])double(sample.size+RESERVED) else double(0),
@@ -166,7 +166,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
 #  cat("Finished C routine.\n")
   
   sample<-list(## MCMC Sample
-                llk=Cret[["llk.mcmc"]],
+                lpY=Cret[["lpY.mcmc"]],
                 lpZ=Cret[["lpZ.mcmc"]],
                 lpbeta=Cret[["lpbeta.mcmc"]],
                 lpRE=Cret[["lpRE.mcmc"]],
@@ -228,9 +228,9 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
                               interval.l=interval.l,
                               seed=floor(runif(6,0,.Machine[["integer.max"]])))
   mcmc.mle<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
-                                         function(i) mcmc.out.l[[i]][["mcmc.mle"]][["llk"]]))]][["mcmc.mle"]]
+                                         function(i) mcmc.out.l[[i]][["mcmc.mle"]][["lpY"]]))]][["mcmc.mle"]]
   mcmc.pmode<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
-                                         function(i) mcmc.out.l[[i]][["mcmc.pmode"]][["llk"]]))]][["mcmc.pmode"]]
+                                         function(i) lpsum(mcmc.out.l[[i]][["mcmc.pmode"]])))]][["mcmc.pmode"]]
   result.list<-list(sample=list(),mcmc.mle=mcmc.mle,mcmc.pmode=mcmc.pmode)
   for(i in 1:length(mcmc.out.l)) result.list[["sample"]][[i]]<-mcmc.out.l[[i]][["sample"]]
   result.list
