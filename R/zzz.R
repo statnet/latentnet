@@ -13,7 +13,7 @@
               substring(ehelp[3],first=16),".\n", sep=""))
     
     cat(paste(
-"copyright (c) 2003-2008, Pavel N. Krivitsky, University of Washington\n",
+"copyright (c) 2003-2009, Pavel N. Krivitsky, University of Washington\n",
 "                         Mark S. Handcock, University of Washington\n",
 "                         and others; see LICENSE for the full list of\n",
 "                         contributors.\n"
