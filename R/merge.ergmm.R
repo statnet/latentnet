@@ -1,8 +1,10 @@
 ## A routine to merge replications of ergmm calls with same inputs
 ## but different random seeds and/or starting values.
 
-merge.ergmm<-function(object,...,verbose=FALSE){
+merge.ergmm<-function(x,y,...,verbose=FALSE){
   # Pairwise is may not be the most efficient way to do it, but it is the simplest.
+  if(verbose) cat(".")
+  object<-combine.2ergmm(x,y)
   for(mergewith in list(...)){
     if(verbose) cat(".")
     object<-combine.2ergmm(object,mergewith)

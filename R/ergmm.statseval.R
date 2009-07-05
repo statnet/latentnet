@@ -247,7 +247,7 @@ best.avail.Z.K.ref.ergmm<-function(x){
 scale<-function (x,...) 
   UseMethod("scale")
 
-scale.ergmm.model<-function(model,theta){
+scale.ergmm.model<-function(x,theta){
   if(!is.null(theta[["Z"]])){
     if(!is.null(theta[["Z.mean"]])){
       Z.center<-colMeans(theta[["Z.mean"]])
@@ -257,11 +257,11 @@ scale.ergmm.model<-function(model,theta){
     }
     theta[["Z"]]<-sweep(theta[["Z"]],2,Z.center,check.margin=FALSE)
   }
-  if(model[["intercept"]]){
+  if(x[["intercept"]]){
     shift<-0
 
     if(!is.null(theta[["sociality"]])){
-      shift.mul<-1+is.directed(model[["Yg"]])
+      shift.mul<-1+is.directed(x[["Yg"]])
       shift<-shift+mean(theta[["sociality"]])*shift.mul
       theta[["sociality"]]<-theta[["sociality"]]-mean(theta[["sociality"]])
     }
