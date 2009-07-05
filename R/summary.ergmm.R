@@ -227,7 +227,7 @@ bic.ergmm<-function(object){
   
   condZRE<-with(object,find.mle(object[["model"]],mkl,given=list(Z=mkl[["Z"]],sender=mkl[["sender"]],receiver=mkl[["receiver"]],sociality=mkl[["sociality"]]),control=object[["control"]]))
 
-  bic<-with(object[["model"]],list(Y = -2*condZRE[["llk"]] + (p+n*d + (sender + receiver + sociality)*n )*log(n),
+  bic<-with(object[["model"]],list(Y = -2*condZRE[["lpY"]] + (p+n*d + (sender + receiver + sociality)*n )*log(n),
                               Z =
                               if(d>0){
                                 if(G>0){

@@ -66,7 +66,7 @@ as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
   thin<-x[["control"]][["interval"]]
 
   as.mcmc.list.ergmm.par.list(if(burnin) x[["burnin.samples"]][[burnin]] else x[["sample"]],
-                              if(is.null(which.vars)) list(llk=1,
+                              if(is.null(which.vars)) list(lpY=1,
                                                            beta=1:p,
                                                            Z=cbind(rep(vertex.i,each=d),rep(1:d,length(vertex.i))),
                                                            sender=vertex.i,

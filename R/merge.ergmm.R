@@ -30,12 +30,12 @@ combine.2ergmm<-function(fit1,fit2){
   ## [["model"]] and [["prior"]] are identical.
 
   # MCMC MLE
-  if(fit2[["mcmc.mle"]][["llk"]]>fit1[["mcmc.mle"]][["llk"]])
+  if(fit2[["mcmc.mle"]][["lpY"]]>fit1[["mcmc.mle"]][["lpY"]])
     fit1[["mcmc.mle"]]<-fit2[["mcmc.mle"]]
 
   # MCMC posterior mode
-  if(with(fit2[["mcmc.pmode"]],llk+lpbeta+lpLV+lpRE+lpREV+lpZ)>
-     with(fit1[["mcmc.pmode"]],llk+lpbeta+lpLV+lpRE+lpREV+lpZ))
+  if(lpsum(fit2[["mcmc.pmode"]])>
+     lpsum(fit1[["mcmc.pmode"]]))
     fit1[["mcmc.pmode"]]<-fit2[["mcmc.pmode"]]
 
   # Burnin start
