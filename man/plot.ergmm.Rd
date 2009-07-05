@@ -136,7 +136,7 @@
   black circle) inside the plotting symbol.
 }
 \value{If applicable, invisibly returns the vertex positions plotted.}
-\seealso{\code{\link{ergmm}},\link[=ergmm.object]{\code{ergmm} (object)}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
+\seealso{\code{\link{ergmm}},\code{\link{ergmm.object}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
 #
 # Using Sampson's Monk data, lets fit a 
