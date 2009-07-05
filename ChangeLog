@@ -1,5 +1,7 @@
-2.3
+2.2
+	Ability to fit random effects (actor heterogeneity) models.
+
 	Removed ergmm.par class --- it has been rendered obsolete by
 	changes in R's handling of partial matching in [[ operator.
 
-	Added a print.ergmm and show.ergmm function.
+	Many bug fixes and miscellaneous changes.

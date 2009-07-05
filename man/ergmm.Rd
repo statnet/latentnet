@@ -5,8 +5,9 @@
 \title{Fit a Latent Space Random Graph Model}
 \description{
   \code{\link{ergmm}} is used to fit latent space and latent space cluster random network models, 
-    as described in Hoff, Raftery and Handcock (2002),
-    Handcock, Raftery and Tantrum (2005), and the article we are working on.
+    as described by Hoff, Raftery and Handcock (2002),
+    Handcock, Raftery and Tantrum (2005), and Krivitsky, Handcock,
+    Raftery, and Hoff (2009).
   \code{\link{ergmm}} can return either a Bayesian model fit
   or the two-stage MLE.
 }
@@ -74,20 +75,23 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
 \seealso{network, set.vertex.attributes, set.network.attributes,
   \code{\link{summary.ergmm}}, \link{terms.ergmm}}
 \references{
-  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock.
-  \emph{Latent space approaches to social network analysis.} 
-  Journal of the American Statistical Association, Dec 2002, Vol.97, 
-  Iss. 460; pp. 1090-1098.
-  
-  Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
+   Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum (2002).
   \emph{Model-Based Clustering for Social Networks.} Journal of the Royal
-  Statistical Society: Series A, 2007, Vol. 170, Iss. 2; pp. 301-354.
+  Statistical Society: Series A, 170(2), 301-354.
+  
+  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock (2002).
+  \emph{Latent space approaches to social network analysis.} 
+  Journal of the American Statistical Association, 97(460), 
+  1090-1098.
   
   Pavel N. Krivitsky, Mark S. Handcock, Adrian E. Raftery, and Peter
-  D. Hoff. \emph{Representing Degree Distributions, Clustering, and
-  Homophily in Social Networks With Latent Cluster Random Effects
-  Models.} Center for Statistics and Social Sciences Working Paper
-  no. 77, Aug 2007. 
+  D. Hoff (2009). \emph{Representing degree distributions, clustering, and
+  homophily in social networks with latent cluster random effects
+  models}.  Social Networks, 31(3), 204-213.
+
+ Pavel N. Krivitsky and Mark S. Handcock (2008).
+ \emph{Fitting Position Latent Cluster Models for Social Networks with
+ \code{latentnet}}. Journal of Statistical Software, 24(5).
 }
 \examples{
 

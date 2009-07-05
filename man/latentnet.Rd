@@ -38,19 +38,28 @@
 }
 \seealso{\code{\link{ergmm}}, \link{terms.ergmm}}
 \references{
- Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock.
- \emph{Latent space approaches to social network analysis}.
- Journal of the American Statistical Association, Dec 2002, Vol. 97, 
- Iss. 460;  pg. 1090-1098.
-
- Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum.
+  Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum (2007).
  \emph{Model-Based Clustering for Social Networks}.
  Journal of the Royal Statistical Society: Series A (Statistics in
- Society), 2007, Vol. 170, Iss. 2; pg. 301-354.
+ Society), 170(2), 301-354.
+  
+  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock (2002).
+ \emph{Latent space approaches to social network analysis}.
+ Journal of the American Statistical Association, 97(460), 1090-1098.
 
- Susan M. Shortreed, Mark S. Handcock, and Peter D. Hoff.
+ Pavel N. Krivitsky, Mark S. Handcock, Adrian E. Raftery, and Peter
+ D. Hoff (2009).
+ \emph{Representing degree distributions, clustering, and homophily in
+   social networks with latent cluster random effects models}.
+ Social Networks, 31(3), 204-213.
+
+ Pavel N. Krivitsky and Mark S. Handcock (2008).
+ \emph{Fitting Position Latent Cluster Models for Social Networks with
+ \code{latentnet}}. Journal of Statistical Software, 24(5).
+
+ Susan M. Shortreed, Mark S. Handcock, and Peter D. Hoff (2006).
  \emph{Positional Estimation within the Latent Space Model for
-   Networks}. Methodology, 2006, Vol. 2, Iss. 1; pg. 24-33.
+   Networks}. Methodology, 2(1), 24-33.
 }
 \keyword{graphs}
 \keyword{package}
