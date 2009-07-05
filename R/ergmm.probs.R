@@ -407,11 +407,10 @@ find.mpe<-function(model,start,given=list(),prior=list(),control,fit.vars=NULL,o
     mpe[["mlp"]]<-ergmm.lp(model,mpe,prior=prior,given=given,opt=opt)
   
   if(hessian) mpe[["hessian"]]<-vmpe[["hessian"]]
-  class(mpe)<-"ergmm.par"
   mpe
 }
 
-ergmm.lp<-function(model,theta,prior,given=ergmm.par(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV"),up.to.const=FALSE){
+ergmm.lp<-function(model,theta,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV"),up.to.const=FALSE){
 
   lpY<-if("lpY" %in% opt) ergmm.lpY(model,theta,
                                         given=given,up.to.const=up.to.const) else 0
