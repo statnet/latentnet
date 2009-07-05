@@ -1,5 +1,7 @@
 \name{ergmm.object}
 \alias{ergmm.object}
+\alias{print.ergmm}
+\alias{show.ergmm}
 \title{Class of Fitted Exponential Random Graph Mixed Models}
 \description{
   A class \code{\link[=ergmm.object]{ergmm}} to represent a fitted exponential random graph

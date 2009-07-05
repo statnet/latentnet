@@ -56,8 +56,8 @@
 \alias{ergmm.midarrow}
 \alias{ergmm.plotting.region}
 \alias{ergmm.plotting.vertex.radius} 
-\alias{tetrahedra3d}
-\alias{tetrahedron3d}
+\alias{THra3d}
+\alias{THron3d}
 
 \alias{ergmm.fit.deps}
 \alias{ergmm.geodesicmatrix}
@@ -100,15 +100,21 @@
 \alias{bayesmbc.snowFT}
 \alias{klswitch.snowFT}
 \alias{klswitch.step2.snowFT.slave}
+\alias{backoff.check}
 
 \alias{seldrop}
 \alias{sim.1.ergmm}
 \alias{switch.Q.K}
 \alias{labelswitch.K}
 \alias{get.beta.eff}
+\alias{scale.ergm.model}
+\alias{scale}
 
 \alias{post.predict.C}
 \alias{post.predict.R}
+
+\alias{combine.2ergmm}
+
 
 %
 % These might be worth documenting
