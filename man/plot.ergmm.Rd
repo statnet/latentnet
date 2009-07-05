@@ -7,8 +7,8 @@
                           what="mkl",
                           main = NULL, xlab=NULL, ylab=NULL, zlab=NULL,
                           xlim=NULL, ylim=NULL, zlim=NULL,
-                          object.scale=formals(plot.network.default)$object.scale,
-                          pad=formals(plot.network.default)$pad,
+                          object.scale=formals(plot.network.default)[["object.scale"]],
+                          pad=formals(plot.network.default)[["pad"]],
                           cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
                           vertex.col = NULL, print.formula = TRUE,
                           edge.col = 8,
@@ -17,10 +17,11 @@
                           zoom.on = NULL,
                           pie = FALSE,
                           labels=FALSE,
-                          rand.eff=NULL,
+                          rand.eff = NULL, rand.eff.cap = NULL,
                           plot.means = TRUE, plot.vars = TRUE,
                           suppress.axes = FALSE,
-                          jitter1D=1, curve1D=TRUE, use.rgl=FALSE,
+                          jitter1D=1, curve1D=TRUE,
+                          use.rgl = FALSE, vertex.3d.cex = 1/20,
                           suppress.center=FALSE,density.par=list())
 
 }
@@ -67,6 +68,9 @@
   \item{rand.eff}{A character vector selecting "sender", "receiver",
     "sociality", or "total" random effects. Each vertex is scaled such that its area is proportional
     to the odds ratio due to its selected random effect. }
+  \item{rand.eff.cap}{If not \code{NULL} and \code{rand.eff} is given,
+    limits the scaling of the plotting symbol due to random effect to
+    the given value.} 
   \item{plot.means}{Whether cluster means are plotted for latent cluster
     models. The "+" character is used. Defaults to \code{TRUE}.}
   \item{plot.vars}{Whether circles with radius equal to the square root
@@ -104,6 +108,7 @@
     \code{FALSE}. If set to \code{TRUE} and a 3-dimensional plot is
     produced, edges are not plotted and
     argument \code{pie} has no effect.}
+  \item{vertex.3d.cex}{Controls the size of the plotting symbol when \code{use.rgl=TRUE}.}
   \item{zoom.on}{If given a list of vertex indices, sets the plotting
     region to the smallest that can fit those vertices.}
   \item{density.par}{A list of optional parameters for density plots:
@@ -153,6 +158,17 @@ plot(samp.fit,pie=TRUE,rand.eff="receiver")
 plot(samp.fit,what="pmean",rand.eff="receiver")
 plot(samp.fit,what="cloud",rand.eff="receiver")
 plot(samp.fit,what="density",rand.eff="receiver")
+
+\dontrun{
+# Fit a 3D latent space model to Sampson's Monks
+samp.fit3 <- ergmm(samplike ~ latent(d=3))
+
+# Plot the first two principal components of the
+# latent space positions
+plot(samp.fit,use.rgl=FALSE)
+# Plot the resulting fit in 3D
+plot(samp.fit,use.rgl=TRUE)
+}
 }
 \keyword{graphs}
 \keyword{hplot}
