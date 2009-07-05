@@ -59,8 +59,8 @@
 	latent positions, and, in cluster models, each cluster.}
       \item{\code{list}}{Plots the
     configuration contained in the list.}
-      \item{integer}{Plots the configuration of \code{ergm.fit}'th
-	stored MCMC iteration.}
+      \item{integer}{Plots the configuration of \code{what}th
+	 MCMC draw stored in \code{x}.}
     }
   }
   \item{pie}{For latent clustering models, each node is drawn as a pie
@@ -136,7 +136,7 @@
   black circle) inside the plotting symbol.
 }
 \value{If applicable, invisibly returns the vertex positions plotted.}
-\seealso{\code{\link{ergmm}},\code{\link[=ergmm.object]{ergmm (object)}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
+\seealso{\code{\link{ergmm}},\link[=ergmm.object]{\code{ergmm} (object)}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
 #
 # Using Sampson's Monk data, lets fit a 
