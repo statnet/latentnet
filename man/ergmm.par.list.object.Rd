@@ -29,7 +29,36 @@
   configuration. That is, scalars become vectors, vectors become
   matrixes with the original vectors in rows, and matrixes become
   3-dimensional arrays, with the original matrixes indexed by their
-  first dimension.
+  first dimension. See \code{\link{terms.ergmm}} for comon elements of
+  these configurations.
+
+  In some cases, such as when representing MCMC or optimization output,
+  the object may also have some of the following elements:
+  \describe{
+    \item{\code{mlp}}{\eqn{\log
+	p(Y,Z,\beta,\mu,\sigma,\delta,\gamma,\sigma_\delta,\sigma_\gamma,|K)},
+      the joint
+      probability/density of network, the covariate coefficients, the
+      latent space positions and parameters, and the random effects and
+      their variances, conditional on cluster assignments.}
+    \item{\code{lpY}}{\eqn{\log p(Y|\dots)}, depending on the model, the log-probability or
+      log-density of the network conditional on all the parameters.}
+    \item{\code{lpZ}}{\eqn{\log p(Z|\mu,\sigma,K)}, the log-density of latent space positions conditional on
+      latent space or cluster parameters and cluster assignments.}
+    \item{\code{lpbeta}}{\eqn{\log p(\beta)}, the prior log-density of
+      the covariate coefficients.}
+    \item{\code{lpRE}}{\eqn{\log
+	p(\delta,\gamma|\sigma_\delta,\sigma_\gamma)}, the log-density of all random effects, conditional on
+      their respective variances.}
+    \item{\code{lpLV}}{\eqn{\log p(\mu,\sigma)}, the prior log-density
+      of latent space or cluster parameters (but not that of the cluster
+      assignments).}
+    \item{\code{lpREV}}{\eqn{\log p(\sigma_\delta,\sigma_\gamma)}, the prior log-density of all random effect variances.}
+    \item{\code{Z.rate}}{Proportion of single-vertex proposals accepted over the preceding
+      interval.}
+    \item{\code{beta.rate}}{
+      Proportion of group proposals accepted over the preceding interval.}
+  }
 }
 \seealso{
   \code{\link{ergmm}}

@@ -27,7 +27,7 @@ ERGMM_MCMC_Par *klswitch_unpack(unsigned int S, unsigned int n, unsigned int d, 
     cur->Z_mean = Runpack_dmatrixs(vZ_mean_mcmc+s,G,d,Z_mean_space[s],S);
     cur->Z_var = Runpack_dvectors(vZ_var_mcmc+s,G,Z_var_space[s],S);
     cur->Z_pK = Runpack_dvectors(vZ_pK_mcmc+s,G,Z_pK_space[s],S);
-    cur->Z_K = Runpack_ivectors(vZ_K_mcmc+s,n,Z_K_space[s],S);
+    cur->Z_K = (unsigned int *)Runpack_ivectors(vZ_K_mcmc+s,n,(int *)Z_K_space[s],S);
 
     if(verbose>2 && (s+1)%(S/(verbose))==0) Rprintf("KLswitch: Unpacking: Completed %u/%d.\n",s+1,S);
   }
@@ -82,7 +82,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   tmp.Z_mean=dmatrix(*G,*d);
   tmp.Z_var=dvector(*G);
   tmp.Z_pK=dvector(*G);
-  tmp.Z_K=ivector(*n);
+  tmp.Z_K=(unsigned int *)ivector(*n);
 
   if(*verbose>1) Rprintf("KLswitch: Unpacking R input and precalculating pK.\n");
   ERGMM_MCMC_Par *sample = klswitch_unpack(*S,*n,*d,*G,
@@ -117,7 +117,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
     Rpack_dmatrixs(cur->Z_mean,*G,*d,vZ_mean_mcmc+s,*S);
     Rpack_dvectors(cur->Z_var,*G,vZ_var_mcmc+s,*S);
     Rpack_dvectors(cur->Z_pK,*G,vZ_pK_mcmc+s,*S);
-    Rpack_ivectors(cur->Z_K,*n,vZ_K_mcmc+s,*S);
+    Rpack_ivectors((int *)cur->Z_K,*n,vZ_K_mcmc+s,*S);
   }
 
   Rpack_dmatrixs(Q,*n,*G,vQ,1);
@@ -179,7 +179,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
   copy_dmatrix(to->Z_mean,tmp->Z_mean,G,d);
   copy_dvector(to->Z_var,tmp->Z_var,G);
   copy_dvector(to->Z_pK,tmp->Z_pK,G);
-  copy_ivector(to->Z_K,tmp->Z_K,n);
+  copy_ivector((int *)to->Z_K,(int *)tmp->Z_K,n);
 
   for(unsigned int g=0; g<G; g++){
     copy_dvector(tmp->Z_mean[perm[g]-1],to->Z_mean[g],d);
@@ -263,7 +263,7 @@ void klswitch_step2_wrapper(int *S, int *n, int *G, double *vQ, double *vpK, int
   double ***pK = Runpack_d3array(vpK,*S,*n,*G,NULL);
   for(unsigned int s=0; s<*S; s++){
     if(klswitch_bestperm(Q, *n, *G, perm, bestperm, dir,pK[s])){
-      Rpack_ivectors(bestperm, *G, vbestperms+s, *S);
+      Rpack_ivectors((int *)bestperm, *G, vbestperms+s, *S);
     } // Otherwise, that row of vbestperms is set to all zeros.
   }
 }
