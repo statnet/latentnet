@@ -376,7 +376,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     if(!use.rgl)
       points(cbind(0,0),pch="+")
     else
-      tetrahedra3d(0,0,0,color="black",size=1*vertex.3d.cex)
+      THra3d(0,0,0,color="black",size=1*vertex.3d.cex)
   }
   Z.mean<-if(G>0)Z.mean else cbind(0,0,if(use.rgl)0)
 
@@ -385,7 +385,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     if(!use.rgl)
       points(Z.mean,pch="+",col=cluster.col)
     else
-      tetrahedra3d(Z.mean,color=cluster.col,size=1*vertex.3d.cex)
+      THra3d(Z.mean,color=cluster.col,size=1*vertex.3d.cex)
   }
 
   ## Plot the cluster standard deviations.
@@ -449,7 +449,7 @@ ergmm.plotting.vertex.radius<-function(vertex.cex,xylim,object.scale){
   vertex.cex*baserad
 }
 
-tetrahedra3d<-function(x,y=NULL,z=NULL,size=1,color="white",alpha=1,...){
+THra3d<-function(x,y=NULL,z=NULL,size=1,color="white",alpha=1,...){
   xyz<-xyz.coords(x=x,y=y,z=z)
   n<-length(xyz[["x"]])
   size<-rep(size,length.out=n)
@@ -457,11 +457,11 @@ tetrahedra3d<-function(x,y=NULL,z=NULL,size=1,color="white",alpha=1,...){
   alpha<-rep(alpha,length.out=n)
 
   for(i in 1:n){
-    with(xyz,tetrahedron3d(x[i],y[i],z[i],size=size[i],color=color[i],alpha=alpha[i]))
+    with(xyz,THron3d(x[i],y[i],z[i],size=size[i],color=color[i],alpha=alpha[i]))
   }
 }
 
-tetrahedron3d<-function(x,y=NULL,z=NULL,size=1,...){
+THron3d<-function(x,y=NULL,z=NULL,size=1,...){
   xyz<-xyz.coords(x=x,y=y,z=z)
   xyz<-with(xyz,c(x,y,z))/size
   centroid<-c(1/2,1/(2*sqrt(2)),sqrt(3)/4)
