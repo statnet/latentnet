@@ -90,8 +90,8 @@
   \item{main,vertex.cex, vertex.col,
     xlim,ylim,vertex.sides,object.scale,pad,
     edge.col,xlab,ylab}{Arguments passed to
-    \code{\link[pkg:network]{plot.network}}, whose defaults differ from
-    those of \code{\link[pkg:network]{plot.network}}.}
+    \code{\link[network]{plot.network}}, whose defaults differ from
+    those of \code{\link[network]{plot.network}}.}
   \item{zlim,zlab}{Limits and labels for the third latent space
     dimension or principal component, if \code{use.rgl=TRUE}.}
   \item{labels}{Whether vertex labels should be displayed. Defaults to
@@ -123,7 +123,7 @@
     }
   }
   
-  \item{\dots}{Other optional arguments passed to the \code{\link[pkg:network]{plot.network}} function.}
+  \item{\dots}{Other optional arguments passed to the \code{\link[network]{plot.network}} function.}
 }
 
 \details{
