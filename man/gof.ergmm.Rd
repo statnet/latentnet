@@ -52,7 +52,7 @@
 \value{\code{\link{gof}} and \code{\link{gof.ergmm}}
   return an object of class \code{gofobject}.
   This is a list of the tables of statistics and \eqn{p}-values.
-  This is typically plotted using \code{\link[ergmm]{plot.gofobject}}.
+  This is typically plotted using \code{\link[ergm]{plot.gofobject}}.
 }
 
 \seealso{\code{\link{ergmm}},

@@ -42,7 +42,7 @@
 
 \value{
   If \code{nsim = 1}, \code{simulate} returns an object of class
-  \code{\link[network]{network}}. Otherwise, a \code{\link[network]{network.series}} that is a list
+  \code{\link[network]{network}}. Otherwise, an object of class \code{network.series} that is a list
   consisting of the following elements:
   \item{\$formula}{The formula used to generate the sample.}
   \item{\$networks}{A list of the generated networks.}
