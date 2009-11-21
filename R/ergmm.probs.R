@@ -185,7 +185,7 @@ observed.dyads<-function(Yg){
   observed.dyads<-get.network.attribute(Yg,"design")
   if(is.null(observed.dyads)){
     if(!is.bipartite(Yg))
-      observed.dyads<-matrix(TRUE,network.size(Yg),network.size(Yg))
+      observed.dyads<-!is.na(as.matrix.network(Yg,matrix.type="adjacency"))
     else
       observed.dyads<-bipartite.augment(!is.na(as.matrix.network(Yg,matrix.type="adjacency")))
   }
