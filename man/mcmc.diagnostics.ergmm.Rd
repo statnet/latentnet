@@ -50,7 +50,8 @@ data(sampson)
 #
 # test the mcmc.diagnostics function
 #
-gest <- ergmm(samplike ~ latent(d=2),control=ergmm.control(burnin=1000,interval=5))
+gest <- ergmm(samplike ~ latent(d=2),
+              control=ergmm.control(burnin=1000,interval=5))
 summary(gest)
 #
 # Plot the traces and densities
