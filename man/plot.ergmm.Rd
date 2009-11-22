@@ -3,26 +3,24 @@
 \alias{plot3d.ergmm}
 \title{Plotting Method for class ERGMM}
 \usage{
-\method{plot}{ergmm}(x, \dots, vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
-                          what="mkl",
-                          main = NULL, xlab=NULL, ylab=NULL, zlab=NULL,
-                          xlim=NULL, ylim=NULL, zlim=NULL,
-                          object.scale=formals(plot.network.default)[["object.scale"]],
-                          pad=formals(plot.network.default)[["pad"]],
-                          cluster.col=c("red","green","blue","cyan","magenta","orange","yellow","purple"),
-                          vertex.col = NULL, print.formula = TRUE,
-                          edge.col = 8,
-                          Z.ref = NULL,
-                          Z.K.ref = NULL,
-                          zoom.on = NULL,
-                          pie = FALSE,
-                          labels=FALSE,
-                          rand.eff = NULL, rand.eff.cap = NULL,
-                          plot.means = TRUE, plot.vars = TRUE,
-                          suppress.axes = FALSE,
-                          jitter1D=1, curve1D=TRUE,
-                          use.rgl = FALSE, vertex.3d.cex = 1/20,
-                          suppress.center=FALSE,density.par=list())
+\method{plot}{ergmm}(x, \dots, vertex.cex=1,
+     vertex.sides=16*ceiling(sqrt(vertex.cex)),
+     what="mkl",
+     main = NULL, xlab=NULL, ylab=NULL, zlab=NULL,
+     xlim=NULL, ylim=NULL, zlim=NULL,
+     object.scale=formals(plot.network.default)[["object.scale"]],
+     pad=formals(plot.network.default)[["pad"]],
+     cluster.col=c("red","green","blue","cyan","magenta",
+                   "orange","yellow","purple"),
+     vertex.col = NULL, print.formula = TRUE,
+     edge.col = 8,
+     Z.ref = NULL, Z.K.ref = NULL,
+     zoom.on = NULL, pie = FALSE, labels=FALSE,
+     rand.eff = NULL, rand.eff.cap = NULL,
+     plot.means = TRUE, plot.vars = TRUE,
+     suppress.axes = FALSE, jitter1D=1, curve1D=TRUE,
+     use.rgl = FALSE, vertex.3d.cex = 1/20,
+     suppress.center=FALSE,density.par=list())
 
 }
 \description{
@@ -87,9 +85,8 @@
     origin. Defaults to \code{FALSE}.}
   \item{cluster.col}{A vector of colors used to distinguish clusters in
     a latent cluster model.}
-  \item{main,vertex.cex, vertex.col,
-    xlim,ylim,vertex.sides,object.scale,pad,
-    edge.col,xlab,ylab}{Arguments passed to
+  \item{main, vertex.cex, vertex.col, xlim, ylim, vertex.sides,
+    object.scale, pad, edge.col, xlab, ylab}{Arguments passed to
     \code{\link[network]{plot.network}}, whose defaults differ from
     those of \code{\link[network]{plot.network}}.}
   \item{zlim,zlab}{Limits and labels for the third latent space
@@ -139,12 +136,13 @@
 \seealso{\code{\link{ergmm}},\code{\link{ergmm.object}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
 #
-# Using Sampson's Monk data, lets fit a 
+# Using Sampson's Monk data, let's fit a 
 # simple latent position model
 #
 data(sampson)
 #
-# Using Sampson's Monk data, lets fit a latent clustering random effects model
+# Using Sampson's Monk data, let's fit a
+# latent clustering random effects model
 #
 samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
 #
