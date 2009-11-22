@@ -9,7 +9,8 @@
   point estimates, standard errors, and BIC calculation.
 }
 \usage{
-\method{summary}{ergmm}(object, point.est = c("pmean", "mkl"), quantiles = c(0.025, 0.975), se = FALSE,\dots)
+\method{summary}{ergmm}(object, point.est = c("pmean", "mkl"),
+                        quantiles = c(0.025, 0.975), se = FALSE, \dots)
 }
 
 \arguments{

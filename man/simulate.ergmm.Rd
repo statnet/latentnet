@@ -53,7 +53,8 @@
 # Fit a short MCMC run: just the MCMC.
 #
 data(sampson)
-gest <- ergmm(samplike ~ latent(d=2,G=3),control=ergmm.control(burnin=1000,interval=5))
+gest <- ergmm(samplike ~ latent(d=2,G=3),
+              control=ergmm.control(burnin=1000,interval=5))
 #
 # Draw from the posterior
 #

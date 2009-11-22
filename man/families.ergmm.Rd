@@ -36,12 +36,12 @@
 \section{Family-link combinations}{
   \tabular{rlllll}{
     ID \tab \code{C} name          \tab \R name   \tab Type       \tab Family    \tab Link  \cr
-     1 \tab Bernoulli\_logit       \tab Bernoulli.logit \tab Discrete   \tab Bernoulli \tab logit \cr
-     2 \tab binomial\_logit        \tab binomial.logit  \tab Discrete   \tab binomial  \tab logit \cr
-     3 \tab Poisson\_log           \tab Poisson.log     \tab Discrete   \tab Possion   \tab log   \cr
-     4 \tab Bernoulli\_cont\_logit \tab NA              \tab Continuous \tab Bernoulli \tab logit \cr
-     5 \tab binomial\_cont\_logit  \tab NA              \tab Continuous \tab binomial  \tab logit \cr
-     6 \tab Poisson\_cont\_log     \tab NA              \tab Continuous \tab Possion   \tab log  
+     1 \tab \code{Bernoulli_logit}       \tab \code{Bernoulli.logit} \tab Discrete   \tab Bernoulli \tab logit \cr
+     2 \tab \code{binomial_logit}        \tab \code{binomial.logit}  \tab Discrete   \tab binomial  \tab logit \cr
+     3 \tab \code{Poisson_log}           \tab \code{Poisson.log}     \tab Discrete   \tab Possion   \tab log   \cr
+     4 \tab \code{Bernoulli_cont_logit} \tab NA              \tab Continuous \tab Bernoulli \tab logit \cr
+     5 \tab \code{binomial_cont_logit}  \tab NA              \tab Continuous \tab binomial  \tab logit \cr
+     6 \tab \code{Poisson_cont_log}     \tab NA              \tab Continuous \tab Possion   \tab log  
    }
 }
 \details{
