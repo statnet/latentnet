@@ -50,17 +50,17 @@ rsm.Poisson.log<-function(eta,fam.par=NULL){
 }
 EY.Poisson.log<-function(eta,fam.par=NULL) exp(eta)
 
-## normal (linear)
+## normal identity
 
-lpY.normal<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),TRUE)
-lpYc.normal<-function(Y,eta,fam.par=NULL) -(Y-eta)^2/fam.par$var/2
-pY.normal<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),FALSE)
-dlpY.deta.normal<-function(Y,eta,fam.par=NULL) (Y-eta)/fam.par$var
-rsm.normal<-function(eta,fam.par=NULL){
+lpY.normal.identity<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),TRUE)
+lpYc.normal.identity<-function(Y,eta,fam.par=NULL) -(Y-eta)^2/fam.par$var/2
+pY.normal.identity<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),FALSE)
+dlpY.deta.normal.identity<-function(Y,eta,fam.par=NULL) (Y-eta)/fam.par$var
+rsm.normal.identity<-function(eta,fam.par=NULL){
   n<-dim(eta)[1]
   matrix(rnorm(n*n,eta,sqrt(fam.par$var)),n,n)
 }
-EY.normal<-function(eta,fam.par=NULL) eta
+EY.normal.identity<-function(eta,fam.par=NULL) eta
 
 ## Dispatcher functions
 
@@ -73,7 +73,10 @@ family.IDs<-list(Bernoulli=1,
                  Bernoulli.cont.logit=4,
                  binomial.cont.logit=5,
                  Poisson.cont.log=6,
-                 normal=7)
+                 normal=7,
+                 normal.identity=7,
+                 Gaussian=7,
+                 Gaussian.identity=7)
 
 family.names<-c("Bernoulli.logit",
                 "binomial.logit",
@@ -81,7 +84,7 @@ family.names<-c("Bernoulli.logit",
                 "Bernoulli.cont.logit",
                 "binomial.cont.logit",
                 "Poisson.cont.log",
-                "normal")
+                "normal.identity")
 
 
 lpY.fs<-c(lpY.Bernoulli.logit,
@@ -90,7 +93,7 @@ lpY.fs<-c(lpY.Bernoulli.logit,
           lpY.Bernoulli.logit,
           lpY.binomial.logit,
           lpY.Poisson.log,
-          lpY.normal)
+          lpY.normal.identity)
 
 lpYc.fs<-c(lpYc.Bernoulli.logit,
            lpYc.binomial.logit,
@@ -98,7 +101,7 @@ lpYc.fs<-c(lpYc.Bernoulli.logit,
            lpYc.Bernoulli.logit,
            lpYc.binomial.logit,
            lpYc.Poisson.log,
-           lpYc.normal)
+           lpYc.normal.identity)
           
 pY.fs<-c(pY.Bernoulli.logit,
          pY.binomial.logit,
@@ -106,7 +109,7 @@ pY.fs<-c(pY.Bernoulli.logit,
          pY.Bernoulli.logit,
          pY.binomial.logit,
          pY.Poisson.log,
-         pY.normal)
+         pY.normal.identity)
 
 dlpY.deta.fs<-c(dlpY.deta.Bernoulli.logit,
                 dlpY.deta.binomial.logit,
@@ -114,7 +117,7 @@ dlpY.deta.fs<-c(dlpY.deta.Bernoulli.logit,
                 dlpY.deta.Bernoulli.logit,
                 dlpY.deta.binomial.logit,
                 dlpY.deta.Poisson.log,
-                dlpY.deta.normal)
+                dlpY.deta.normal.identity)
 
 rsm.fs<-c(rsm.Bernoulli.logit,
           rsm.binomial.logit,
@@ -122,7 +125,7 @@ rsm.fs<-c(rsm.Bernoulli.logit,
           rsm.Bernoulli.logit,
           rsm.binomial.logit,
           rsm.Poisson.log,
-          rsm.normal)
+          rsm.normal.identity)
           
 EY.fs<-c(EY.Bernoulli.logit,
          EY.binomial.logit,
@@ -130,7 +133,7 @@ EY.fs<-c(EY.Bernoulli.logit,
          EY.Bernoulli.logit,
          EY.binomial.logit,
          EY.Poisson.log,
-         EY.normal)
+         EY.normal.identity)
 
 fam.par.check<-function(model){
   if(model[["familyID"]]==2){

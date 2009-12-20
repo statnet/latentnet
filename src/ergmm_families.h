@@ -47,8 +47,8 @@ void ERGMM_MCMC_set_lp_Yconst_Poisson_cont_log(ERGMM_MCMC_Model *model);
 double ERGMM_MCMC_E_edge_Poisson_cont_log(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
 
 /* 6 */
-double ERGMM_MCMC_lp_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
-void ERGMM_MCMC_set_lp_Yconst_normal(ERGMM_MCMC_Model *model);
-double ERGMM_MCMC_E_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
+double ERGMM_MCMC_lp_edge_normal_identity(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
+void ERGMM_MCMC_set_lp_Yconst_normal_identity(ERGMM_MCMC_Model *model);
+double ERGMM_MCMC_E_edge_normal_identity(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
 
 #endif /* ERGMM_FAMILIES_H */
