@@ -26,7 +26,7 @@ double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
   ERGMM_MCMC_lp_edge_Bernoulli_cont_logit,
   ERGMM_MCMC_lp_edge_binomial_cont_logit,
   ERGMM_MCMC_lp_edge_Poisson_cont_log,
-  ERGMM_MCMC_lp_edge_normal
+  ERGMM_MCMC_lp_edge_normal_identity
 };
   
 void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *)={
@@ -36,7 +36,7 @@ void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *)={
   ERGMM_MCMC_set_lp_Yconst_Bernoulli_cont_logit,
   ERGMM_MCMC_set_lp_Yconst_binomial_cont_logit,
   ERGMM_MCMC_set_lp_Yconst_Poisson_cont_log,
-  ERGMM_MCMC_set_lp_Yconst_normal
+  ERGMM_MCMC_set_lp_Yconst_normal_identity
 };
   
 double (*ERGMM_MCMC_E_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
@@ -47,7 +47,7 @@ double (*ERGMM_MCMC_E_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
   ERGMM_MCMC_E_edge_Bernoulli_cont_logit,
   ERGMM_MCMC_E_edge_binomial_cont_logit,
   ERGMM_MCMC_E_edge_Poisson_cont_log,
-  ERGMM_MCMC_E_edge_normal
+  ERGMM_MCMC_E_edge_normal_identity
 };
 
 
@@ -209,13 +209,13 @@ double ERGMM_MCMC_E_edge_Poisson_cont_log(ERGMM_MCMC_Model *model, ERGMM_MCMC_Pa
   return(exp(eta));
 }
 
-/* 6 normal */
-double ERGMM_MCMC_lp_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
+/* 6 normal_identity */
+double ERGMM_MCMC_lp_edge_normal_identity(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double diff=model->dY[i][j]-ERGMM_MCMC_etaij(model,par,i,j);
   return(-diff*diff/model->dconst[0]/2);
 }
 
-void ERGMM_MCMC_set_lp_Yconst_normal(ERGMM_MCMC_Model *model){
+void ERGMM_MCMC_set_lp_Yconst_normal_identity(ERGMM_MCMC_Model *model){
   unsigned int i,j;
 
   model->lp_Yconst=0;
@@ -234,7 +234,7 @@ void ERGMM_MCMC_set_lp_Yconst_normal(ERGMM_MCMC_Model *model){
   }
 }
 
-double ERGMM_MCMC_E_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
+double ERGMM_MCMC_E_edge_normal_identity(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double eta=ERGMM_MCMC_etaij(model,par,i,j);
   return(eta);
 }

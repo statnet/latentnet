@@ -5,27 +5,33 @@
 \alias{dlpY.deta.binomial.logit}
 \alias{dlpY.deta.fs}
 \alias{dlpY.deta.Poisson.log}
+\alias{dlpY.deta.normal.identity}
 \alias{lpYc.Bernoulli.logit}
 \alias{lpYc.binomial.logit}
+\alias{lpYc.normal.identity}
 \alias{lpYc.fs}
 \alias{lpYc.Poisson.log}
 \alias{lpY.Bernoulli.logit}
 \alias{lpY.binomial.logit}
 \alias{lpY.Poisson.log}
+\alias{lpY.normal.identity}
 \alias{lpY.fs}
 \alias{EY.Bernoulli.logit}
 \alias{EY.binomial.logit}
 \alias{EY.fs}
 \alias{EY.Poisson.log}
+\alias{EY.normal.identity}
 \alias{mk.lp.optim.fs}
 \alias{pY.fs}
 \alias{pY.Poisson.log}
 \alias{pY.Bernoulli.logit}
 \alias{pY.binomial.logit}
+\alias{pY.normal.identity}
 \alias{rsm.fs}
 \alias{rsm.Poisson.log}
 \alias{rsm.binomial.logit}
 \alias{rsm.Bernoulli.logit}
+\alias{rsm.normal.identity}
 \alias{family.IDs}
 \alias{family.names}
 \alias{fam.par.check}
@@ -41,9 +47,20 @@
      3 \tab \code{Poisson_log}           \tab \code{Poisson.log}     \tab Discrete   \tab Possion   \tab log   \cr
      4 \tab \code{Bernoulli_cont_logit} \tab NA              \tab Continuous \tab Bernoulli \tab logit \cr
      5 \tab \code{binomial_cont_logit}  \tab NA              \tab Continuous \tab binomial  \tab logit \cr
-     6 \tab \code{Poisson_cont_log}     \tab NA              \tab Continuous \tab Possion   \tab log  
+     6 \tab \code{Poisson_cont_log}     \tab NA              \tab Continuous \tab Possion   \tab log \cr  
+     7 \tab \code{normal_identity}      \tab \code{normal.identity} \tab Continuous \tab normal   \tab identity  
    }
-}
+   \code{.link} can be omited when not ambiguous. Some families
+   require an appropriate \code{fam.par} argument to be supplied to
+   \code{\link{ergmm}}:
+   \describe{
+     \item{binomial families}{a mandatory \code{trials} parameter for the
+       number of trials (same for every dyad) whose success the response
+       counts represent}
+     \item{normal}{a mandatory \code{var} parameter for the variance of
+       the dyad values}
+   }
+ }
 \details{
   Each supported family has a family of \R functions, of the form
   \code{pY.}-, \code{lpY.}-, \code{EY.}-,
