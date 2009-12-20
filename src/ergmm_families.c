@@ -15,8 +15,8 @@
 
 /* Define "lookup tables" for families. */
 
-const unsigned int ERGMM_MCMC_is_discrete[6]={TRUE,TRUE,TRUE,FALSE,FALSE,FALSE};
-const unsigned int ERGMM_MCMC_to_cont[6]={3,4,5,3,4,5};
+const unsigned int ERGMM_MCMC_is_discrete[N_FAMILIES]={TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE};
+const unsigned int ERGMM_MCMC_to_cont[N_FAMILIES]={3,4,5,3,4,5,6};
 
 double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
 					 unsigned int, unsigned int)={
@@ -25,7 +25,8 @@ double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
   ERGMM_MCMC_lp_edge_Poisson_log,
   ERGMM_MCMC_lp_edge_Bernoulli_cont_logit,
   ERGMM_MCMC_lp_edge_binomial_cont_logit,
-  ERGMM_MCMC_lp_edge_Poisson_cont_log
+  ERGMM_MCMC_lp_edge_Poisson_cont_log,
+  ERGMM_MCMC_lp_edge_normal
 };
   
 void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *)={
@@ -34,7 +35,8 @@ void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *)={
   ERGMM_MCMC_set_lp_Yconst_Poisson_log,
   ERGMM_MCMC_set_lp_Yconst_Bernoulli_cont_logit,
   ERGMM_MCMC_set_lp_Yconst_binomial_cont_logit,
-  ERGMM_MCMC_set_lp_Yconst_Poisson_cont_log
+  ERGMM_MCMC_set_lp_Yconst_Poisson_cont_log,
+  ERGMM_MCMC_set_lp_Yconst_normal
 };
   
 double (*ERGMM_MCMC_E_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
@@ -44,7 +46,8 @@ double (*ERGMM_MCMC_E_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
   ERGMM_MCMC_E_edge_Poisson_log,
   ERGMM_MCMC_E_edge_Bernoulli_cont_logit,
   ERGMM_MCMC_E_edge_binomial_cont_logit,
-  ERGMM_MCMC_E_edge_Poisson_cont_log
+  ERGMM_MCMC_E_edge_Poisson_cont_log,
+  ERGMM_MCMC_E_edge_normal
 };
 
 
@@ -204,4 +207,34 @@ void ERGMM_MCMC_set_lp_Yconst_Poisson_cont_log(ERGMM_MCMC_Model *model){
 double ERGMM_MCMC_E_edge_Poisson_cont_log(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double eta=ERGMM_MCMC_etaij(model,par,i,j);
   return(exp(eta));
+}
+
+/* 6 normal */
+double ERGMM_MCMC_lp_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
+  double diff=model->dY[i][j]-ERGMM_MCMC_etaij(model,par,i,j);
+  return(-diff*diff/model->dconst[0]/2);
+}
+
+void ERGMM_MCMC_set_lp_Yconst_normal(ERGMM_MCMC_Model *model){
+  unsigned int i,j;
+
+  model->lp_Yconst=0;
+
+  if(model->dir){
+    for(i=0;i<model->verts;i++)
+      for(j=0;j<model->verts;j++)
+	if(IS_OBSERVABLE(model->observed_ties,i,j))
+	  model->lp_Yconst+=-M_LN_SQRT_2PI-log(model->dconst[0])/2;
+  }
+  else{
+    for(i=0;i<model->verts;i++)
+      for(j=0;j<=i;j++)
+	if(IS_OBSERVABLE(model->observed_ties,i,j))
+	  model->lp_Yconst+=-M_LN_SQRT_2PI-log(model->dconst[0])/2;
+  }
+}
+
+double ERGMM_MCMC_E_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
+  double eta=ERGMM_MCMC_etaij(model,par,i,j);
+  return(eta);
 }

@@ -14,9 +14,6 @@
 #include "ergmm_families.h"
 #include "ergmm_probs.h"
 
-#define FALSE 0
-#define TRUE !0
-
 //#define VERBOSE 1
 //#define SUPER_VERBOSE 1
 //#define ALWAYS_RECOMPUTE_LLK 1

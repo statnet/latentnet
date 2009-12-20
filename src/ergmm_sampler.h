@@ -2,8 +2,6 @@
 #define ERGMM_SAMPLER_H
 
 #include "ergmm_structs.h"
-#define FALSE 0
-#define TRUE !0
 
 /* First 1 positions in the outlists are reserved for special values:
    [0] Iteration with the highest likelihood so far.

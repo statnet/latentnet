@@ -3,15 +3,7 @@
 
 #include "ergmm_structs.h"
 
-#ifndef TRUE
-#define TRUE !0
-#endif /* TRUE */
-
-#ifndef FALSE
-#define FALSE 0
-#endif /* FALSE */
-
-#define N_FAMILIES 6
+#define N_FAMILIES 7
 /* Declare "lookup tables" for families. */
 
 const unsigned int ERGMM_MCMC_is_discrete[N_FAMILIES];
@@ -53,5 +45,10 @@ double ERGMM_MCMC_E_edge_binomial_cont_logit(ERGMM_MCMC_Model *model, ERGMM_MCMC
 double ERGMM_MCMC_lp_edge_Poisson_cont_log(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
 void ERGMM_MCMC_set_lp_Yconst_Poisson_cont_log(ERGMM_MCMC_Model *model);
 double ERGMM_MCMC_E_edge_Poisson_cont_log(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
+
+/* 6 */
+double ERGMM_MCMC_lp_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
+void ERGMM_MCMC_set_lp_Yconst_normal(ERGMM_MCMC_Model *model);
+double ERGMM_MCMC_E_edge_normal(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j);
 
 #endif /* ERGMM_FAMILIES_H */
