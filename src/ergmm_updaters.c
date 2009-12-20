@@ -13,10 +13,6 @@
 #include "ergmm_probs.h"
 #include "ergmm_updaters.h"
 
-
-#define FALSE 0
-#define TRUE !0
-
 /*
   Initiates a Metropolis-Hasting step, by signaling what is about to be proposed.
   *** It MUST be called BEFORE the proposals are made. ***

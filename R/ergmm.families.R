@@ -50,6 +50,18 @@ rsm.Poisson.log<-function(eta,fam.par=NULL){
 }
 EY.Poisson.log<-function(eta,fam.par=NULL) exp(eta)
 
+## normal (linear)
+
+lpY.normal<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),TRUE)
+lpYc.normal<-function(Y,eta,fam.par=NULL) -(Y-eta)^2/fam.par$var/2
+pY.normal<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),FALSE)
+dlpY.deta.normal<-function(Y,eta,fam.par=NULL) (Y-eta)/fam.par$var
+rsm.normal<-function(eta,fam.par=NULL){
+  n<-dim(eta)[1]
+  matrix(rnorm(n*n,eta,sqrt(fam.par$var)),n,n)
+}
+EY.normal<-function(eta,fam.par=NULL) eta
+
 ## Dispatcher functions
 
 family.IDs<-list(Bernoulli=1,
@@ -60,14 +72,16 @@ family.IDs<-list(Bernoulli=1,
                  Poisson.log=3,
                  Bernoulli.cont.logit=4,
                  binomial.cont.logit=5,
-                 Poisson.cont.log=6)
+                 Poisson.cont.log=6,
+                 normal=7)
 
 family.names<-c("Bernoulli.logit",
                 "binomial.logit",
                 "Poisson.log",
                 "Bernoulli.cont.logit",
                 "binomial.cont.logit",
-                "Poisson.cont.log")
+                "Poisson.cont.log",
+                "normal")
 
 
 lpY.fs<-c(lpY.Bernoulli.logit,
@@ -75,42 +89,48 @@ lpY.fs<-c(lpY.Bernoulli.logit,
           lpY.Poisson.log,
           lpY.Bernoulli.logit,
           lpY.binomial.logit,
-          lpY.Poisson.log)
+          lpY.Poisson.log,
+          lpY.normal)
 
 lpYc.fs<-c(lpYc.Bernoulli.logit,
            lpYc.binomial.logit,
            lpYc.Poisson.log,
            lpYc.Bernoulli.logit,
            lpYc.binomial.logit,
-           lpYc.Poisson.log)
+           lpYc.Poisson.log,
+           lpYc.normal)
           
 pY.fs<-c(pY.Bernoulli.logit,
          pY.binomial.logit,
          pY.Poisson.log,
          pY.Bernoulli.logit,
          pY.binomial.logit,
-         pY.Poisson.log)
+         pY.Poisson.log,
+         pY.normal)
 
 dlpY.deta.fs<-c(dlpY.deta.Bernoulli.logit,
-         dlpY.deta.binomial.logit,
-         dlpY.deta.Poisson.log,
-         dlpY.deta.Bernoulli.logit,
-         dlpY.deta.binomial.logit,
-         dlpY.deta.Poisson.log)
+                dlpY.deta.binomial.logit,
+                dlpY.deta.Poisson.log,
+                dlpY.deta.Bernoulli.logit,
+                dlpY.deta.binomial.logit,
+                dlpY.deta.Poisson.log,
+                dlpY.deta.normal)
 
 rsm.fs<-c(rsm.Bernoulli.logit,
           rsm.binomial.logit,
           rsm.Poisson.log,
           rsm.Bernoulli.logit,
           rsm.binomial.logit,
-          rsm.Poisson.log)
+          rsm.Poisson.log,
+          rsm.normal)
           
 EY.fs<-c(EY.Bernoulli.logit,
          EY.binomial.logit,
          EY.Poisson.log,
          EY.Bernoulli.logit,
          EY.binomial.logit,
-         EY.Poisson.log)
+         EY.Poisson.log,
+         EY.normal)
 
 fam.par.check<-function(model){
   if(model[["familyID"]]==2){
@@ -122,6 +142,11 @@ fam.par.check<-function(model){
     if(is.null(model[["fam.par"]][["trials"]]))
       stop("Binomial (cont) family requires parameter `trials'.")
     model[["dconsts"]]<-model[["fam.par"]][["trials"]]
+  }
+  if(model[["familyID"]]==7){
+    if(is.null(model[["fam.par"]][["var"]]))
+      stop("Binomial (cont) family requires parameter `var'.")
+    model[["dconsts"]]<-model[["fam.par"]][["var"]]
   }
   model
 }
