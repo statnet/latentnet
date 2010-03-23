@@ -247,7 +247,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   if(!is.null(Z.ref)){
     R<-procOPA(Z.ref,Z.pos,scale=FALSE,reflect=TRUE)[["R"]]
     Z.pos<-Z.pos%*%R
-    Z.mean<-Z.mean%*%R
+    if(G) Z.mean<-Z.mean%*%R
   }
   if(!is.null(Z.K.ref)){
     perm<-which.perm.nearest(Z.K.ref,Z.K)
