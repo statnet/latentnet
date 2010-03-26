@@ -7,28 +7,6 @@
 #include "matrix_utils.h"
 #include "ergmm_utils.h"
 
-// Computes distance between every pair of points and puts the result into dist.
-void pairwise_dist(double **A,unsigned int n,unsigned int dim, double **dist){
-  unsigned int i,j;
-  for(i=0;i<n;i++)
-    for(j=0;j<i;j++)
-      dist[i][j]=dist[j][i]=dvector_dist(A[i],A[j],dim);
-}
-
-// Updates distance between vertex i and all others.
-void update_dist(double **A,unsigned int i, unsigned int n, unsigned int dim, double **dist){
-  unsigned int j,k;
-  double temp,temp2;
-  for(j=0;j<n;j++){
-    temp2=0;
-    for(k=0;k<dim;k++){
-      temp=A[i][k]-A[j][k];
-      temp2+=temp*temp;
-    }
-    dist[i][j]=dist[j][i]=sqrt(temp2);
-  }
-}
-
 double *latentpos_average(double **A, unsigned int n, unsigned int m, double *avA){
   unsigned int i,j;
   if(!avA) avA=dvector(m);

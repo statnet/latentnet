@@ -104,7 +104,7 @@ data(package="latentnet")
 # simple latent position model
 #
 data(sampson)
-samp.fit <- ergmm(samplike ~ latent(d=2))
+samp.fit <- ergmm(samplike ~ euclidean(d=2))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
@@ -115,7 +115,7 @@ plot(samp.fit)
 #
 # Using Sampson's Monk data, lets fit a latent clustering random effects model
 #
-samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver)
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)

@@ -44,7 +44,7 @@ ergmm.eta<-function(model,theta){
   eta<-matrix(0,n,n)
   
   if(!is.null(theta[["Z"]]))
-    eta<-eta-as.matrix(dist(theta[["Z"]]))
+    eta<-eta+latent.effect.fs[[model[["latentID"]]]](theta[["Z"]])
 
   if(!is.null(theta[["beta"]]))
     for(k in 1:length(theta[["beta"]]))
@@ -95,19 +95,7 @@ ergmm.lpY.grad<-function(model,theta,given=list()){
   if(not.given("beta",theta,given)) grad[["beta"]] <- sapply(1:length(theta[["beta"]]),function(k) sum((dlpY.deta*model[["X"]][[k]])[obs]))
 
   if(not.given("Z",theta,given)){
-    d<-model[["d"]]
-    Z.invdist<- as.matrix(dist(theta[["Z"]]))
-    Z.invdist[Z.invdist==0]<-Inf
-    Z.invdist<-1/Z.invdist
-
-    grad[["Z"]]<-matrix(0,n,d)
-    for(k in 1:d){
-      Z.normdiff.k<-sapply(1:n,function(j)
-                           sapply(1:n,function(i)
-                                  theta[["Z"]][i,k]-theta[["Z"]][j,k]))*Z.invdist
-      grad[["Z"]][,k]<-grad[["Z"]][,k]+
-        -sapply(1:n,function(i) crossprod(Z.normdiff.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
-    }
+    grad[["Z"]]<-dlpY.dZ.fs[[model[["latentID"]]]](theta[["Z"]],dlpY.deta)
   }
 
   if(not.given("sociality",theta,given))
@@ -122,6 +110,7 @@ ergmm.lpY.grad<-function(model,theta,given=list()){
   
 ergmm.lpY.C<-function(model,theta){
   Y <- model[["Ym"]]
+  Y[is.na(Y)] <- 0
   n <- network.size(model[["Yg"]])
 
   ## Figure out the design matrix.
@@ -162,6 +151,7 @@ ergmm.lpY.C<-function(model,theta){
             viY=as.integer(Y),
             vdY=as.double(Y),
             family=as.integer(model[["familyID"]]),iconsts=as.integer(model[["iconsts"]]),dconsts=as.integer(model[["dconsts"]]),
+            latent=as.integer(model[["latentID"]]),
             
             vX=as.double(unlist(model[["X"]])),
             

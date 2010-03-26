@@ -100,6 +100,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              family=as.integer(model[["familyID"]]),
              iconsts=as.integer(model[["iconsts"]]),
              dconsts=as.double(model[["dconsts"]]),
+             latent=as.integer(model[["latentID"]]),
              
              vX=as.double(unlist(model[["X"]])),  
              
