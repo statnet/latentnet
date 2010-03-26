@@ -1,7 +1,7 @@
 library(latentnet)
 
 data(sampson)
-onlymcmc <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver,tofit="mcmc")
+onlymcmc <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver,tofit="mcmc")
 
 mcmc.diagnostics(onlymcmc)
 

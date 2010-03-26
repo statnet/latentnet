@@ -1,10 +1,19 @@
+2.3
+	Added an ability to fit bilinear latent space models of
+	Hoff (2005).
+
 2.2-3
-	Fixed a bug in handling of missing data, uncovered by Xiaoyue "Maggie" Niu, and added a test for it.
+	Fixed a bug in handling of missing data, uncovered by Xiaoyue
+	"Maggie" Niu, and added a test for it.
+
 	Documentation fixes.
+
 2.2-2
 	More documentation fixes.
+
 2.2-1
 	Documentation fixes.
+
 2.2
 	Ability to fit random effects (actor heterogeneity) models.
 

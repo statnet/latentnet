@@ -29,9 +29,9 @@
 \examples{
 data(sampson)
 # Run two short MCMC-based fits.
-samp.fit1 <- ergmm(samplike ~ latent(d=2, G=3),
+samp.fit1 <- ergmm(samplike ~ euclidean(d=2, G=3),
   control=ergmm.control(burnin=1000,interval=10,sample.size=2000))
-samp.fit2 <- ergmm(samplike ~ latent(d=2, G=3),
+samp.fit2 <- ergmm(samplike ~ euclidean(d=2, G=3),
   control=ergmm.control(burnin=1000,interval=10,sample.size=2000))
 
 # Combine them, and summarize the result.

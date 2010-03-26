@@ -1,6 +1,28 @@
 \name{terms.ergmm}
 \alias{terms.ergmm}
 \alias{ergmm.terms}
+\alias{dlpY.dZ.bilinear}
+\alias{dlpY.dZ.negative.Euclidean}
+\alias{dlpY.dZ.fs}
+\alias{latent.effect.fs}
+\alias{latent.effect.IDs}
+\alias{latent.effect.invariances}
+\alias{latent.effect.names}
+\alias{InitErgmm.absdiff}
+\alias{InitErgmm.latent}
+\alias{InitErgmm.euclidean}
+\alias{InitErgmm.bilinear}
+\alias{InitErgmm.latentcov}
+\alias{InitErgmm.nodematch}
+\alias{InitErgmm.receivercov}
+\alias{InitErgmm.rreceiver}
+\alias{InitErgmm.rsender}
+\alias{InitErgmm.rsociality}
+\alias{InitErgmm.sendercov}
+\alias{InitErgmm.socialitycov}
+\alias{latent.effect.bilinear}
+\alias{latent.effect.negative.Euclidean}
+
 \title{Model Terms for Latent Space Random Graph Model}
 \description{
   Model terms that can be used in an \code{\link{ergmm}} formula and
@@ -11,13 +33,73 @@
   dyad-independent terms. In the formula for the model, the model terms are various function-like
   calls, some of which require arguments, separated by \code{+} signs.
   
-  \emph{Random Effects}\cr
+  \emph{Latent Space Effects}\cr
   \describe{
-    \item{\code{latent(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
-  mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)}}{\emph{Latent position model term, with
+    \item{\code{euclidean(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+  mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)}}{\emph{(Negative)
+  Euclidean distance model term, with
 	optional clustering.}
       Adds a term to the model equal to the negative Eucledean distance
       \eqn{-||Z_i-Z_j||}{-dist(Z[i],Z[j])}, where \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]}
+      are the positions of their respective actors in an unobserved social
+      space. These positions may optionally have a finite spherical
+      Gaussian mixture clustering structure. This term was previously
+      called \code{latent} which now fits negative Euclidean latent
+      space model with a warning.
+      The parameters are as follows:
+      \describe{
+	\item{\code{d}}{The dimension of the latent space.}
+	\item{\code{G}}{The number of groups (0 for no clustering).}
+	\item{\code{var.mul}}{In the absence of \code{var}, this
+	  argument will be used as a scaling factor for a
+	  function of average cluster size and latent space dimension to
+	  set \code{var}. To set it in the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.var.mul}.}
+	\item{\code{var}}{If given, the scale
+	  parameter for the scale-inverse-chi-squared prior distribution of the within-cluster
+	  variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
+	  \code{Z.var}.}
+	\item{\code{var.df.mul}}{In the absence of \code{var.df}, this
+	  argument is the multiplier for the square root of average
+	  cluster size, which serves in place of \code{var.df}. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
+	  \code{Z.var.df.mul}.}
+	\item{\code{var.df}}{The degrees of freedom
+	  parameter for the scale-inverse-chi-squared prior distribution of the within-cluster
+	  variance. To set it in the \code{prior} argument to \code{\link{ergmm}}, use
+	  \code{Z.var.df}.}
+	\item{\code{mean.var.mul}}{In the absence of \code{mean.var},
+	  the multiplier for a function of number of vertices and latent space
+	  dimension to set \code{mean.var}. To set it in the
+	  \code{prior} argument to \code{\link{ergmm}}, use \code{Z.mean.var.mul}.}
+	\item{\code{mean.var}}{The variance of
+	  the spherical Gaussian prior distribution of the cluster means. To set it in the
+	  \code{prior} argument to \code{\link{ergmm}}, use
+	  \code{Z.mean.var}.}
+	\item{\code{pK.mul}}{In the absence of \code{pK}, this argument
+	  is the multiplier for the square root of the average cluster size,
+	  which is used as \code{pK}. To set it in
+	  the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.pK}.}
+	\item{\code{pK}}{The parameter of the Dirichilet prior
+	  distribution of cluster assignment probabilities. To set it in
+	  the \code{prior} argument to \code{\link{ergmm}}, use \code{Z.pK}.}
+      }
+      The following parameters are associated with this term:
+      \describe{
+	\item{\code{Z}}{ Numeric matrix with rows being latent space
+	  positions.}
+	\item{\code{Z.K} (when \eqn{\code{G}>0})}{ Integer vector of cluster assignments. }
+	\item{\code{Z.mean} (when \eqn{\code{G}>0})}{ Numeric matrix with rows being cluster means. }
+	\item{\code{Z.var}  (when \eqn{\code{G}>0})}{ Depending on the model, either a numeric vector with
+	  within-cluster variances or a numeric scalar with the overal latent space variance. }
+	\item{\code{Z.pK}  (when \eqn{\code{G}>0})}{ Numeric vector of probabilities of a vertex being
+	  in a particular cluster.} 
+      }
+    }
+    \item{\code{bilinear(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+  mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)}}{\emph{Bilinear
+  latent model term, with
+	optional clustering.}
+      Adds a term to the model equal to the inner product of the latent positions:
+      \eqn{Z_i \cdot Z_j||}{sum(Z[i]*Z[j])}, where \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]}
       are the positions of their respective actors in an unobserved social
       space. These positions may optionally have a finite spherical
       Gaussian mixture clustering structure.
@@ -69,6 +151,9 @@
 	  in a particular cluster.} 
       }
     }
+  }
+  \emph{Actor-specific effects}\cr
+  \describe{
     \item{\code{rsender(var=1, var.df=3)}}{\emph{Random sender effect.}
       Adds a random sender effect to the model, with normal prior centered
       around \eqn{0}{0} and a variance that is estimated.

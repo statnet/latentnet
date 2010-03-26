@@ -144,7 +144,7 @@ data(sampson)
 # Using Sampson's Monk data, let's fit a
 # latent clustering random effects model
 #
-samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver)
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
@@ -159,7 +159,7 @@ plot(samp.fit,what="density",rand.eff="receiver")
 
 \dontrun{
 # Fit a 3D latent space model to Sampson's Monks
-samp.fit3 <- ergmm(samplike ~ latent(d=3))
+samp.fit3 <- ergmm(samplike ~ euclidean(d=3))
 
 # Plot the first two principal components of the
 # latent space positions

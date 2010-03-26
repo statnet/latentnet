@@ -68,17 +68,9 @@
 
 \alias{GS.orth.matrix} 
 \alias{P.free.all}
-
-\alias{InitErgmm.absdiff}
-\alias{InitErgmm.latent}
-\alias{InitErgmm.latentcov}
-\alias{InitErgmm.nodematch}
-\alias{InitErgmm.receivercov}
-\alias{InitErgmm.rreceiver}
-\alias{InitErgmm.rsender}
-\alias{InitErgmm.rsociality}
-\alias{InitErgmm.sendercov}
-\alias{InitErgmm.socialitycov}
+\alias{procOPA}
+\alias{procOPA.default}
+\alias{procOPA.ergmm.model}
 
 \alias{cmp.lists}
 \alias{merge.lists}

@@ -38,7 +38,7 @@
 \examples{
 library(coda)
 data(sampson)
-monks.fit<-ergmm(samplike~latent(d=2,G=3))
+monks.fit<-ergmm(samplike~euclidean(d=2,G=3))
 monks.fit.mcmc<-as.mcmc(monks.fit)
 plot(monks.fit.mcmc)
 raftery.diag(monks.fit.mcmc)

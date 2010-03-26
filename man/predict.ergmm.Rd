@@ -23,7 +23,7 @@
 \seealso{ \code{\link[=ergmm.object]{ergmm}} }
 \examples{
 data(sampson)
-monks.fit<-ergmm(samplike~latent(d=2,G=3),tofit="mcmc")
+monks.fit<-ergmm(samplike~euclidean(d=2,G=3),tofit="mcmc")
 heatmap(predict(monks.fit),Rowv=NA,Colv=NA)
 }
 \keyword{graphs}

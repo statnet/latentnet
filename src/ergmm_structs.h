@@ -82,6 +82,7 @@ struct ERGMM_MCMC_Model_struct{
   double *dconst;
   unsigned int verts, latent, coef, clusters;
   unsigned int sociality;
+  double (*latent_eff)(double *u, double *v, unsigned int dim);
 } ;
 
 typedef struct ERGMM_MCMC_Model_struct ERGMM_MCMC_Model;

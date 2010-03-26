@@ -260,7 +260,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   ## Transform coordinates for dimensions other than 2 (or 3, when using rgl).
   if(d==1){    
     Z.pos<-coords.1D(Z.pos,curve1D,jitter1D)
-    Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
+    if(G) Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
     if(curve1D){
       distances<-as.matrix(dist(Z.pos))
       distances<-distances/max(distances)
@@ -269,12 +269,12 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     ## Plot the first three principal components.
     prc<-prcomp(Z.pos)
     Z.pos<-predict(prc,Z.pos)[,1:3]
-    Z.mean<-predict(prc,Z.mean)[,1:3]
+    if(G) Z.mean<-predict(prc,Z.mean)[,1:3]
   }else if(d>2 && !use.rgl){ ## I.e. high latent dimension.
     ## Plot the first two principal components.
     prc<-prcomp(Z.pos)
     Z.pos<-predict(prc,Z.pos)[,1:2]
-    Z.mean<-predict(prc,Z.mean)[,1:2]
+    if(G) Z.mean<-predict(prc,Z.mean)[,1:2]
   }
   
   ## Set default vertex color.

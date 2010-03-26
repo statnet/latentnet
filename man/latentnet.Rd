@@ -6,10 +6,12 @@
   models, where the probability of a network \eqn{g},
   on a set of nodes is a product of dyad probabilities, each of which is
   a GLM with linear component
-  \eqn{\eta_{i,j}=\sum_{k=1}^p \beta_k X_{i,j,k}+||Z_i-Z_j||+\delta_i+\gamma_j},
+  \eqn{\eta_{i,j}=\sum_{k=1}^p \beta_k X_{i,j,k}+d(Z_i,Z_j)+\delta_i+\gamma_j},
   where \eqn{X} is an array of dyad covariates, \eqn{\beta} is a vector
   of covariate coefficients, \eqn{Z_i} is the latent space position of
-  node \eqn{i}, and \eqn{\delta} and \eqn{\gamma} are vectors of sender
+  node \eqn{i}, \eqn{d(\cdot,\cdot)} is a function of the two positions:
+  either negative Euclidean (\eqn{-||Z_i-Z_j||}) or bilinear
+  (\eqn{Z_i\cdot Z_j}), and \eqn{\delta} and \eqn{\gamma} are vectors of sender
   and receiver effects.
 
   The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>}
@@ -42,8 +44,12 @@
  \emph{Model-Based Clustering for Social Networks}.
  Journal of the Royal Statistical Society: Series A (Statistics in
  Society), 170(2), 301-354.
-  
-  Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock (2002).
+
+ Peter D. Hoff (2005). \emph{Bilinear Mixed Effects Models for Dyadic
+ Data}. Journal of the American Statistical Association, 100(469),
+ 286-295.
+
+ Peter D. Hoff,  Adrian E. Raftery and Mark S. Handcock (2002).
  \emph{Latent space approaches to social network analysis}.
  Journal of the American Statistical Association, 97(460), 1090-1098.
 

@@ -10,6 +10,7 @@
 #include "ergmm_updaters.h"
 #include "ergmm_probs.h"
 #include "ergmm_families.h"
+#include "ergmm_latent_effects.h"
 #include "wishart.h"
 #include "mvnorm.h"
 
@@ -37,6 +38,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 			int *family,
 			int *iconsts,
 			double *dconsts,
+			int *latent_eff,
 
 			double *vX,
 			  
@@ -141,7 +143,10 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 		  *G,
 		 
 		  *dir,iY,dY,
-		  family ? *family-1 : 0,iconsts,dconsts,
+		  *family-1,
+		  iconsts,dconsts,
+		  latent_eff ? *latent_eff-1 : 1000,
+
 		  X,
 
 		  llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
@@ -187,7 +192,9 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 
 		     unsigned int dir, int **iY, double **dY,
 
-		     unsigned int family, int *iconsts, double *dconsts,
+		     unsigned int family, 
+		     int *iconsts, double *dconsts,
+		     unsigned int latent_eff,
 
 		     double ***X,
 
@@ -242,7 +249,9 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			    d, // latent
 			    p, // coef
 			    G, // clusters
-			    sociality};
+			    sociality,
+			    ERGMM_MCMC_latent_eff[latent_eff]
+  };
   ERGMM_MCMC_set_lp_Yconst[family](&model);
 
   ERGMM_MCMC_MCMCSettings setting = {Z_delta,

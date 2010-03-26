@@ -44,6 +44,7 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
           family=as.integer(model[["familyID"]]),
           iconsts=as.integer(model[["iconsts"]]),
           dconsts=as.double(model[["dconsts"]]),
+          family=as.integer(model[["latentID"]]),
           
           X=as.double(unlist(model[["X"]])),
           

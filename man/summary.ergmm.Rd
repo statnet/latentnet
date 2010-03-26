@@ -34,7 +34,7 @@
 }
 \examples{
 data(sampson)
-samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver)
 summary(samp.fit)
 }
 \keyword{graphs}

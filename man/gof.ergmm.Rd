@@ -65,7 +65,7 @@ data(sampson)
 #
 # test the gof.ergm function
 #
-samplike.fit <- ergmm(samplike ~ latent(d=2,G=3),
+samplike.fit <- ergmm(samplike ~ euclidean(d=2,G=3),
                       control=ergmm.control(burnin=1000,interval=5))
 samplike.fit
 summary(samplike.fit)
