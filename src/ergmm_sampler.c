@@ -115,7 +115,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
      + receiver (no sociality) : ~p
   */
 
-  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (sender_start ? 1 : 0) + (vcoef_eff_sender?*coef_eff_sender_size:0)+(vcoef_eff_receiver?*coef_eff_receiver_size:0);
+  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (vcoef_eff_sender?*coef_eff_sender_size:0)+(vcoef_eff_receiver?*coef_eff_receiver_size:0);
   double **group_deltas = Runpack_dmatrix(deltas+GROUP_DELTAS_START, group_prop_size, group_prop_size, NULL);
   double **coef_eff_sender = vcoef_eff_sender? Runpack_dmatrix(vcoef_eff_sender, *coef_eff_sender_size, *n, NULL) : NULL;
   double **coef_eff_receiver = vcoef_eff_receiver? Runpack_dmatrix(vcoef_eff_receiver, *coef_eff_receiver_size, *n, NULL) : NULL;
