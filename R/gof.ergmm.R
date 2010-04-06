@@ -119,6 +119,7 @@ gof.ergmm <- function (object, ..., nsim=100,
    obs.triadcensus <- summary(as.formula(paste('nw',triadcensus.formula,sep="")), drop=FALSE)
    sim.triadcensus <- array(0,dim=c(nsim,length(triadcensus)))
    dimnames(sim.triadcensus) <- list(paste(c(1:nsim)), namestriadcensus)
+   names(obs.triadcensus) <- namestriadcensus
   }
  
   # Simulate an exponential family random graph model
