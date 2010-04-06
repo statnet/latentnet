@@ -12,7 +12,9 @@
   node \eqn{i}, \eqn{d(\cdot,\cdot)} is a function of the two positions:
   either negative Euclidean (\eqn{-||Z_i-Z_j||}) or bilinear
   (\eqn{Z_i\cdot Z_j}), and \eqn{\delta} and \eqn{\gamma} are vectors of sender
-  and receiver effects.
+  and receiver effects. (Note that these are different from the
+  eigenmodel of Hoff (2007) ``Modeling homophily and stochastic
+  equivalence in symmetric relational data'', fit by package \code{eigenmodel}.)
 
   The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>}
   where \code{g} is a \code{network} object

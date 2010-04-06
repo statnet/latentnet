@@ -287,7 +287,7 @@ scale.ergmm.model<-function(x,theta,...){
 # We are overriding "procOPA" to make it more flexible.
 procOPA <- function(x, ...) UseMethod("procOPA")
 
-procOPA.default <- shapes::procOPA
+procOPA.default <- function(x, ...) shapes::procOPA(x, ...)
 
 procOPA.ergmm.model<-function (x,A,B,...){
   procOPA(A,B,scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])

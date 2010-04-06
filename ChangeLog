@@ -2,7 +2,9 @@
 	Added an ability to fit bilinear latent space models of
 	Hoff (2005).
 
-	Bug and documentation fixes.
+	Bug fixes, including one reported by Soriani Nicola.
+
+	Documentation fixes.
 
 2.2-3
 	Fixed a bug in handling of missing data, uncovered by Xiaoyue

@@ -52,6 +52,8 @@ InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1,
   
   model[["d"]] <- d
   model[["G"]] <- G
+
+  if(G>0) warning("For a bilinear (inner-product) latent position effect, two actors being closer in a clustering sense does not necessarily mean a higher expected value of their relationship. Thus, clustering might not be interpretable.")
   
   model[["prior"]][["Z.var.mul"]]<-var.mul
   model[["prior"]][["Z.var"]]<-var
