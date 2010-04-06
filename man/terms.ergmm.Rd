@@ -102,7 +102,11 @@
       \eqn{Z_i \cdot Z_j||}{sum(Z[i]*Z[j])}, where \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]}
       are the positions of their respective actors in an unobserved social
       space. These positions may optionally have a finite spherical
-      Gaussian mixture clustering structure.
+      Gaussian mixture clustering structure. \emph{Note: For a
+	bilinear latent space effect, two actors being closer in the
+	clustering sense does not necessarily mean that the expected value of
+	a tie between them is higher. Thus, a warning is printed when
+	this model is combined with clustering.}
       The parameters are as follows:
       \describe{
 	\item{\code{d}}{The dimension of the latent space.}
