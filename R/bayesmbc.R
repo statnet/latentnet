@@ -1,5 +1,5 @@
 bayesmbc<-function(G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=500,verbose=FALSE){
-  start<-find.clusters(G,Z)
+  start<-mbc.VII.EM(G,Z)
   state<-start<-with(start,list(Z=Z,
                                 Z.mean=Z.mean,
                                 Z.var=Z.var,
@@ -30,7 +30,7 @@ bayesmbc<-function(G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=50
 
 bayesmbc.snowFT<-function(threads,G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=500,verbose=FALSE){
   require(snowFT)
-  start<-find.clusters(G,Z)
+  start<-mbc.VII.EM(G,Z)
   state<-start<-with(start,list(Z=Z,
                                 Z.mean=Z.mean,
                                 Z.var=Z.var,

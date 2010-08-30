@@ -45,7 +45,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   }
 
   if(need.to.fit[["Z.K"]]){
-    mbc1<-find.clusters(G,pm[["Z"]][i.keep,])
+    mbc1<-mbc.VII.EM(G,pm[["Z"]][i.keep,])
     pm[["Z.K"]]<-integer(n)
     pm[["Z.K"]][i.keep]<-mbc1[["Z.K"]]
     pm[["Z.K"]][!i.keep]<-which.max(tabulate(mbc1[["Z.K"]]))
@@ -126,7 +126,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
                  given=merge.lists(list(Z.K=pm[["Z.K"]]),user.start),
                  prior=prior,control=control,fit.vars=need.to.fit)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
-    if(need.to.fit[["Z.K"]])pm[["Z.K"]]<-find.clusters(G,pm[["Z"]])[["Z.K"]]
+    if(need.to.fit[["Z.K"]])pm[["Z.K"]]<-mbc.VII.EM(G,pm[["Z"]])[["Z.K"]]
     if(isTRUE(all.equal(pm.old,pm))) break
   }
   if(control[["verbose"]]) cat("Finished.\n")
@@ -134,46 +134,63 @@ ergmm.initvals <- function(model,user.start,prior,control){
   pm
 }
 
-find.clusters<-function(G,Z){
-  if(!require(mclust,quietly=TRUE, warn.conflicts = FALSE)){
-    stop("You need the 'mclust' package to fit latent cluster models.")
-  }
+mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps ^ 0.5,EM.maxstarts=15){
+  Z<-cbind(Z)
+  n<-dim(Z)[1]
   d<-dim(Z)[2]
-  
-  if(d > 1){
-   el.hc <- hc(modelName="VII",data=Z)
+  if(G>1){
+    cl<-kmeans(Z,G,nstart=EM.maxstarts)
+    theta<-list(Z.mean = cl[["centers"]],
+                Z.var = cl[["withinss"]]/cl[["size"]],
+                Z.pK = cl[["size"]]/sum(cl[["size"]]))
   }else{
-   el.hc <- hc(modelName="V",data=Z)
+    theta<-list(Z.mean = rbind(apply(Z,2,mean)),
+                Z.var = sum(sweep(Z,2,apply(Z,2,mean))^2)/(n-d),
+                Z.pK = 1)
   }
-  cl <- hclass(el.hc,G)
-  if(d > 1){
-    el.me <- me(modelName="VII",data=Z,z=unmap(cl))
-  }else{
-    el.me <- me(modelName="V",data=Z,z=unmap(cl))
-  }
-  if(any(is.na(el.me[["parameters"]][["mean"]]))){
-    if(d > 1){
-      el.me <- mstep(modelName="VII",data=Z,z=unmap(cl))
-    }else{
-      el.me <- mstep(modelName="V",data=Z,z=unmap(cl))
-    }
-    el.me[["z"]] <- unmap(cl)
-  }
-  Z.mean <- rbind(el.me[["parameters"]][["mean"]])
-  Z.mean <- t(Z.mean)
-  if(d > 1){
-   Z.var <- el.me[["parameters"]][["variance"]][["sigmasq"]]
-  }else{
-   Z.var <- el.me[["parameters"]][["variance"]][["sigmasq"]]
-  }
-  Z.K <- map(el.me[["z"]])
-#  cat("Z.mean:\n")
-#  print(Z.mean)
-#  cat("Z.var:\n")
-#  print(Z.var)
-#  cat("Z.K:\n")
-#  print(Z.K)
-  Z.pK <- table(map(el.me[["z"]]))/sum(table(map(el.me[["z"]])))
 
-  return(list(Z.mean=Z.mean,Z.var=Z.var,Z.K=Z.K,Z.pK=Z.pK,Z.pZK=el.me[["z"]],mbc.llk=el.me[["loglik"]]))
+  E.step<-function(theta){
+    Z.pZK<-with(theta,cbind(sapply(seq_len(G),function(g) Z.pK[g]*dmvnorm(Z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
+    sweep(Z.pZK,1,apply(Z.pZK,1,sum),"/")
+  }
+
+  M.step<-function(Z.pZK){
+    Z.pK <- apply(Z.pZK,2,mean)
+    Z.mean <- sweep(crossprod(Z.pZK,Z),1,Z.pK,"/")/n
+    ## Alternative implementation of the above vectorized implementation: may or may not be slower.
+    #t(sapply(seq_len(G),function(g) sapply(seq_len(d),function(j) weighted.mean(Z[,j],Z.pZK[,g]))))
+    Z.var <- sapply(seq_len(G),function(g)
+                      sum(Z.pZK[,g]*apply(sweep(Z,2,Z.mean[g,])^2,1,mean))/sum(Z.pZK[,g])
+               )
+    list(Z.pK=Z.pK,Z.mean=Z.mean,Z.var=Z.var)
+  }
+
+  llk<-function(theta,Z.pZK){
+    with(theta,
+         sum(apply(Z,1,
+                   function(z) log(sum(sapply(seq_len(G),
+                                              function(g) Z.pK[g]*dmvnorm(z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
+                   )
+             )
+         )
+  }
+
+  theta.old<-theta
+  for(it in 1:EM.maxit){
+    converged<-FALSE
+    Z.pZK<-E.step(theta)
+    theta<-M.step(Z.pZK)
+    if(isTRUE(all.equal(theta.old,theta,tolerance=EM.tol))) {
+      converged=TRUE
+      break
+    }
+    theta.old<-theta
+  }
+
+  Z.K<-apply(Z.pZK,1,which.max)
+
+  llk<-llk(theta,Z.pZK)
+  bic<--2*llk+(G-1 + d*G + G)*log(n)
+  
+  return(with(theta,list(Z.mean=Z.mean,Z.var=Z.var,Z.K=Z.K,Z.pK=Z.pK,Z.pZK=Z.pZK,llk=llk,bic=bic,converged=converged,iterations=it)))
 }

@@ -172,7 +172,7 @@ find.pmode.loop<-function(model,start,prior,control){
     if(control[["verbose"]]>1) cat(i,"")
     pmode.old<-pmode
     pmode<-find.mpe(model,pmode,prior=prior,given=list(Z.K=pmode[["Z.K"]]),control=control)
-    if(model[["G"]]>1) pmode[["Z.K"]]<-find.clusters(model[["G"]],pmode[["Z"]])[["Z.K"]]
+    if(model[["G"]]>1) pmode[["Z.K"]]<-mbc.VII.EM(model[["G"]],pmode[["Z"]])[["Z.K"]]
     if(all.equal(pmode.old,pmode)[1]==TRUE) break
   }
   pmode
@@ -204,7 +204,6 @@ proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
 labelswitch.sample.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
   if(!is.null(x[["sample"]]) && x[["model"]][["G"]]>1){
     if(x[["control"]][["verbose"]]) cat("Performing label-switching... ")
-    require(mclust,quiet=TRUE)
     Q.start<-switch.Q.K(Z.K.ref,x[["model"]][["G"]])
     x[["sample"]] <- {
       if(x[["control"]][["kl.threads"]]==1)
