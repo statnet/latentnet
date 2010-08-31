@@ -147,6 +147,14 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
         theta<-list(Z.mean = cl[["centers"]],
                     Z.var = cl[["withinss"]]/cl[["size"]],
                     Z.pK = cl[["size"]]/sum(cl[["size"]]))
+        ## If the initial hard clustering produces a singleton
+        ## cluster, boost the variance to avoid degeneracy.
+        theta[["Z.var"]]<-ifelse(theta[["Z.var"]]<=.Machine$double.eps^0.5,
+                                 sum(sweep(Z,2,apply(Z,2,mean))^2)/(n-d),
+                                 theta[["Z.var"]])
+        Z.pZK<-matrix(0,n,G)
+        for(i in seq_len(n)) Z.pZK[i,cl[["cluster"]][i]]<-1
+        
       }else{
         theta<-list(Z.mean = rbind(apply(Z,2,mean)),
                     Z.var = sum(sweep(Z,2,apply(Z,2,mean))^2)/(n-d),
@@ -162,7 +170,7 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
     M.step<-function(Z.pZK){
       Z.pK <- apply(Z.pZK,2,mean)
       Z.mean <- sweep(crossprod(Z.pZK,Z),1,Z.pK,"/")/n
-      ## Alternative implementation of the above vectorized implementation: may or may not be slower.
+      ## Alternative implementation of the above vectorized implementation: may or may not be slower:
       ##t(sapply(seq_len(G),function(g) sapply(seq_len(d),function(j) weighted.mean(Z[,j],Z.pZK[,g]))))
       Z.var <- sapply(seq_len(G),function(g)
                       sum(Z.pZK[,g]*apply(sweep(Z,2,Z.mean[g,])^2,1,mean))/sum(Z.pZK[,g])
@@ -181,6 +189,7 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
     }
     
     theta.old<-theta
+    
     EMloop<-try(
                 {
                   for(it in 1:EM.maxit){
@@ -193,11 +202,12 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
                     }
                     theta.old<-theta
                   }   
-                  Z.K<-apply(Z.pZK,1,which.max)
                 },
                 silent=TRUE)
+
+    Z.K<-apply(Z.pZK,1,which.max)
     
-    if(inherits(EMloop,"try-error") && with(theta,max(Z.var)/min(Z.var))>.Machine$double.eps^-0.5){
+    if(inherits(EMloop,"try-error") || with(theta,max(Z.var)/min(Z.var))>.Machine$double.eps^-0.5){
       llk<-Inf
       bic<--Inf
     }else{
