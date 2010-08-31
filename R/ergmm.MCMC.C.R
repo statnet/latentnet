@@ -85,15 +85,15 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
   
 #  cat("Entering C routine... ")
   Cret <- .C("ERGMM_MCMC_wrapper",
-             
+             # 1:
              sample.size=as.integer(sample.size),
              interval=as.integer(interval),
-             
+             # 3:
              n=as.integer(n),
              p=as.integer(p),
              d=as.integer(d),
              G=as.integer(G), 
-             
+             # 7:
              dir=as.integer(is.directed(model[["Yg"]])),
              viY=as.integer(Ym.noNA),
              vdY=as.double(Ym.noNA),
@@ -101,66 +101,66 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              iconsts=as.integer(model[["iconsts"]]),
              dconsts=as.double(model[["dconsts"]]),
              latent=as.integer(model[["latentID"]]),
-             
+             # 14:
              vX=as.double(unlist(model[["X"]])),  
-             
+             # 15:
              lpY.mcmc=double(sample.size+RESERVED),
              lpZ.mcmc=if(!is.null(start[["Z"]]))double(sample.size+RESERVED) else double(0),
              lpbeta.mcmc=if(p>0)double(sample.size+RESERVED) else double(0),
              lpRE.mcmc=if(model[["sender"]]||model[["sociality"]]||model[["receiver"]])double(sample.size+RESERVED) else double(0),
              lpLV.mcmc=if(!is.null(start[["Z"]]))double(sample.size+RESERVED) else double(0),
              lpREV.mcmc=if(model[["sender"]] || model[["sociality"]] || model[["receiver"]])double(sample.size+RESERVED) else double(0),
-             
+             # 21:
              Z=as.double(start[["Z"]]),
-             
+             # 22:
              Z.pK=if(G > 0) as.double(start[["Z.pK"]]) else double(0),
              Z.mean=if(G > 0) as.double(start[["Z.mean"]]) else double(0),
              Z.var=as.double(start[["Z.var"]]),
              Z.K=if(G > 0) as.integer(start[["Z.K"]]) else integer(0),
-             
+             # 26:
              prior.Z.var=as.double(prior[["Z.var"]]),
              prior.Z.mean.var=if(G > 0) as.double(prior[["Z.mean.var"]]) else double(0),
              prior.Z.pK=if(G > 0) as.double(prior[["Z.pK"]]) else double(0),
              prior.Z.var.df=as.double(prior[["Z.var.df"]]),
-             
+             # 30:
              Z.mcmc = double((sample.size+RESERVED)*n*d),
              Z.rate = if(d > 0 || model[["sender"]] || model[["sociality"]] || model[["receiver"]]) double((sample.size+RESERVED)) else double(0),
-             
+             # 32:
              K.mcmc = if(G > 0) integer(n*(sample.size+RESERVED)) else integer(0),
              Z.pK.mcmc = double(G*(sample.size+RESERVED)),
              mu.mcmc = double(d*G*(sample.size+RESERVED)),
              Z.var.mcmc = double(max(G,d>0)*(sample.size+RESERVED)),
-             
+             # 36:
              start.beta=as.double(start[["beta"]]),
              prior.beta.mean=as.double(prior[["beta.mean"]]),
              prior.beta.var=as.double(prior[["beta.var"]]),
              beta.mcmc=double((sample.size+RESERVED)*p),
              beta.rate=double((sample.size+RESERVED)),
-             
+             # 41:
              start.sender=if(model[["sociality"]]) as.double(start[["sociality"]]) else as.double(start[["sender"]]),
              start.receiver=as.double(start[["receiver"]]),
              sender.var=if(model[["sociality"]]) as.double(start[["sociality.var"]]) else as.double(start[["sender.var"]]),
              receiver.var=as.double(start[["receiver.var"]]),
-             
+             # 45:
              prior.sender.var=if(model[["sociality"]]) as.double(prior[["sociality.var"]]) else as.double(prior[["sender.var"]]),
              prior.sender.var.df=if(model[["sociality"]]) as.double(prior[["sociality.var.df"]]) else as.double(prior[["sender.var.df"]]),
              prior.receiver.var=as.double(prior[["receiver.var"]]),
              prior.receiver.var.df=as.double(prior[["receiver.var.df"]]),
-             
+             # 49:
              sender.mcmc=if(model[["sender"]]||model[["sociality"]]) double(n*(sample.size+RESERVED)) else double(0),
              receiver.mcmc=if(model[["receiver"]]) double(n*(sample.size+RESERVED)) else double(0),
              sender.var.mcmc=if(model[["sender"]] || model[["sociality"]]) double((sample.size+RESERVED)) else double(0),
              receiver.var.mcmc=if(model[["receiver"]]) double((sample.size+RESERVED)) else double(0),
-             
+             # 53:
              lock.RE=model[["sociality"]],
              observed=as.integer(observed),
-
+             # 55:
              deltas=with(control,as.numeric(c(Z.delta,RE.delta,group.deltas))),
              beta.eff.sender=as.double(c(model[["beta.eff.sender"]],model[["beta.eff.sociality"]])),
              beta.eff.sender.size=as.integer(nrow(rbind(model[["beta.eff.sender"]],model[["beta.eff.sociality"]]))),
              beta.eff.receiver=as.double(model[["beta.eff.receiver"]]),
              beta.eff.receiver.size=as.integer(nrow(model[["beta.eff.receiver"]])),
-
+             # 60:
              accept.all=control[["accept.all"]],
              
              PACKAGE="latentnet")
