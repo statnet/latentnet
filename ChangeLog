@@ -1,3 +1,13 @@
+2.3-1
+	Reimplemented the used functionality of and removed the dependence
+	on mclust.
+
+	Fixed a number of bugs reported by Nicola Sorani.
+
+	Modified the proposal tuner to propose those variables with high
+	autocorrelation more aggressively (at the expense of the
+	others). This should vastly improve mixing for complex models.
+
 2.3
 	Added an ability to fit bilinear latent space models of
 	Hoff (2005).
