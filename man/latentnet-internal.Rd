@@ -100,6 +100,7 @@
 \alias{get.beta.eff}
 \alias{scale.ergmm.model}
 \alias{scale}
+\alias{get.beta.ext}
 
 \alias{post.predict.C}
 \alias{post.predict.R}
