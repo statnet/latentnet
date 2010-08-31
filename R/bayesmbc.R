@@ -22,7 +22,8 @@ bayesmbc<-function(G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=50
                        list(Z.mean=apply(Z.mean,2:3,mean),
                             Z.var=apply(Z.var,2,mean),
                             Z.K=apply(Z.K,2,function(x)which.max(tabulate(x,G))),
-                            Z.pZK=t(apply(Z.K,2,function(x)tabulate(x,G)/length(x)))
+                            Z.pZK=t(apply(Z.K,2,function(x)tabulate(x,G)/length(x))),
+                            Z.pK=tabulate(c(Z.K),G)/length(Z.K)
                             )
                        )
   mcmc.out
@@ -53,7 +54,8 @@ bayesmbc.snowFT<-function(threads,G,Z,prior,Z.K.ref=NULL,sample.size=2000,interv
                        list(Z.mean=apply(Z.mean,2:3,mean),
                             Z.var=apply(Z.var,2,mean),
                             Z.K=apply(Z.K,2,function(x)which.max(tabulate(x,G))),
-                            Z.pZK=t(apply(Z.K,2,function(x)tabulate(x,G)/length(x)))
+                            Z.pZK=t(apply(Z.K,2,function(x)tabulate(x,G)/length(x))),
+                            Z.pK=tabulate(c(Z.K),G)/length(Z.K)
                             )
                        )
   mcmc.out

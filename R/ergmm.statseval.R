@@ -172,7 +172,7 @@ find.pmode.loop<-function(model,start,prior,control){
     if(control[["verbose"]]>1) cat(i,"")
     pmode.old<-pmode
     pmode<-find.mpe(model,pmode,prior=prior,given=list(Z.K=pmode[["Z.K"]]),control=control)
-    if(model[["G"]]>1) pmode[["Z.K"]]<-mbc.VII.EM(model[["G"]],pmode[["Z"]])[["Z.K"]]
+    if(model[["G"]]>1) pmode[["Z.K"]]<-mbc.VII.EM(model[["G"]],pmode[["Z"]],resume=list(Z.mean=pmode[["Z.mean"]],Z.var=pmode[["Z.var"]],Z.pK=pmode[["Z.pK"]]))[["Z.K"]]
     if(all.equal(pmode.old,pmode)[1]==TRUE) break
   }
   pmode
@@ -238,7 +238,7 @@ best.avail.Z.K.ref.ergmm<-function(x){
   if(!is.null(x[["mcmc.pmode"]][["Z.K"]])) return(x[["mcmc.pmode"]][["Z.K"]])
   if(!is.null(x[["start"]][["Z.K"]])) return(x[["start"]][["Z.K"]])
   
-  return(find.clusters(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
+  return(mbc.VII.EM(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
 }
 
 # We are overriding the generic for "scale" to make it more flexible.
