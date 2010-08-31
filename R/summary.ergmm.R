@@ -231,7 +231,14 @@ bic.ergmm<-function(object){
                               Z =
                               if(d>0){
                                 if(G>0){
-                                  mbc.VII.EM(G,object[["mkl"]][["Z"]])[["bic"]]
+                                  mbc.llk<-Inf
+                                  Gsub<--1
+                                  while(!is.finite(mbc.llk)){
+                                    Gsub<-Gsub+1
+                                    mbc.llk<-mbc.VII.EM(G,object[["mkl"]][["Z"]])[["llk"]]
+                                  }
+                                  if(Gsub) warning(paste("Bad clustering: treating",Gsub,"clusters as empty."))
+                                  -2*mbc.llk+(G-1 + d*G + G)*log(n)
                                 } else {
                                   -2*sum(dnorm(object[["mkl"]][["Z"]],0,sqrt(mean(condZRE[["Z"]]^2)*d),log=TRUE))+1*log(n*d)
                                 }

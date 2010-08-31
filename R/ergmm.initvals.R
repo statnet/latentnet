@@ -126,7 +126,8 @@ ergmm.initvals <- function(model,user.start,prior,control){
                  given=merge.lists(list(Z.K=pm[["Z.K"]]),user.start),
                  prior=prior,control=control,fit.vars=need.to.fit)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
-    if(need.to.fit[["Z.K"]])pm[["Z.K"]]<-mbc.VII.EM(G,pm[["Z"]])[["Z.K"]]
+    if(need.to.fit[["Z.K"]])pm[["Z.K"]]<-try(mbc.VII.EM(G,pm[["Z"]],resume=list(Z.mean=pm[["Z.mean"]],Z.var=pm[["Z.var"]],Z.pK=pm[["Z.pK"]]))[["Z.K"]])
+    if(inherits(pm[["Z.K"]],"try-error")) stop("Unable to find an initial clustering. Try fitting a model with fewer clusters, or specifying initial clusters manually.")
     if(isTRUE(all.equal(pm.old,pm))) break
   }
   if(control[["verbose"]]) cat("Finished.\n")
@@ -134,63 +135,76 @@ ergmm.initvals <- function(model,user.start,prior,control){
   pm
 }
 
-mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps ^ 0.5,EM.maxstarts=15){
+mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstarts=15,resume=NULL){
   Z<-cbind(Z)
   n<-dim(Z)[1]
   d<-dim(Z)[2]
-  if(G>1){
-    cl<-kmeans(Z,G,nstart=EM.maxstarts)
-    theta<-list(Z.mean = cl[["centers"]],
-                Z.var = cl[["withinss"]]/cl[["size"]],
-                Z.pK = cl[["size"]]/sum(cl[["size"]]))
-  }else{
-    theta<-list(Z.mean = rbind(apply(Z,2,mean)),
-                Z.var = sum(sweep(Z,2,apply(Z,2,mean))^2)/(n-d),
-                Z.pK = 1)
-  }
 
-  E.step<-function(theta){
-    Z.pZK<-with(theta,cbind(sapply(seq_len(G),function(g) Z.pK[g]*dmvnorm(Z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
-    sweep(Z.pZK,1,apply(Z.pZK,1,sum),"/")
-  }
-
-  M.step<-function(Z.pZK){
-    Z.pK <- apply(Z.pZK,2,mean)
-    Z.mean <- sweep(crossprod(Z.pZK,Z),1,Z.pK,"/")/n
-    ## Alternative implementation of the above vectorized implementation: may or may not be slower.
-    #t(sapply(seq_len(G),function(g) sapply(seq_len(d),function(j) weighted.mean(Z[,j],Z.pZK[,g]))))
-    Z.var <- sapply(seq_len(G),function(g)
+  for(attempt in 1:EM.maxstarts){
+    if(is.null(resume) || attempt>2){
+      if(G>1){
+        cl<-kmeans(Z,G,nstart=EM.maxstarts)
+        theta<-list(Z.mean = cl[["centers"]],
+                    Z.var = cl[["withinss"]]/cl[["size"]],
+                    Z.pK = cl[["size"]]/sum(cl[["size"]]))
+      }else{
+        theta<-list(Z.mean = rbind(apply(Z,2,mean)),
+                    Z.var = sum(sweep(Z,2,apply(Z,2,mean))^2)/(n-d),
+                    Z.pK = 1)
+      }
+    }else theta<-resume
+    
+    E.step<-function(theta){
+      Z.pZK<-with(theta,cbind(sapply(seq_len(G),function(g) Z.pK[g]*dmvnorm(Z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
+      sweep(Z.pZK,1,apply(Z.pZK,1,sum),"/")
+    }
+    
+    M.step<-function(Z.pZK){
+      Z.pK <- apply(Z.pZK,2,mean)
+      Z.mean <- sweep(crossprod(Z.pZK,Z),1,Z.pK,"/")/n
+      ## Alternative implementation of the above vectorized implementation: may or may not be slower.
+      ##t(sapply(seq_len(G),function(g) sapply(seq_len(d),function(j) weighted.mean(Z[,j],Z.pZK[,g]))))
+      Z.var <- sapply(seq_len(G),function(g)
                       sum(Z.pZK[,g]*apply(sweep(Z,2,Z.mean[g,])^2,1,mean))/sum(Z.pZK[,g])
+                      )
+      list(Z.pK=Z.pK,Z.mean=Z.mean,Z.var=Z.var)
+    }
+    
+    llk<-function(theta,Z.pZK){
+      with(theta,
+           sum(apply(Z,1,
+                     function(z) log(sum(sapply(seq_len(G),
+                                                function(g) Z.pK[g]*dmvnorm(z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
+                     )
                )
-    list(Z.pK=Z.pK,Z.mean=Z.mean,Z.var=Z.var)
-  }
-
-  llk<-function(theta,Z.pZK){
-    with(theta,
-         sum(apply(Z,1,
-                   function(z) log(sum(sapply(seq_len(G),
-                                              function(g) Z.pK[g]*dmvnorm(z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
-                   )
-             )
-         )
-  }
-
-  theta.old<-theta
-  for(it in 1:EM.maxit){
-    converged<-FALSE
-    Z.pZK<-E.step(theta)
-    theta<-M.step(Z.pZK)
-    if(isTRUE(all.equal(theta.old,theta,tolerance=EM.tol))) {
-      converged=TRUE
+           )
+    }
+    
+    theta.old<-theta
+    EMloop<-try(
+                {
+                  for(it in 1:EM.maxit){
+                    converged<-FALSE
+                    Z.pZK<-E.step(theta)
+                    theta<-M.step(Z.pZK)
+                    if(isTRUE(all.equal(theta.old,theta,tolerance=EM.tol))) {
+                      converged=TRUE
+                      break
+                    }
+                    theta.old<-theta
+                  }   
+                  Z.K<-apply(Z.pZK,1,which.max)
+                },
+                silent=TRUE)
+    
+    if(inherits(EMloop,"try-error") && with(theta,max(Z.var)/min(Z.var))>.Machine$double.eps^-0.5){
+      llk<-Inf
+      bic<--Inf
+    }else{
+      llk<-llk(theta,Z.pZK)
+      bic<--2*llk+(G-1 + d*G + G)*log(n)
       break
     }
-    theta.old<-theta
   }
-
-  Z.K<-apply(Z.pZK,1,which.max)
-
-  llk<-llk(theta,Z.pZK)
-  bic<--2*llk+(G-1 + d*G + G)*log(n)
-  
   return(with(theta,list(Z.mean=Z.mean,Z.var=Z.var,Z.K=Z.K,Z.pK=Z.pK,Z.pZK=Z.pZK,llk=llk,bic=bic,converged=converged,iterations=it)))
 }

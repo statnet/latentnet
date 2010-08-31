@@ -64,7 +64,6 @@
 \alias{ergmm.geodesicmatrix.edgelist}
 \alias{ergmm.get.model}
 \alias{ergmm.initvals}
-\alias{find.clusters} 
 
 \alias{GS.orth.matrix} 
 \alias{P.free.all}
@@ -111,6 +110,8 @@
 %
 % These might be worth documenting
 %
+
+\alias{mbc.VII.EM}
 
 \alias{print.ergmm.model}
 \alias{ergmm.model}
