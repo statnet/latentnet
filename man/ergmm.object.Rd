@@ -49,7 +49,6 @@
   \code{\link{summary.ergmm}},
   \code{\link{plot.ergmm}},
   \code{\link{predict.ergmm}},
-  \code{\link{as.mcmc.ergmm}},
   \code{\link{as.mcmc.list.ergmm}}
 }
 \keyword{graphs}

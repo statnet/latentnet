@@ -101,6 +101,7 @@
 \alias{scale.ergmm.model}
 \alias{scale}
 \alias{get.beta.ext}
+\alias{as.mcmc}
 
 \alias{post.predict.C}
 \alias{post.predict.R}
