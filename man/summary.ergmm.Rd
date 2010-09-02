@@ -48,11 +48,11 @@ bic.ergmm(object)
 data(sampson)
 # Fit the model for cluster sizes 1 through 5:
 fits<-list(
-           ergmm(samplike~latent(d=2,G=1)),
-           ergmm(samplike~latent(d=2,G=2)),
-           ergmm(samplike~latent(d=2,G=3)),
-           ergmm(samplike~latent(d=2,G=4)),
-           ergmm(samplike~latent(d=2,G=5))
+           ergmm(samplike~euclidean(d=2,G=1)),
+           ergmm(samplike~euclidean(d=2,G=2)),
+           ergmm(samplike~euclidean(d=2,G=3)),
+           ergmm(samplike~euclidean(d=2,G=4)),
+           ergmm(samplike~euclidean(d=2,G=5))
            )
 
 \dontrun{
