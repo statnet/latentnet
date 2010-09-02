@@ -1,12 +1,19 @@
-2.3-1
-	Reimplemented the used functionality of and removed the dependence
-	on mclust.
+2.4-0
+	Removed the dependence on package 'mclust'. (The functionality
+	used has been reimplemented internally.) This means that
+	commercial use of the latent position clustering functionality
+	is now possible without the UW license. The reimplementation
+	requires 'mvtnorm' as a dependency.
 
-	Fixed a number of bugs reported by Nicola Sorani.
+	Fixed a number of bugs reported by Soriani Nicola.
 
 	Modified the proposal tuner to propose those variables with high
 	autocorrelation more aggressively (at the expense of the
 	others). This should vastly improve mixing for complex models.
+
+	Package 'coda' is now a dependency rather than a suggested package.
+
+	Made the require()s for the suggested packages more informative.
 
 2.3
 	Added an ability to fit bilinear latent space models of

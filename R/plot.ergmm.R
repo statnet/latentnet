@@ -34,7 +34,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   G<-x[["model"]][["G"]]
   if(G<1) pie<-FALSE
 
-  if(use.rgl) require(rgl)
+  if(use.rgl) if(!require(rgl)) stop("3D plots with use.rgl=TRUE option require the 'rgl' package.")
   
   ## Set default axis labels.
   if(d==1){

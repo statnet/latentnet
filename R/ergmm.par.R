@@ -74,13 +74,12 @@ length.ergmm.par.list<-function(x){
 
 stack.ergmm.par.list.list<-function(x,...){
   extraneous.argcheck(...)
-  require(abind)
   mcmcsample<-list()
 
   for(name in names(x[[1]]))
-    mcmcsample[[name]]<-abind(sapply(1:length(x),
-                                      function(i) x[[i]][[name]],
-                                      simplify=FALSE),along=1)
+    mcmcsample[[name]]<-abind::abind(sapply(1:length(x),
+                                            function(i) x[[i]][[name]],
+                                            simplify=FALSE),along=1)
 
   attr(mcmcsample,"breaks")<-cumsum(c(sapply(1:(length(x)
                                                  ),
@@ -107,8 +106,7 @@ unstack.ergmm.par.list<-function(x,...){
   mcmcList
 }
 
-as.mcmc.list.ergmm.par.list<-function(x,which.vars,start=1,thin=1){
-  require(coda)
+as.mcmc.list.ergmm.par.list<-function(x,which.vars,start=1,thin=1,...){
   x<-unstack(x)
   m.l<-list()
   for(thread in 1:length(x)){

@@ -9,8 +9,8 @@
 }
 \details{
   There are methods \code{\link{summary.ergmm}}, \code{print.ergmm},
-  \code{\link{plot.ergmm}}, \code{\link{predict.ergmm}},
-  \code{\link{as.mcmc.ergmm}}, and \code{\link{as.mcmc.list.ergmm}}.
+  \code{\link{plot.ergmm}}, \code{\link{predict.ergmm}}, and
+  \code{\link{as.mcmc.list.ergmm}}.
   
   The structure of \code{ergmm} is as follows:
   \describe{

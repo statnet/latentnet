@@ -57,7 +57,7 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
   if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
   
 
-  if(!require(snowFT)) stop("Package snowFT required for multithreaded KL Switching!")
+  if(!require(snowFT)) stop("Package 'snowFT' is required for multithreaded KL Switching.")
   
   Cret <- .C("klswitch_pK_wrapper",
              S = as.integer(S),
