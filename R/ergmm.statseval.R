@@ -118,9 +118,6 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   x[["mle"]]<-scale(x[["model"]],x[["mle"]])
 
   if(x[["model"]][["d"]] && "rotation" %in% latent.effect.invariances[[x[["model"]][["familyID"]]]]){
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
     x[["mle"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mle"]][["Z"]])[["Bhat"]]
   }
   
@@ -155,9 +152,6 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     
   if(x[["model"]][["d"]]>0 && !is.null(x[["pmode"]])){
     x[["pmode"]]<-scale(x[["model"]], x[["pmode"]])
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
     P<-procOPA(x[["model"]],Z.ref,x[["pmode"]][["Z"]])[["R"]]
     x[["pmode"]][["Z"]]<-x[["pmode"]][["Z"]]%*%P
     if(!is.null(x[["pmode"]][["Z.mean"]]))
@@ -182,9 +176,6 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
   if(!is.null(x[["sample"]])){
     if(x[["control"]][["verbose"]]) cat("Fitting the MKL locations... ")
     x[["mkl"]]<-find.mkl(x[["model"]],x[["sample"]],x[["control"]])
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
   }
   if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-scale(x[["model"]],x[["mkl"]])
   if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mkl"]][["Z"]])[["Bhat"]]

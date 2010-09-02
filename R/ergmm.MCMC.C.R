@@ -217,7 +217,7 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
   param.sets<-max(l.sizes)
   if(any(l.sizes!=param.sets & l.sizes!=1)) stop("Length of each input list must be either 1 or a single other number.")
 
-  if(!require(snowFT)) stop("Package snowFT required for multithreaded MCMC!")
+  if(!require(snowFT)) stop("Package 'snowFT' is required for multithreaded MCMC.")
   mcmc.out.l<-performParallel(threads,rep(1:param.sets,reps),
                               ergmm.MCMC.snowFT.slave,
                               lib=path.to.me,

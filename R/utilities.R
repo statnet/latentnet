@@ -27,7 +27,8 @@ extraneous.argcheck<-function(...){
 }
 
 
-thin.ergmm<-function(x,by){
+thin.ergmm<-function(x,by,...){
+  extraneous.argcheck(...)
   if(x[["control"]][["threads"]]>1) warning("Multithreaded run output. Stuff might be broken.")
   S<-x[["control"]][["sample.size"]]
   s.kept<-seq(from=1,to=S,by=by)
