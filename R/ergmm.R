@@ -15,7 +15,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
     with(control,
          if(sample.size%%threads || (burnin/interval)%%threads)
          stop("Please make the MCMC sample size and the ratio burnin/interval a multiple of the number of threads."))
-    require(snowFT)
+    stop("Package 'snowFT' is required for multithreaded MCMC.")
   }
   
   
@@ -80,9 +80,10 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
             burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
           }
           if(control[["store.burnin"]]) burnin.samples[[length(burnin.samples)+1]]<-burnin.sample
-
-          burnin.control<-backoff.check(model,burnin.sample,burnin.control)
-          backoff<-burnin.control[["backedoff"]]
+          if(control[["pilot.runs"]]){
+            burnin.control<-backoff.check(model,burnin.sample,burnin.control)
+            backoff<-burnin.control[["backedoff"]]
+          }else backoff<-FALSE
         }
         
         if(control[["pilot.runs"]]) burnin.control<-get.sample.deltas(model, burnin.sample, burnin.control)

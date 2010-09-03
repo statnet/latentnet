@@ -64,21 +64,12 @@
 \alias{ergmm.geodesicmatrix.edgelist}
 \alias{ergmm.get.model}
 \alias{ergmm.initvals}
-\alias{find.clusters} 
 
 \alias{GS.orth.matrix} 
 \alias{P.free.all}
-
-\alias{InitErgmm.absdiff}
-\alias{InitErgmm.latent}
-\alias{InitErgmm.latentcov}
-\alias{InitErgmm.nodematch}
-\alias{InitErgmm.receivercov}
-\alias{InitErgmm.rreceiver}
-\alias{InitErgmm.rsender}
-\alias{InitErgmm.rsociality}
-\alias{InitErgmm.sendercov}
-\alias{InitErgmm.socialitycov}
+\alias{procOPA}
+\alias{procOPA.default}
+\alias{procOPA.ergmm.model}
 
 \alias{cmp.lists}
 \alias{merge.lists}
@@ -109,6 +100,8 @@
 \alias{get.beta.eff}
 \alias{scale.ergmm.model}
 \alias{scale}
+\alias{get.beta.ext}
+\alias{as.mcmc}
 
 \alias{post.predict.C}
 \alias{post.predict.R}
@@ -119,6 +112,8 @@
 %
 % These might be worth documenting
 %
+
+\alias{mbc.VII.EM}
 
 \alias{print.ergmm.model}
 \alias{ergmm.model}

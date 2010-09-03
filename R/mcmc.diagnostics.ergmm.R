@@ -55,9 +55,11 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
   }
 }
 
-as.mcmc.list.ergmm<-as.mcmc.ergmm<-function(x,burnin=FALSE,
+as.mcmc<-function(x,...) UseMethod("as.mcmc")
+as.mcmc.ergmm<-as.mcmc.list.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,
-                             vertex.i=c(1)){
+                             vertex.i=c(1),...){
+  extraneous.argcheck(...)
   n<-network.size(x[["model"]][["Yg"]])
   G<-x[["model"]][["G"]]
   d<-x[["model"]][["d"]]

@@ -24,6 +24,7 @@ double ERGMM_MCMC_logp_REV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *c
 void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			int *dir, int *viY, double *vdY,
 			int *family, int *iconsts, double *dconsts,
+			int *latent_eff,
 			double *vX, double *vZ,
 			double *coef,
 			double *sender, double *receiver, int *lock_RE,

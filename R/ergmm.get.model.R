@@ -46,12 +46,9 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
     }
     model <- eval(as.call(init.call), attr(terms,".Environment"))
   }
-  
-  if(!("Z.var" %in% names(model[["prior"]]))) model[["prior"]][["Z.var"]]<-model[["prior"]][["Z.var.mul"]]*(network.size(model[["Yg"]])/max(1,model[["G"]]))^(2/model[["d"]])
-  if(!("Z.mean.var" %in% names(model[["prior"]]))) model[["prior"]][["Z.mean.var"]]<-model[["prior"]][["Z.mean.var.mul"]]*model[["prior"]][["Z.var"]]*max(1,model[["G"]])^(2/model[["d"]])
-  if(!("Z.var.df" %in% names(model[["prior"]]))) model[["prior"]][["Z.var.df"]]<-model[["prior"]][["Z.var.df.mul"]]*sqrt(network.size(model[["Yg"]])/max(1,model[["G"]]))
-  if(!("Z.pK" %in% names(model[["prior"]]))) model[["prior"]][["Z.pK"]]<-model[["prior"]][["Z.pK.mul"]]*sqrt(network.size(model[["Yg"]])/max(1,model[["G"]]))
-  
+
+  if(model[["d"]]>0) model[["latentID"]] <- latent.effect.IDs[[model[["latent"]]]]
+
   if(prior[["adjust.beta.var"]]) model[["prior"]][["beta.var"]]<-model[["prior"]][["beta.var"]]/sapply(1:model[["p"]],function(i) mean((model[["X"]][[i]][observed.dyads(model[["Yg"]])])^2))
   
   for(name in names(prior)){
@@ -73,19 +70,19 @@ get.beta.eff<-function(model){
   n<-network.size(model[["Yg"]])
   out<-list(sender = if(model[["sender"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],1,mean))),
             receiver = if(model[["receiver"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],2,mean))),
-            sociality = if(model[["sociality"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],1,mean))))
+            sociality = if(model[["sociality"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],1,mean)+apply(model[["X"]][[k]],2,mean))))
   for(re in names(out))
     if(is.null(out[[re]])) out[[re]]<-NULL
     else if(model[["p"]]>1)
       for(k1 in 2:model[["p"]])
         for(k2 in 1:(k1-1)){
           utu<-crossprod(out[[re]][k2,],out[[re]][k2,])
-          if(isTRUE(all.equal(utu,0))) break;
+          if(isTRUE(all.equal(c(utu),0))) break;
           out[[re]][k1,]<-out[[re]][k1,]-crossprod(out[[re]][k2,],out[[re]][k1,])/utu*out[[re]][k2,]
         }
   ## Rows of 0s will break the tuner, and don't actually help, so, we drop them.
   for(re in names(out)){
-    no.eff<-apply(out[[re]],1,function(x) isTRUE(all.equal(x,rep(0,n))))
+    no.eff<-apply(out[[re]],1,function(x) isTRUE(all.equal(c(x),rep(0,n))))
     out[[re]]<-out[[re]][!no.eff,,drop=FALSE]
   }
   

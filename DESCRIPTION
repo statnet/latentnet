@@ -1,14 +1,14 @@
 Package: latentnet
-Version: 2.3-1088-1092.1-2009.12.20-19.10.51
-Date: 2009-12-20
+Version: 2.4-0
+Date: 2010-09-01
 Title:  Latent position and cluster models for statistical networks
-Author: Pavel N. Krivitsky <pavel@stat.washington.edu>,
-        Mark S. Handcock <handcock@stat.washington.edu>, 
+Author: Pavel N. Krivitsky <pavel@stat.cmu.edu>,
+        Mark S. Handcock <handcock@stat.ucla.edu>, 
         based on original code from "latentnetHRT",
         and code from other packages of `statnet' project
-Maintainer: Pavel N. Krivitsky <pavel@stat.washington.edu>
+Maintainer: Pavel N. Krivitsky <pavel@stat.cmu.edu>
 Description: A package to fit and simulate latent position and cluster models for statistical networks. 
-Depends: network, shapes, abind, tools
-Suggests: coda, mclust, KernSmooth, snowFT, ergm, rgl
+Depends: network, shapes, abind, tools, mvtnorm, coda
+Suggests: KernSmooth, snowFT, ergm, rgl
 License: file LICENSE
 URL: http://statnetproject.org

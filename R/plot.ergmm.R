@@ -34,7 +34,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   G<-x[["model"]][["G"]]
   if(G<1) pie<-FALSE
 
-  if(use.rgl) require(rgl)
+  if(use.rgl) if(!require(rgl)) stop("3D plots with use.rgl=TRUE option require the 'rgl' package.")
   
   ## Set default axis labels.
   if(d==1){
@@ -247,7 +247,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   if(!is.null(Z.ref)){
     R<-procOPA(Z.ref,Z.pos,scale=FALSE,reflect=TRUE)[["R"]]
     Z.pos<-Z.pos%*%R
-    Z.mean<-Z.mean%*%R
+    if(G) Z.mean<-Z.mean%*%R
   }
   if(!is.null(Z.K.ref)){
     perm<-which.perm.nearest(Z.K.ref,Z.K)
@@ -260,7 +260,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   ## Transform coordinates for dimensions other than 2 (or 3, when using rgl).
   if(d==1){    
     Z.pos<-coords.1D(Z.pos,curve1D,jitter1D)
-    Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
+    if(G) Z.mean<-coords.1D(Z.mean,curve1D,jitter1D)
     if(curve1D){
       distances<-as.matrix(dist(Z.pos))
       distances<-distances/max(distances)
@@ -269,12 +269,12 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     ## Plot the first three principal components.
     prc<-prcomp(Z.pos)
     Z.pos<-predict(prc,Z.pos)[,1:3]
-    Z.mean<-predict(prc,Z.mean)[,1:3]
+    if(G) Z.mean<-predict(prc,Z.mean)[,1:3]
   }else if(d>2 && !use.rgl){ ## I.e. high latent dimension.
     ## Plot the first two principal components.
     prc<-prcomp(Z.pos)
     Z.pos<-predict(prc,Z.pos)[,1:2]
-    Z.mean<-predict(prc,Z.mean)[,1:2]
+    if(G) Z.mean<-predict(prc,Z.mean)[,1:2]
   }
   
   ## Set default vertex color.

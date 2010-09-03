@@ -11,6 +11,8 @@
 \usage{
 \method{summary}{ergmm}(object, point.est = c("pmean", "mkl"),
                         quantiles = c(0.025, 0.975), se = FALSE, \dots)
+
+bic.ergmm(object)
 }
 
 \arguments{
@@ -22,21 +24,53 @@
   \item{\dots}{Additional arguments. Currently unused.}
 }
 \value{
-  An object of class
+  For \code{summary}, an object of class
   \code{\link[=summary.ergmm.object]{summary.ergmm}}. A print method is
   available.
 
   The BICs are available as the element "bic" of the object
-  returned. Note that BIC computed for the random effects models may not be correct.
+  returned. Note that BIC computed for the random effects models may not
+  be correct.
+
+  \code{bic.ergmm} returns the BIC for the model directly.
 }
 \seealso{ \code{\link{ergmm.object}},
   \code{\link{ergmm}}
 }
+
+\references{ Chris Fraley and Adrian E. Raftery
+  (2002). \emph{Model-based clustering, discriminant analysis, and
+  density estimation}. Journal of the American Statistical Association,
+  97(458), 611-631.
+}
+
 \examples{
 data(sampson)
-samp.fit <- ergmm(samplike ~ latent(d=2, G=3)+rreceiver)
-summary(samp.fit)
+# Fit the model for cluster sizes 1 through 5:
+fits<-list(
+           ergmm(samplike~euclidean(d=2,G=1)),
+           ergmm(samplike~euclidean(d=2,G=2)),
+           ergmm(samplike~euclidean(d=2,G=3)),
+           ergmm(samplike~euclidean(d=2,G=4)),
+           ergmm(samplike~euclidean(d=2,G=5))
+           )
+
+\dontrun{
+sapply(fits,plot)
 }
+
+# Compute the BICs for the fits and plot them:
+(bics<-reshape(as.data.frame(t(sapply(fits,function(x)c(G=x$model$G,unlist(bic.ergmm(x))[c("Y","Z","overall")])))),list(c("Y","Z","overall")),idvar="G",v.names="BIC",timevar="Component",times=c("likelihood","clustering","overall"),direction="long"))
+
+with(bics,interaction.plot(G,Component,BIC,type="b",xlab="Clusters", ylab="BIC"))
+
+# Summarize and plot whichever fit has the lowest overall BIC:
+bestG<-with(bics[bics$Component=="overall",],G[which.min(BIC)])
+summary(fits[[bestG]])
+plot(fits[[bestG]])
+
+}
+
 \keyword{graphs}
 \keyword{models}
 \keyword{print}

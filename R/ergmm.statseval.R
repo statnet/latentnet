@@ -10,8 +10,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   sample.size <- control[["sample.size"]]
 
   if(!is.null(Z.ref)){
-    Z.ref<-scale(Z.ref,scale=FALSE)
-    control[["Z.ref"]]<-Z.ref
+    control[["Z.ref"]]<-scale(model, list(Z=Z.ref))
   }
   if(!is.null(Z.K.ref)){
     control[["Z.K.ref"]]<-Z.K.ref
@@ -39,9 +38,9 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
 
 statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   if(!is.null(Z.ref)){
-    Z.ref<-scale(Z.ref,scale=FALSE)
-    x[["control"]][["Z.ref"]]<-Z.ref
+    control[["Z.ref"]]<-scale(x[["model"]], list(Z=Z.ref))
   }
+  
   if(!is.null(Z.K.ref)){
     x[["control"]][["Z.K.ref"]]<-Z.K.ref
   }
@@ -118,11 +117,8 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   
   x[["mle"]]<-scale(x[["model"]],x[["mle"]])
 
-  if(x[["model"]][["d"]]){
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
-    x[["mle"]][["Z"]]<-procOPA(Z.ref,x[["mle"]][["Z"]],scale=FALSE,reflect=TRUE)[["Bhat"]]
+  if(x[["model"]][["d"]] && "rotation" %in% latent.effect.invariances[[x[["model"]][["familyID"]]]]){
+    x[["mle"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mle"]][["Z"]])[["Bhat"]]
   }
   
   x
@@ -155,11 +151,8 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   if(is.null(x[["pmode"]]) || pmode2[["mlp"]]>x[["pmode"]][["mlp"]]) x[["pmode"]]<-pmode2
     
   if(x[["model"]][["d"]]>0 && !is.null(x[["pmode"]])){
-    Z<-scale(x[["pmode"]][["Z"]],scale=FALSE)
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
-    P<-procOPA(Z.ref,Z,scale=FALSE,reflect=TRUE)[["R"]]
+    x[["pmode"]]<-scale(x[["model"]], x[["pmode"]])
+    P<-procOPA(x[["model"]],Z.ref,x[["pmode"]][["Z"]])[["R"]]
     x[["pmode"]][["Z"]]<-x[["pmode"]][["Z"]]%*%P
     if(!is.null(x[["pmode"]][["Z.mean"]]))
       x[["pmode"]][["Z.mean"]]<-x[["pmode"]][["Z.mean"]]%*%P
@@ -173,7 +166,7 @@ find.pmode.loop<-function(model,start,prior,control){
     if(control[["verbose"]]>1) cat(i,"")
     pmode.old<-pmode
     pmode<-find.mpe(model,pmode,prior=prior,given=list(Z.K=pmode[["Z.K"]]),control=control)
-    if(model[["G"]]>1) pmode[["Z.K"]]<-find.clusters(model[["G"]],pmode[["Z"]])[["Z.K"]]
+    if(model[["G"]]>1) pmode[["Z.K"]]<-mbc.VII.EM(model[["G"]],pmode[["Z"]],resume=list(Z.mean=pmode[["Z.mean"]],Z.var=pmode[["Z.var"]],Z.pK=pmode[["Z.pK"]]))[["Z.K"]]
     if(all.equal(pmode.old,pmode)[1]==TRUE) break
   }
   pmode
@@ -183,18 +176,15 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
   if(!is.null(x[["sample"]])){
     if(x[["control"]][["verbose"]]) cat("Fitting the MKL locations... ")
     x[["mkl"]]<-find.mkl(x[["model"]],x[["sample"]],x[["control"]])
-    if(!require(shapes,quietly=TRUE)){
-      stop("You need the 'shapes' package to summarize the fit of latent cluster models.")
-    }
   }
   if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-scale(x[["model"]],x[["mkl"]])
-  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-procOPA(Z.ref,x[["mkl"]][["Z"]],scale=FALSE,reflect=TRUE)[["Bhat"]]
+  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mkl"]][["Z"]])[["Bhat"]]
   if(x[["control"]][["verbose"]]) cat("Finished.\n")
   x
 }
 
 proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
-  if(!is.null(x[["sample"]]) && x[["model"]][["d"]]>0){
+  if(!is.null(x[["sample"]]) && x[["model"]][["d"]]>0 && "rotation" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]] && "reflection" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]]){
     if(x[["control"]][["verbose"]]) cat("Performing Procrustes transformation... ")
     x[["sample"]]<-proc.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
@@ -205,7 +195,6 @@ proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
 labelswitch.sample.ergmm<-function(x,Z.K.ref=best.avail.Z.K.ref.ergmm(x)){
   if(!is.null(x[["sample"]]) && x[["model"]][["G"]]>1){
     if(x[["control"]][["verbose"]]) cat("Performing label-switching... ")
-    require(mclust,quiet=TRUE)
     Q.start<-switch.Q.K(Z.K.ref,x[["model"]][["G"]])
     x[["sample"]] <- {
       if(x[["control"]][["kl.threads"]]==1)
@@ -240,23 +229,29 @@ best.avail.Z.K.ref.ergmm<-function(x){
   if(!is.null(x[["mcmc.pmode"]][["Z.K"]])) return(x[["mcmc.pmode"]][["Z.K"]])
   if(!is.null(x[["start"]][["Z.K"]])) return(x[["start"]][["Z.K"]])
   
-  return(find.clusters(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
+  return(mbc.VII.EM(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
 }
 
 # We are overriding the generic for "scale" to make it more flexible.
-scale<-function (x,...) 
-  UseMethod("scale")
+scale<-function (x, ...) UseMethod("scale")
 
 scale.ergmm.model<-function(x,theta,...){
   extraneous.argcheck(...)
   if(!is.null(theta[["Z"]])){
-    if(!is.null(theta[["Z.mean"]])){
-      Z.center<-colMeans(theta[["Z.mean"]])
-      theta[["Z.mean"]]<-sweep(theta[["Z.mean"]],2,Z.center,check.margin=FALSE)
-    }else{
-      Z.center<-colMeans(theta[["Z"]])
+    if("translation" %in% latent.effect.invariances[[x[["latentID"]]]]){
+      if(!is.null(theta[["Z.mean"]])){
+        Z.center<-colMeans(theta[["Z.mean"]])
+        theta[["Z.mean"]]<-sweep(theta[["Z.mean"]],2,Z.center,check.margin=FALSE)
+      }else{
+        Z.center<-colMeans(theta[["Z"]])
+      }
+      theta[["Z"]]<-sweep(theta[["Z"]],2,Z.center,check.margin=FALSE)
     }
-    theta[["Z"]]<-sweep(theta[["Z"]],2,Z.center,check.margin=FALSE)
+    if("scaling" %in% latent.effect.invariances[[x[["latentID"]]]]){
+      theta[["Z"]]<-scale(theta[["Z"]],center=FALSE)
+      theta[["Z.mean"]]<-scale(theta[["Z.mean"]],center=FALSE)
+      ## Fixme: Should Z.var be scaled as well? How?
+    }
   }
   if(x[["intercept"]]){
     shift<-0
@@ -277,4 +272,13 @@ scale.ergmm.model<-function(x,theta,...){
     theta[["beta"]][1]<-theta[["beta"]][1]+shift
   }
   theta
+}
+
+# We are overriding "procOPA" to make it more flexible.
+procOPA <- function(x, ...) UseMethod("procOPA")
+
+procOPA.default <- function(x, ...) shapes::procOPA(x, ...)
+
+procOPA.ergmm.model<-function (x,A,B,...){
+  procOPA(A,B,scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
 }

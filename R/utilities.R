@@ -27,7 +27,8 @@ extraneous.argcheck<-function(...){
 }
 
 
-thin.ergmm<-function(x,by){
+thin.ergmm<-function(x,by,...){
+  extraneous.argcheck(...)
   if(x[["control"]][["threads"]]>1) warning("Multithreaded run output. Stuff might be broken.")
   S<-x[["control"]][["sample.size"]]
   s.kept<-seq(from=1,to=S,by=by)
@@ -37,9 +38,12 @@ thin.ergmm<-function(x,by){
   x
 }
 
-xtabs.ergmm<-function(x,ref){
+xtabs.ergmm<-function(x,ref,min.plurality=0){
   ref->Reference
   apply(attr(x[["sample"]],"Q"),1,which.max)->Fitted
+  admit<-sapply(seq_along(Fitted), function(i) attr(x[["sample"]],"Q")[i,Fitted[i]]>=min.plurality)
+  Reference<-Reference[admit]
+  Fitted<-Fitted[admit]
   xtabs(~Reference+Fitted)
 }
 

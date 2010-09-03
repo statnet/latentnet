@@ -1,14 +1,14 @@
 \name{as.mcmc.list.ergmm}
-\alias{as.mcmc.list.ergmm}
 \alias{as.mcmc.ergmm}
+\alias{as.mcmc.list.ergmm}
 \title{Convert an ERGMM Object to an MCMC list object for Diagnostics.}
 \description{
-  A function to extract a subset of MCMC-sampled variables from an object of class
+  Functions to extract a subset of MCMC-sampled variables from an object of class
   \code{\link[=ergmm.object]{ergmm}} and construct an \code{\link[coda]{mcmc.list}} object.
 }
 \usage{
-\method{as.mcmc}{ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1))
-\method{as.mcmc.list}{ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1))
+\method{as.mcmc}{ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1), ...)
+\method{as.mcmc.list}{ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1), ...)
 }
 \arguments{
   \item{x}{ An object of class \code{\link[=ergmm.object]{ergmm}}. }
@@ -19,6 +19,7 @@
     to include. If given, overrides the defaults and all arguments that follow.}
   \item{vertex.i}{ A numeric vector of vertices whose latent space
     coordinates and random effects to include. }
+  \item{...}{Not used at this time. }
 }
 \details{
   Unless \code{which.vars} is specified, the
@@ -33,13 +34,13 @@
   A \code{\link[coda]{mcmc.list}} object with the sample of the
   selected subset of the variables.
 }
-\seealso{ \code{\link{ergmm}},\code{\link[coda]{mcmc}},
+\seealso{ \code{\link{ergmm}},
   \code{\link[coda]{mcmc.list}}, \code{\link{mcmc.diagnostics.ergmm}} }
 \examples{
 library(coda)
 data(sampson)
-monks.fit<-ergmm(samplike~latent(d=2,G=3))
-monks.fit.mcmc<-as.mcmc(monks.fit)
+monks.fit<-ergmm(samplike~euclidean(d=2,G=3))
+monks.fit.mcmc<-as.mcmc.list(monks.fit)
 plot(monks.fit.mcmc)
 raftery.diag(monks.fit.mcmc)
 }

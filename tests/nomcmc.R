@@ -2,7 +2,7 @@ library(latentnet)
 
 data(sampson)
 
-mleonly<-ergmm(samplike~latent(d=2),tofit="mle")
+mleonly<-ergmm(samplike~euclidean(d=2),tofit="mle")
 
 # Should skip MCMC.
 if(!is.null(mleonly$sample)) stop("MCMC should not be run for MLE!")

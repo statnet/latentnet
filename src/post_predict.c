@@ -8,6 +8,7 @@
 #include "matrix_utils.h"
 #include "ergmm_probs.h"
 #include "ergmm_families.h"
+#include "ergmm_latent_effects.h"
 
 /*R_INLINE*/ void ergmm_par_pred(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par){
   if(model->dir){
@@ -28,6 +29,7 @@ void post_pred_wrapper(int *S,
 		       
 		       int *dir,
 		       int *family, int *iconsts, double *dconsts,
+		       int *latent_eff,
 		       
 		       double *vX,
 		       
@@ -72,7 +74,9 @@ void post_pred_wrapper(int *S,
 			    *d, // latent
 			    *p, // coef
 			    0,
-			    *sociality};
+			    *sociality,
+			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
+  };
   
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z

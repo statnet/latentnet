@@ -495,16 +495,6 @@ double mean(double *x, unsigned int n){
   return(mu/n);
 }
 
-/*R_INLINE*/ double dvector_dist(double *u, double *v, unsigned int dim){
-  unsigned int k;
-  double dist,dist2=0;
-  for(k=0;k<dim;k++){
-    dist=u[k]-v[k];
-    dist2+=dist*dist;
-  }
-  return(sqrt(dist2));
-}
-
 double dmatrix_scale_to(double **A,unsigned int n, unsigned int m, double rms_wanted){
   double rms=0;
   unsigned int i,j;
@@ -637,12 +627,5 @@ double **Gram_Schmidt_rows(double **A, unsigned n, unsigned m){
 	A[k1][i] -= GS_coef*A[k2][i];
     }
   return(A);
-}
-
-double dvector_dotprod(double *x, double *y, unsigned int n){
-  double prod=0;
-  for(unsigned int i=0; i<n; i++)
-    prod += x[i]*y[i];
-  return(prod);
 }
 */
