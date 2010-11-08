@@ -248,6 +248,9 @@ bic.ergmm<-function(object){
                               sociality=if(sociality) -2*sum(dnorm(condZRE[["sociality"]],0,sqrt(mean(condZRE[["sociality"]]^2)),log=TRUE))+1*log(n) else 0
                               )
             )
+
+  if(model[["sender"]] || model[["receiver"]] || model[["sociality"]] || G==0)
+    warning("Theory for BIC has not been developed for random actor (sender, receiver, and sociality) effects. Similarly, it may not be appropriate to use BIC to compare clustered models with the unclustered model. Their use in latentnet is entirely heuristic.")
   
   bic[["overall"]]<-sum(unlist(bic))
   
