@@ -223,11 +223,13 @@ bic.ergmm<-function(object){
     stop("MKL estimates were not computed for this fit.")
   }
 
-  n<-network.size(object[["model"]][["Yg"]])
-  
-  condZRE<-with(object,find.mle(object[["model"]],mkl,given=list(Z=mkl[["Z"]],sender=mkl[["sender"]],receiver=mkl[["receiver"]],sociality=mkl[["sociality"]]),control=object[["control"]]))
+  model<-object[["model"]]
 
-  bic<-with(object[["model"]],list(Y = -2*condZRE[["lpY"]] + (p+n*d + (sender + receiver + sociality)*n )*log(n),
+  n<-network.size(model[["Yg"]])
+  
+  condZRE<-with(object,find.mle(model,mkl,given=list(Z=mkl[["Z"]],sender=mkl[["sender"]],receiver=mkl[["receiver"]],sociality=mkl[["sociality"]]),control=object[["control"]]))
+
+  bic<-with(model,list(Y = -2*condZRE[["lpY"]] + (p+n*d + (sender + receiver + sociality)*n )*log(n),
                               Z =
                               if(d>0){
                                 if(G>0){
@@ -248,6 +250,9 @@ bic.ergmm<-function(object){
                               sociality=if(sociality) -2*sum(dnorm(condZRE[["sociality"]],0,sqrt(mean(condZRE[["sociality"]]^2)),log=TRUE))+1*log(n) else 0
                               )
             )
+
+  if(model[["sender"]] || model[["receiver"]] || model[["sociality"]] || model[["G"]]==0)
+    warning("Theory for BIC has not been developed for random actor (sender, receiver, and sociality) effects. Similarly, it may not be appropriate to use BIC to compare clustered models with the unclustered model. Their use in latentnet is entirely heuristic.")
   
   bic[["overall"]]<-sum(unlist(bic))
   

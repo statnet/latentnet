@@ -1,3 +1,11 @@
+2.4-1
+	Latentnet now prints a warning when computing BICs for random
+	effects models, since we do not have a theoretical justification
+	for that.
+
+	A bug reported by Jorge González in the multithreaded code has
+	been fixed.
+
 2.4-0
 	Removed the dependence on package 'mclust'. (The functionality
 	used has been reimplemented internally.) This means that
@@ -15,7 +23,7 @@
 
 	Made the require()s for the suggested packages more informative.
 
-2.3
+2.3-0
 	Added an ability to fit bilinear latent space models of
 	Hoff (2005).
 
@@ -35,7 +43,7 @@
 2.2-1
 	Documentation fixes.
 
-2.2
+2.2-0
 	Ability to fit random effects (actor heterogeneity) models.
 
 	Removed ergmm.par class --- it has been rendered obsolete by

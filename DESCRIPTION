@@ -1,6 +1,6 @@
 Package: latentnet
-Version: 2.4-0
-Date: 2010-09-01
+Version: 2.4-1
+Date: 2010-12-04
 Title:  Latent position and cluster models for statistical networks
 Author: Pavel N. Krivitsky <pavel@stat.cmu.edu>,
         Mark S. Handcock <handcock@stat.ucla.edu>, 
