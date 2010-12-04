@@ -1,3 +1,11 @@
+2.4-1
+	Latentnet now prints a warning when computing BICs for random
+	effects models, since we do not have a theoretical justification
+	for that.
+
+	A bug reported by Jorge González in the multithreaded code has
+	been fixed.
+
 2.4-0
 	Removed the dependence on package 'mclust'. (The functionality
 	used has been reimplemented internally.) This means that
