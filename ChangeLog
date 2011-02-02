@@ -1,3 +1,6 @@
+2.4-2
+	Clarified the license specification.
+
 2.4-1
 	Latentnet now prints a warning when computing BICs for random
 	effects models, since we do not have a theoretical justification

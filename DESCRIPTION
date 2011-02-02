@@ -10,5 +10,5 @@ Maintainer: Pavel N. Krivitsky <pavel@stat.cmu.edu>
 Description: A package to fit and simulate latent position and cluster models for statistical networks. 
 Depends: network, shapes, abind, tools, mvtnorm, coda
 Suggests: KernSmooth, snowFT, ergm, rgl
-License: file LICENSE
+License: GPL-3 + file LICENSE
 URL: http://statnetproject.org
