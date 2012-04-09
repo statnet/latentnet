@@ -21,7 +21,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
   par(ask=dev.interactive())
 
   if("cor" %in% which.diags){
-    x.ac<-autocorr(x,lag=0:1)
+    x.ac<-autocorr(x,lags=0:1)
     for(chain in seq(along=x.ac)){
       cat(paste("Chain",chain,"\n"))
       didnt.mix<-colnames(x.ac[[chain]][2,,])[which(is.nan(diag(x.ac[[chain]][2,,])))]
