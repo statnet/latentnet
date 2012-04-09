@@ -1,5 +1,5 @@
 \name{davis}
-\title{Southern Women Data Set (Davis) as a bipartite ``network" object}
+\title{Southern Women Data Set (Davis) as a bipartite ``network'' object}
 \alias{davis}
 \description{
 This is a data set of 18 women observed over a nine-month period. During that
@@ -29,11 +29,11 @@ In particular, they collected systematic data on the social activities of
 period, various subsets of these women had met in a series of 14 informal
 social events. The participation of women in events was uncovered using
 ``interviews, the records of participant observers, guest lists, and the
-newspapers" (DGG, p. 149). Homans (1950, p. 82), who presumably had
+newspapers'' (DGG, p. 149). Homans (1950, p. 82), who presumably had
 been in touch with the research team, reported that the data reflect joint
 activities like, ``a day's work behind the counter of a store, a meeting of a
 women's club, a church supper, a card party, a supper party, a meeting of
-the Parent-Teacher Association, etc."
+the Parent-Teacher Association, etc.''
 
 This data set has several interesting properties. It is small and
 manageable. It embodies a relatively simple structural pattern, one in
@@ -44,8 +44,8 @@ be determined in terms of the ways in which different women had been
 involved in group activities.
 At the same time, the DGG data set is complicated enough that some
 of the details of its patterning are less than obvious. As Homans (1950, p.
-84) put it, ``The pattern is frayed at the edges." And, finally, this data set
-comes to us in a two-mode ``woman by event" form. Thus, it provides an
+84) put it, ``The pattern is frayed at the edges.'' And, finally, this data set
+comes to us in a two-mode ``woman by event'' form. Thus, it provides an
 opportunity to explore methods designed for direct application to two-mode
 data. But at the same time, it can easily be transformed into two one-mode
 matrices (woman by woman or event by event) that can be examined using
@@ -80,6 +80,13 @@ Southern Women Data}, In Ronald Breiger, Kathleen Carley and Philippa Pattison,
 eds. Dynamic Social Network Modeling and Analysis. Washington: The National
 Academies Press.
 }
+\examples{
+data(davis)
+# Fit a 2D 2-cluster fit and plot.
+davis.fit<-ergmm(davis~euclidean(d=2,G=2)+rsociality)
+plot(davis.fit,pie=TRUE,rand.eff="sociality")
+}
+
 \details{
 If the source of the data set does not specified otherwise,
 this data set is protected by the Creative Commons License

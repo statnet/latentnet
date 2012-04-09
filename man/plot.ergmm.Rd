@@ -143,11 +143,13 @@ data(sampson)
 #
 # Using Sampson's Monk data, let's fit a
 # latent clustering random effects model
-#
-samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver)
+# Store the burn-in.
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver, control=ergmm.control(store.burnin=TRUE))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
+# We can also plot the burn-in:
+for(i in samp.fit$control$pilot.runs) mcmc.diagnostics(samp.fit,burnin=i)
 #
 # Plot the resulting fit.
 #
@@ -156,6 +158,7 @@ plot(samp.fit,pie=TRUE,rand.eff="receiver")
 plot(samp.fit,what="pmean",rand.eff="receiver")
 plot(samp.fit,what="cloud",rand.eff="receiver")
 plot(samp.fit,what="density",rand.eff="receiver")
+plot(samp.fit,what=5,rand.eff="receiver")
 
 \dontrun{
 # Fit a 3D latent space model to Sampson's Monks
