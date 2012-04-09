@@ -45,6 +45,7 @@
   \code{\link[coda]{plot.mcmc.list}}
 }
 \examples{
+\donttest{
 #
 data(sampson)
 #
@@ -57,6 +58,7 @@ summary(gest)
 # Plot the traces and densities
 #
 mcmc.diagnostics(gest)
+}
 }
 \keyword{graphs}
 \keyword{hplot}
