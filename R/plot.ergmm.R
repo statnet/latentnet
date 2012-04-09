@@ -337,7 +337,14 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   
     options(warn=old.warn)
   }else{
-    plot3d(Z.pos,type="s",col=if(is.null(vertex.col)) 0 else vertex.col,radius=vertex.cex*vertex.3d.cex,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
+    if(is.null(vertex.col))
+      plot3d(Z.pos,type="s",col=vertex.col,radius=vertex.cex*vertex.3d.cex,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
+    else{
+      cols<-unique(vertex.col)
+      for(col in cols){
+        plot3d(Z.pos[vertex.col==col,],type="s",col= col,radius=vertex.cex*vertex.3d.cex,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main,add=col!=cols[1])
+      }
+    }
     if(labels) text3d(Z.pos,texts=Yg %v% "vertex.names")
   }
 
@@ -393,7 +400,9 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     if(!use.rgl)
       symbols(Z.mean,circles=sqrt(Z.var),fg=cluster.col,inches=FALSE,add=TRUE,asp=1)
     else
-      spheres3d(Z.mean,radius=sqrt(Z.var),color=cluster.col,alpha=0.2)
+      for(c in seq_len(G)){
+        spheres3d(Z.mean[c,],radius=sqrt(Z.var[c]),color=cluster.col[c],alpha=0.2)
+      }
   }
   
   invisible(Z.pos)
