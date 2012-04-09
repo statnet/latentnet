@@ -17,9 +17,10 @@
   equivalence in symmetric relational data'', fit by package \code{eigenmodel}.)
 
   The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>}
-  where \code{g} is a \code{network} object
-  For the list of possible \code{<model terms>}, see 
-  \code{\link{terms.ergmm}}.
+  where \code{g} is a \code{network} object For the list of possible
+  \code{<model terms>}, see \link{terms.ergmm}. For the list of
+  the possible dyad distribution families, see
+  \link{families.ergmm}.
 }
 
 \details{

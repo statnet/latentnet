@@ -31,9 +31,9 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
   \item{response}{An optional edge attribute that serves as the response
     variable. By default, presence (1) or absence (0) of an edge in
     \code{g} is used.}
-  \item{family}{A character vector that is one of "Bernoulli" (the default),
-    "binomial", or "Poisson", specifying the conditional distribution of
-    each edge value.}
+  \item{family}{A character vector specifying the conditional distribution of
+    each edge value. See \link{families.ergmm} for the currently
+    implemented families.}
   \item{fam.par}{For those families that require additional parameters,
     a list.}
   \item{control}{The MCMC parameters that do not affect the posterior
@@ -73,7 +73,7 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
   containing the information about the posterior.
 }
 \seealso{network, set.vertex.attributes, set.network.attributes,
-  \code{\link{summary.ergmm}}, \link{terms.ergmm}}
+  summary.ergmm, terms.ergmm, families.ergmm}
 \references{
    Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum (2002).
   \emph{Model-Based Clustering for Social Networks.} Journal of the Royal
