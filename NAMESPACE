@@ -1,0 +1,6 @@
+useDynLib(latentnet)
+
+importFrom(utils, packageDescription)
+
+# Export all names that do not begin with a dot.
+exportPattern("^[^\\.]")
