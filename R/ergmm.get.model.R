@@ -4,7 +4,15 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
 
   if(!attr(terms,"response") || terms[[1]]!="~") stop("Formula must be of form 'network ~ model'.")
 
-  Yg <- try(as.network(eval(terms[[2]],attr(terms,".Environment"))))
+  LHS<-try(eval(terms[[2]],attr(terms,".Environment")))
+  if(inherits(LHS,"try-error")){
+    stop("Invalid network. Is the left-hand-side of the formula correct?")
+  }
+  
+  if(is.matrix(LHS))
+    warning("The model formula LHS is a matrix. Assuming a binary, unipartite, directed graph with no loops. It is *strongly* recommended to convert the matrix to a network with attributes corresponding to what you intend.")
+  
+  Yg <- try(as.network(LHS))
   if(inherits(Yg,"try-error")){
     stop("Invalid network. Is the left-hand-side of the formula correct?")
   }

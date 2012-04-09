@@ -1,3 +1,15 @@
+2.4-2
+	A variety of small updates, robustifications, and bug fixes.
+
+	Made latentnet compliant with R 2.15.0.
+
+	Updated author and maintainer e-mail addresses and affiliations.
+
+	Clarified the license specification.
+
+	Latentnet now prints a warning when a matrix is passed on the LHS
+	of the model formula instead of a network.
+
 2.4-1
 	Latentnet now prints a warning when computing BICs for random
 	effects models, since we do not have a theoretical justification

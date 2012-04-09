@@ -1,5 +1,6 @@
 \name{families.ergmm}
 \alias{families.ergmm}
+\alias{family}
 \alias{ergmm.families}
 \alias{dlpY.deta.Bernoulli.logit}
 \alias{dlpY.deta.binomial.logit}
@@ -70,7 +71,9 @@
   log-normalizing-constant, and random sociomatrix generation functions.
 
   On the \code{C} side, similar functions exist, but becuase of static
-  typing, are also provided for ``continuous'' versions of those families.
+  typing, are also provided for ``continuous'' versions of those
+  families. These should not be used on their own, but are used in
+  estimating MKL positions from the posterior distribution.
 }
 \keyword{graphs}
 \keyword{models}

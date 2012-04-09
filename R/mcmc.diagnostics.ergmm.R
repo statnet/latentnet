@@ -1,10 +1,8 @@
-if(!exists("mcmc.diagnostics", mode="function")){
-  mcmc.diagnostics <- function(x, ...)
-    UseMethod("mcmc.diagnostics")
+.mcmc.diagnostics <- function(x, ...)
+  UseMethod("mcmc.diagnostics")
   
-  mcmc.diagnostics.default <- function(x,...){
-    stop("An object must be given as an argument ")
-  }
+.mcmc.diagnostics.default <- function(x,...){
+  stop("An object must be given as an argument ")
 }
 
 mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"),
@@ -21,7 +19,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
   par(ask=dev.interactive())
 
   if("cor" %in% which.diags){
-    x.ac<-autocorr(x,lag=0:1)
+    x.ac<-autocorr(x,lags=0:1)
     for(chain in seq(along=x.ac)){
       cat(paste("Chain",chain,"\n"))
       didnt.mix<-colnames(x.ac[[chain]][2,,])[which(is.nan(diag(x.ac[[chain]][2,,])))]
@@ -55,6 +53,7 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
   }
 }
 
+# We have to redefine this generic, since we need to pass additional arguments to as.mcmc().
 as.mcmc<-function(x,...) UseMethod("as.mcmc")
 as.mcmc.ergmm<-as.mcmc.list.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,

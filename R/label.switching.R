@@ -141,7 +141,7 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
 }
 
 klswitch.step2.snowFT.slave<-function(i,lib,Q,pK.l){
-  library(latentnet,lib=lib)
+  library(latentnet,lib.loc=lib)
 
   n<-dim(Q)[1]
   G<-dim(Q)[2]
