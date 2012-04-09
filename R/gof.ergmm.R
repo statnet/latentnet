@@ -1,7 +1,5 @@
-if(!exists("gof", mode="function")){
-  gof <- function(object, ...)
-    UseMethod("gof")
-}
+.gof <- function(object, ...)
+  UseMethod("gof")
 
 gof.ergmm <- function (object, ..., nsim=100,
                       GOF=~idegree+odegree+distance, 
