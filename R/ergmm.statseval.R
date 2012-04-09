@@ -10,7 +10,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   sample.size <- control[["sample.size"]]
 
   if(!is.null(Z.ref)){
-    control[["Z.ref"]]<-scale(model, list(Z=Z.ref))
+    control[["Z.ref"]]<-scale(model, list(Z=Z.ref))[["Z"]]
   }
   if(!is.null(Z.K.ref)){
     control[["Z.K.ref"]]<-Z.K.ref
