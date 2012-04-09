@@ -238,7 +238,7 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
 }
 
 ergmm.MCMC.snowFT.slave<-function(i, lib, model.l, start.l, prior.l, control.l, sample.size.l=NULL, interval.l=NULL){
-  library(latentnet,lib=lib)
+  library(latentnet,lib.loc=lib)
   ergmm.MCMC.C(model.l[[min(length(model.l),i)]],
                start.l[[min(length(start.l),i)]],
                prior.l[[min(length(prior.l),i)]],
