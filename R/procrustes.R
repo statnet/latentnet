@@ -16,6 +16,7 @@ proc.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
            Z=as.double(sample[["Z"]]),
            Z.mean=as.double(sample[["Z.mean"]]),
            verbose=as.integer(verbose),
+           
            PACKAGE="latentnet")
   sample[["Z"]]<-if(d>0)array(Cret[["Z"]],dim=c(S,n,d))
   sample[["Z.mean"]]<-if(G>0)array(Cret[["Z.mean"]],dim=c(S,G,d))

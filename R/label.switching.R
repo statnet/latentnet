@@ -13,19 +13,24 @@ klswitch.C <- function(Q.start,sample,Z=NULL,maxit=100,verbose=0)
     if(!all(dim(Q.start)==c(n,G))) stop("Incorrect dimensions for initial Q matrix.")
     
     Cret <- .C("klswitch_wrapper",
+               
                maxit = as.integer(maxit),
                S = as.integer(S),
                n = as.integer(n),
                d = as.integer(d),
                G = as.integer(G),
+               
                Z = if(Z.ref) as.double(Z) else as.double(sample[["Z"]]),
                Z.ref=as.integer(Z.ref),
-             Z.mean = as.double(sample[["Z.mean"]]),
+               Z.mean = as.double(sample[["Z.mean"]]),
                Z.var = as.double(sample[["Z.var"]]),
+               
                Z.K = as.integer(sample[["Z.K"]]),
                Z.pK = as.double(sample[["Z.pK"]]),
+               
                Q = as.double(Q.start),
                verbose=as.integer(verbose),
+
                PACKAGE="latentnet")
     
     sample[["Z.mean"]]<-array(Cret[["Z.mean"]],dim=c(S,G,d))
@@ -64,14 +69,18 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
              n = as.integer(n),
              d = as.integer(d),
              G = as.integer(G),
+             
              Z = if(Z.ref) as.double(Z) else as.double(sample[["Z"]]),
              Z.ref = as.integer(Z.ref),
              Z.mean = as.double(sample[["Z.mean"]]),
              Z.var = as.double(sample[["Z.var"]]),
+             
              Z.K = as.integer(sample[["Z.K"]]),
              Z.pK = as.double(sample[["Z.pK"]]),
+             
              verbose = as.integer(verbose),
              pK = double(S*n*G),
+
              PACKAGE="latentnet")
 
   pK<-array(Cret[["pK"]],dim=c(S,n,G))
@@ -154,6 +163,7 @@ klswitch.step2.snowFT.slave<-function(i,lib,Q,pK.l){
              Q = as.double(Q),
              pK = as.double(pK.l[[i]]),
              best.perms = integer(S*G),
+
              PACKAGE="latentnet")
 
   matrix(Cret[["best.perms"]],nrow=S,ncol=G)

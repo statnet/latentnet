@@ -40,7 +40,7 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
           p = as.integer(p),
           d = as.integer(d),
           
-          dir=is.directed(model[["Yg"]]),
+          dir=as.integer(is.directed(model[["Yg"]])),
           family=as.integer(model[["familyID"]]),
           iconsts=as.integer(model[["iconsts"]]),
           dconsts=as.double(model[["dconsts"]]),
@@ -52,12 +52,14 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
           beta = as.double(sample[["beta"]]), # coef
           sender = if(model[["sociality"]]) as.double(sample[["sociality"]]) else as.double(sample[["sender"]]),
           receiver = as.double(sample[["receiver"]]),
+          
           sociality = as.double(model[["sociality"]]),
           observed=as.integer(observed),
           
           EY=double(n*n),
           s.MKL=if(MKL) integer(1) else integer(0),
           verbose=as.integer(control[["verbose"]]),
+
           PACKAGE="latentnet")
   EY<-array(ret[["EY"]],dim=c(1,n,n))[1,,] 
   if(MKL) attr(EY,"s.MKL")<-ret[["s.MKL"]]+1 # C counts from 0; R counts from 1
