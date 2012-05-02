@@ -12,14 +12,14 @@
 PMemNode *PMemNodes=NULL;
 #ifdef DEBUG
 /*R_INLINE*/ void P_print_alloc(){
-  Rprintf("%p",PMemNodes);
+  Rprintf("%p",(void*) PMemNodes);
   if(PMemNodes) Rprintf("(%p)",PMemNodes->data);
 }
 
 void *P_alloc(size_t nmemb, size_t size){
   Rprintf("P_alloc: ");
   P_print_alloc();
-  Rprintf(" -%uB-> ", nmemb*size);
+  Rprintf(" --%uB-> ", (unsigned int) nmemb*size);
 
   PMemNode *memnode=(PMemNode *)calloc(1,sizeof(PMemNode));
   if(!memnode) return NULL;

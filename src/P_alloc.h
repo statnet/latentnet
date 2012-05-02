@@ -6,6 +6,7 @@
 #define P_alloc(nmemb, size) R_alloc(nmemb, size)
 #define P_free_all()
 #define P_free_after(bookmark)
+#define P_bookmark()
 #endif
 
 struct PMemNode_struct{
