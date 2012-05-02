@@ -12,14 +12,14 @@
 PMemNode *PMemNodes=NULL;
 #ifdef DEBUG
 /*R_INLINE*/ void P_print_alloc(){
-  printf("%p",PMemNodes);
-  if(PMemNodes) printf("(%p)",PMemNodes->data);
+  Rprintf("%p",(void*) PMemNodes);
+  if(PMemNodes) Rprintf("(%p)",PMemNodes->data);
 }
 
 void *P_alloc(size_t nmemb, size_t size){
-  printf("P_alloc: ");
+  Rprintf("P_alloc: ");
   P_print_alloc();
-  printf(" -%uB-> ", nmemb*size);
+  Rprintf(" --%uB-> ", (unsigned int) nmemb*size);
 
   PMemNode *memnode=(PMemNode *)calloc(1,sizeof(PMemNode));
   if(!memnode) return NULL;
@@ -33,14 +33,14 @@ void *P_alloc(size_t nmemb, size_t size){
   PMemNodes=memnode;
 
   P_print_alloc();
-  printf("\n");
+  Rprintf("\n");
   return memnode->data;
 }
 
 /*R_INLINE*/ void P_free_after(PMemNode *bookmark){
   while(PMemNodes!=bookmark && PMemNodes){
 
-    printf("P_free: ");
+    Rprintf("P_free: ");
     P_print_alloc();
 
     free(PMemNodes->data);
@@ -48,9 +48,9 @@ void *P_alloc(size_t nmemb, size_t size){
     PMemNodes=PMemNodes->next;
     free(temp);
 
-    printf(" --> ");
+    Rprintf(" --> ");
     P_print_alloc();
-    printf("\n");
+    Rprintf("\n");
   }
 }
 
