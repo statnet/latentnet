@@ -51,6 +51,7 @@ bayesmbc.MCMC.C<-function(G, start, prior, sample.size=NULL, interval=NULL){
              Z.pK.mcmc = if(G > 0) double(G*(sample.size+RESERVED)) else double(0),
              mu.mcmc = double(d*G*(sample.size+RESERVED)),
              Z.var.mcmc = double(max(G,1)*(sample.size+RESERVED)),
+
              PACKAGE="latentnet")
 #  cat("Finished C routine.\n")
   

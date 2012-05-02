@@ -250,7 +250,7 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			    p, // coef
 			    G, // clusters
 			    sociality,
-			    ERGMM_MCMC_latent_eff[latent_eff]
+			    d ? ERGMM_MCMC_latent_eff[latent_eff] : NULL
   };
   ERGMM_MCMC_set_lp_Yconst[family](&model);
 

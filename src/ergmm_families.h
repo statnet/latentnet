@@ -6,8 +6,8 @@
 #define N_FAMILIES 7
 /* Declare "lookup tables" for families. */
 
-const unsigned int ERGMM_MCMC_is_discrete[N_FAMILIES];
-const unsigned int ERGMM_MCMC_to_cont[N_FAMILIES];
+extern const unsigned int ERGMM_MCMC_is_discrete[];
+extern const unsigned int ERGMM_MCMC_to_cont[];
 
 double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
 					 unsigned int, unsigned int);
