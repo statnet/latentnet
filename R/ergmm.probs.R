@@ -150,21 +150,22 @@ ergmm.lpY.C<-function(model,theta){
             dir=as.integer(is.directed(model[["Yg"]])),
             viY=as.integer(Y),
             vdY=as.double(Y),
-            family=as.integer(model[["familyID"]]),iconsts=as.integer(model[["iconsts"]]),dconsts=as.integer(model[["dconsts"]]),
+            
+            family=as.integer(model[["familyID"]]), iconsts=as.integer(model[["iconsts"]]), dconsts=as.integer(model[["dconsts"]]),
+            
             latent=as.integer(model[["latentID"]]),
             
             vX=as.double(unlist(model[["X"]])),
-            
             Z=as.double(theta[["Z"]]),
             
             beta=as.double(theta[["beta"]]),
 
-            sender=if(is.null(theta[["sociality"]]))as.double(theta[["sender"]]) else as.double(theta[["sociality"]]),
-            receiver=as.double(theta[["receiver"]]), lock.RE=!is.null(theta[["sociality"]]),
+            sender=if(is.null(theta[["sociality"]])) as.double(theta[["sender"]]) else as.double(theta[["sociality"]]), receiver=as.double(theta[["receiver"]]), lock.RE=as.integer(!is.null(theta[["sociality"]])),
             
             observed=as.integer(observed),
 
             lpY=double(1),
+
             PACKAGE="latentnet")
   
 
