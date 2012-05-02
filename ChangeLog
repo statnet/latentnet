@@ -1,14 +1,25 @@
 2.4-2
-	A variety of small updates, robustifications, and bug fixes.
+	Latentnet is now compliant with R 2.15.0.
 
-	Made latentnet compliant with R 2.15.0.
+	Many small updates, robustifications, and bug fixes have been
+	made. In particular, crashes and weird memory behavior with recent
+	versions of R and GCC have been fixed.
 
-	Updated author and maintainer e-mail addresses and affiliations.
+	Author and maintainer e-mail addresses and affiliations have been
+	updated.
 
-	Clarified the license specification.
+	License specification has been clarified.
 
 	Latentnet now prints a warning when a matrix is passed on the LHS
 	of the model formula instead of a network.
+
+	Calculation of geodesic distances has been "outsourced" to the sna
+	package, which is now a dependency.
+
+	Fewer functions are unnecessarily masked.
+
+	Documentation has been cleaned up and updated. Examples and tests
+	have been shortened, speeding up R CMD check.
 
 2.4-1
 	Latentnet now prints a warning when computing BICs for random
