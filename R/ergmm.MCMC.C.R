@@ -105,11 +105,11 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              vX=as.double(unlist(model[["X"]])),  
              # 15:
              lpY.mcmc=double(sample.size+RESERVED),
-             lpZ.mcmc=if(!is.null(start[["Z"]]))double(sample.size+RESERVED) else double(0),
-             lpbeta.mcmc=if(p>0)double(sample.size+RESERVED) else double(0),
-             lpRE.mcmc=if(model[["sender"]]||model[["sociality"]]||model[["receiver"]])double(sample.size+RESERVED) else double(0),
-             lpLV.mcmc=if(!is.null(start[["Z"]]))double(sample.size+RESERVED) else double(0),
-             lpREV.mcmc=if(model[["sender"]] || model[["sociality"]] || model[["receiver"]])double(sample.size+RESERVED) else double(0),
+             lpZ.mcmc=if(!is.null(start[["Z"]])) double(sample.size+RESERVED) else double(0),
+             lpbeta.mcmc=if(p>0) double(sample.size+RESERVED) else double(0),
+             lpRE.mcmc=if(model[["sender"]] || model[["sociality"]] || model[["receiver"]]) double(sample.size+RESERVED) else double(0),
+             lpLV.mcmc=if(!is.null(start[["Z"]])) double(sample.size+RESERVED) else double(0),
+             lpREV.mcmc=if(model[["sender"]] || model[["sociality"]] || model[["receiver"]]) double(sample.size+RESERVED) else double(0),
              # 21:
              Z=as.double(start[["Z"]]),
              # 22:
@@ -147,12 +147,12 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              prior.receiver.var=as.double(prior[["receiver.var"]]),
              prior.receiver.var.df=as.double(prior[["receiver.var.df"]]),
              # 49:
-             sender.mcmc=if(model[["sender"]]||model[["sociality"]]) double(n*(sample.size+RESERVED)) else double(0),
+             sender.mcmc=if(model[["sender"]] || model[["sociality"]]) double(n*(sample.size+RESERVED)) else double(0),
              receiver.mcmc=if(model[["receiver"]]) double(n*(sample.size+RESERVED)) else double(0),
              sender.var.mcmc=if(model[["sender"]] || model[["sociality"]]) double((sample.size+RESERVED)) else double(0),
              receiver.var.mcmc=if(model[["receiver"]]) double((sample.size+RESERVED)) else double(0),
              # 53:
-             lock.RE=model[["sociality"]],
+             lock.RE=as.integer(model[["sociality"]]),
              observed=as.integer(observed),
              # 55:
              deltas=with(control,as.numeric(c(Z.delta,RE.delta,group.deltas))),
@@ -162,7 +162,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
              beta.eff.receiver.size=as.integer(nrow(model[["beta.eff.receiver"]])),
              # 60:
              accept.all=control[["accept.all"]],
-             
+
              PACKAGE="latentnet")
 #  cat("Finished C routine.\n")
   
