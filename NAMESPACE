@@ -3,6 +3,7 @@ useDynLib(latentnet)
 importFrom(utils, packageDescription)
 importFrom(shapes, procOPA)
 importFrom(abind, abind)
+importFrom(sna, geodist)
 
 # Export all names that do not begin with a dot.
 exportPattern("^[^\\.]")
