@@ -36,6 +36,9 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
   ## Sanity checks: the following block of code checks that all dimensionalities and
   ## dimensions are correct, and those optional parameters that are required by the presence
   ## of other optional parameters are present.
+
+  if(sample.size!=round(sample.size)) stop("Non-integer MCMC sample size.")
+  if(interval!=round(interval)) stop("Non-integer MCMC interval.")
   
   for(i in 1:p)
     if(!all(dim(model[["X"]][[i]])==c(n,n))) stop("Incorrect size for covariate matrices.")
