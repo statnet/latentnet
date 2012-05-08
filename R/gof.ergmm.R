@@ -1,6 +1,12 @@
 .gof <- function(object, ...)
   UseMethod("gof")
 
+.gof.default <- function(object,...) {
+  classes <- setdiff(gsub(pattern="^gof.",replacement="",as.vector(methods("gof"))), "default")
+  stop("Goodness-of-Fit methods have been implemented only for class(es) ",
+       .paste.and(paste('"',classes,'"',sep="")), " in the packages loaded.")
+}
+
 gof.ergmm <- function (object, ..., nsim=100,
                       GOF=~idegree+odegree+distance, 
 		      verbose=FALSE) {
