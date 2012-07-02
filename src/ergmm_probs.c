@@ -20,20 +20,34 @@
 //#define ALWAYS_RECOMPUTE_LLK 1
 
 /* A wrapper for lp_Y_recompute to be called directly from R. */
-void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
+void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, int *res,
 			int *dir, int *viY, double *vdY,
-			int *family, int *iconsts, double *dconsts,
-			int *latent_eff,
+			int *iconsts, double *dconsts,
 			double *vX, double *vZ,
 			double *coef,
-			double *sender, double *receiver, int *sociality,
+			double *sender, double *receiver,
 			int *vobserved_ties,
 			double *llk){
+
+  // This was added because newer versions of R no longer pass a 0-length vector as NULL, so we have to do it here.
+  if(*p==0){
+    vX=coef=NULL;
+  }
+  if(*d==0){
+    vZ=NULL;
+  }
+  if(res[0]==0&&res[2]==0){
+    sender=NULL;
+  }
+  if(res[1]==0){
+    receiver=NULL;
+  }
+
   unsigned int i,j,k;
   double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
   int **iY = viY ? Runpack_imatrix(viY, *n, *n, NULL) : NULL;
   double **dY = vdY ? Runpack_dmatrix(vdY, *n, *n, NULL) : NULL;
-  unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
+  unsigned int **observed_ties = (unsigned int **) (*vobserved_ties>=0 ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
   double ***X = d3array(*p,*n,*n);
   
   // set up all of the covariate matrices if covariates are involed 
@@ -62,7 +76,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,
 			    *d, // latent
 			    *p, // coef
 			    0,
-			    *sociality,
+			    res[2],
 			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
   };
   

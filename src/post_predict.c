@@ -25,11 +25,11 @@
 
 void post_pred_wrapper(int *S, 
 		       
-		       int *n, int *p, int *d,
+		       int *n, int *p, int *d, int *latent_eff, int *family, int *res,
 		       
 		       int *dir,
-		       int *family, int *iconsts, double *dconsts,
-		       int *latent_eff,
+		       int *iconsts, double *dconsts,
+
 		       
 		       double *vX,
 		       
@@ -37,14 +37,29 @@ void post_pred_wrapper(int *S,
 		       double *coef_mcmc,
 		       double *sender_mcmc, double *receiver_mcmc,
 		       
-		       int *sociality,
 		       int *vobserved_ties,
 
 		       double *vEY,
 		       int *s_MKL,
 		       int *verbose){
+
+  // This was added because newer versions of R no longer pass a 0-length vector as NULL, so we have to do it here.
+  if(*p==0){
+    vX=coef_mcmc=NULL;
+  }
+  if(*d==0){
+    Z_mcmc=NULL;
+  }
+  if(res[0]==0&&res[2]==0){
+    sender_mcmc=NULL;
+  }
+  if(res[1]==0){
+    receiver_mcmc=NULL;
+  }
+
+
   unsigned int i,j,k;
-  unsigned int **observed_ties = (unsigned int **) (vobserved_ties ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
+  unsigned int **observed_ties = (unsigned int **) (*vobserved_ties>=0 ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
   double ***X = d3array(*p,*n,*n);
   double **Z = dmatrix(*n,*d), *coef = dvector(*p), *sender = sender_mcmc ? dvector(*n):NULL, *receiver = receiver_mcmc ? dvector(*n):NULL;
   
@@ -74,7 +89,7 @@ void post_pred_wrapper(int *S,
 			    *d, // latent
 			    *p, // coef
 			    0,
-			    *sociality,
+			    res[2],
 			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
   };
   

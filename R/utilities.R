@@ -72,3 +72,7 @@ clust.homogeneity<-function(x,ref,soft=TRUE,marg=FALSE){
   if(length(x)==2) return(paste(x[1],'and',x[2]))
   if(length(x)>=3) return(paste(paste(x[-length(x)], collapse=", "),', and ',x[length(x)],sep=''))
 }
+
+## If EXPR is NULL, return NULLV, otherwise return EXPR.
+NVL <- function(EXPR, NULLV) if(!is.null(EXPR)) EXPR else NULLV
+  
