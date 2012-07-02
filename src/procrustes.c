@@ -12,7 +12,7 @@ void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
 
   if(*verbose>1) Rprintf("Procrustes: Allocating memory.\n");
 
-  double **Z=dmatrix(*n,*d), **Z_mean=vZ_mean_mcmc?dmatrix(*G,*d):NULL, **Zo=Runpack_dmatrix(vZo,*n,*d,NULL);
+  double **Z=dmatrix(*n,*d), **Z_mean=*G>0?dmatrix(*G,*d):NULL, **Zo=Runpack_dmatrix(vZo,*n,*d,NULL);
   double **A, **tZ, **tZo, **Ahalf, **AhalfInv;
   double **tptrans, **eAvectors, **eADvalues, **teAvectors, *avZ; 
   double *eAvalues, **dd_helper, **dn_helper, **dd2_helper;

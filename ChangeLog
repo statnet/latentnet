@@ -1,6 +1,9 @@
 2.4-2
 	Latentnet is now compliant with R 2.15.0.
 
+	Latentnet no longer relies on a certain behavior of .C() that was
+	changed in the development version of R.
+
 	Many small updates, robustifications, and bug fixes have been
 	made. In particular, crashes and weird memory behavior with recent
 	versions of R and GCC have been fixed.
