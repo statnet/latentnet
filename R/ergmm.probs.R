@@ -145,15 +145,13 @@ ergmm.lpY.C<-function(model,theta){
   
   ret <- .C("ERGMM_lp_Y_wrapper",
             n=as.integer(n), p=as.integer(model[["p"]]),
-            d=as.integer(model[["d"]]),
+            d=as.integer(model[["d"]]), latent=as.integer(NVL(model[["latentID"]],0)), family=as.integer(NVL(model[["familyID"]],0)), res=as.integer(with(model,c(sender,receiver,sociality))),
             
             dir=as.integer(is.directed(model[["Yg"]])),
             viY=as.integer(Y),
             vdY=as.double(Y),
             
-            family=as.integer(model[["familyID"]]), iconsts=as.integer(model[["iconsts"]]), dconsts=as.integer(model[["dconsts"]]),
-            
-            latent=as.integer(model[["latentID"]]),
+            iconsts=as.integer(model[["iconsts"]]), dconsts=as.integer(model[["dconsts"]]),
             
             vX=as.double(unlist(model[["X"]])),
             Z=as.double(theta[["Z"]]),
@@ -162,7 +160,7 @@ ergmm.lpY.C<-function(model,theta){
 
             sender=if(is.null(theta[["sociality"]])) as.double(theta[["sender"]]) else as.double(theta[["sociality"]]), receiver=as.double(theta[["receiver"]]), lock.RE=as.integer(!is.null(theta[["sociality"]])),
             
-            observed=as.integer(observed),
+            observed=as.integer(NVL(observed,-1)),
 
             lpY=double(1),
 

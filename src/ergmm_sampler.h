@@ -20,12 +20,11 @@
 
 void ERGMM_MCMC_wrapper(int *sample_size, int *interval,
 			   
-			int *n, int *p, int *d, int *G,
+			int *n, int *p, int *d, int *G, int *latent_eff, int *family, int *res,
 			  
 			int *dir, int *viY, double *vdY,
-			int *family,
+			
 			int *iconsts, double *dconsts,
-			int *latent_eff, 
 
 			double *vX,
 			  
@@ -56,7 +55,6 @@ void ERGMM_MCMC_wrapper(int *sample_size, int *interval,
 			double *sender_mcmc, double *receiver_mcmc,
 			double *sender_var_mcmc, double *receiver_var_mcmc,
 
-			int *sociality,
 			int *vobserved_ties,
 			double *deltas,
 			double *coef_eff_sender,
