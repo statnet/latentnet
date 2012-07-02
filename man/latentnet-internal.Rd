@@ -164,6 +164,8 @@
 \alias{xtabs.ergmm}
 \alias{clust.homogeneity}
 
+\alias{NVL}
+
 \description{
   Internal latentnet functions.
 }

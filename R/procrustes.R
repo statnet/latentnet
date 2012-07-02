@@ -1,7 +1,6 @@
 proc.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]
   G<-dim(sample[["Z.mean"]])[2]
-  if(is.null(G)) G<-0
   d<-dim(Z.ref)[2]
   S<-dim(sample[["Z"]])[1]
   ## Center Z.ref.
@@ -11,7 +10,7 @@ proc.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
            S=as.integer(S),
            n=as.integer(n),
            d=as.integer(d),
-           G=as.integer(G),
+           G=as.integer(NVL(G,0)),
            Z.ref=as.double(Z.ref),
            Z=as.double(sample[["Z"]]),
            Z.mean=as.double(sample[["Z.mean"]]),
@@ -19,7 +18,7 @@ proc.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
            
            PACKAGE="latentnet")
   sample[["Z"]]<-if(d>0)array(Cret[["Z"]],dim=c(S,n,d))
-  sample[["Z.mean"]]<-if(G>0)array(Cret[["Z.mean"]],dim=c(S,G,d))
+  sample[["Z.mean"]]<-if(!is.null(G))array(Cret[["Z.mean"]],dim=c(S,G,d))
   
   sample
 }

@@ -35,8 +35,8 @@ void MBC_MCMC_wrapper(int *sample_size,
 		      double *Z_pK_mcmc, 
 		      double *Z_mean_mcmc, 
 		      double *Z_var_mcmc){
-  double **Z = vZ ? Runpack_dmatrix(vZ,*n,*d, NULL) : NULL;
-  double **Z_mean_start = Z_mean ? Runpack_dmatrix(Z_mean,*G,*d,NULL) : NULL;
+  double **Z = Runpack_dmatrix(vZ,*n,*d, NULL);
+  double **Z_mean_start = Runpack_dmatrix(Z_mean,*G,*d,NULL);
   
   /* R function enabling uniform RNG */
   GetRNGstate();
@@ -50,10 +50,10 @@ void MBC_MCMC_wrapper(int *sample_size,
 		
 		Z, 
 		Z_pK,Z_mean_start,Z_var,(unsigned int *) Z_K,
-		Z_var_prior? *Z_var_prior : 0,
-		Z_mean_prior_var ? *Z_mean_prior_var : 0,
-		Z_K_prior ? *Z_K_prior : 0,
-		Z_var_df ? *Z_var_df : 0,
+		*Z_var_prior,
+		*Z_mean_prior_var,
+		*Z_K_prior,
+		*Z_var_df,
 		Z_K_mcmc, Z_pK_mcmc, Z_mean_mcmc, Z_var_mcmc);
   
   PutRNGstate();

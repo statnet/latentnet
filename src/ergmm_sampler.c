@@ -31,14 +31,15 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 			int *p,
 			int *d, 
 			int *G,
+			int *latent_eff,
+			int *family,
+			int *res,
 			  
 			int *dir,
 			int *viY,
 			double *vdY,
-			int *family,
 			int *iconsts,
 			double *dconsts,
-			int *latent_eff,
 
 			double *vX,
 			  
@@ -90,7 +91,6 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 			double *sender_var_mcmc,
 			double *receiver_var_mcmc,
 
-			int *sociality,
 			int *vobserved_ties,
 
 			double *deltas,
@@ -100,12 +100,35 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 			int *coef_eff_receiver_size,
 
 			int *accept_all){
+
+  // This was added because newer versions of R no longer pass a 0-length vector as NULL, so we have to do it here.
+  if(*p==0){
+    vX=lpcoef_mcmc=coef_start=coef_prior_mean=coef_var=coef_mcmc=coef_rate=vcoef_eff_sender=coef_eff_sender_size=vcoef_eff_receiver=coef_eff_receiver_size=NULL;
+  }
+  if(*G==0){
+    Z_pK_start=vZ_mean_start=Z_K_start=Z_mean_prior_var=Z_pK_prior=Z_K_mcmc=Z_pK_mcmc=Z_mean_mcmc=NULL;
+  }
+  if(*d==0){
+    lpZ_mcmc=lpLV_mcmc=vZ_start=Z_pK_start=vZ_mean_start=Z_var_start=Z_K_start=Z_var_prior=Z_mean_prior_var=Z_pK_prior=Z_var_prior_df=Z_mcmc=Z_K_mcmc=Z_pK_mcmc=Z_mean_mcmc=Z_var_mcmc=NULL;
+  }
+  if(res[0]==0&&res[2]==0){
+    sender_start=sender_var_start=sender_var_prior=sender_var_prior_df=sender_mcmc=sender_var_mcmc=vcoef_eff_sender=coef_eff_sender_size=NULL;
+  }
+  if(res[1]==0){
+    receiver_start=receiver_var_start=receiver_var_prior=receiver_var_prior_df=receiver_mcmc=receiver_var_mcmc=vcoef_eff_receiver=coef_eff_receiver_size=NULL;
+  }
+  if(res[0]==0&&res[1]==0&&res[2]==0){
+    lpRE_mcmc=lpREV_mcmc=NULL;
+    if(*d==0) Z_rate_move=NULL;
+  }
+
+
   int i=0,j=0,k=0;
   double **Z_start = vZ_start ? Runpack_dmatrix(vZ_start,*n,*d, NULL) : NULL;
   double **Z_mean_start = vZ_mean_start ? Runpack_dmatrix(vZ_mean_start,*G,*d,NULL) : NULL;
-  int **iY = viY ? Runpack_imatrix(viY, *n, *n, NULL):NULL;
-  double **dY = vdY ? Runpack_dmatrix(vdY, *n, *n, NULL):NULL;
-  unsigned int **observed_ties = vobserved_ties ? (unsigned int **) Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL;
+  int **iY = Runpack_imatrix(viY, *n, *n, NULL);
+  double **dY = Runpack_dmatrix(vdY, *n, *n, NULL);
+  unsigned int **observed_ties = *vobserved_ties>=0 ? (unsigned int **) Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL;
   double ***X = d3array(*p,*n,*n);
 
   /* The joint proposal coefficient matrix is square with side
@@ -172,7 +195,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 		  receiver_var_prior_df ? *receiver_var_prior_df : 0,
 		  sender_mcmc, receiver_mcmc, 
 		  sender_var_mcmc, receiver_var_mcmc,
-		  *sociality,
+		  res[2],
 		  observed_ties,
 		  deltas[0],deltas[1],group_deltas,group_prop_size,
 		  coef_eff_sender,coef_eff_sender_size?*coef_eff_sender_size:0,
