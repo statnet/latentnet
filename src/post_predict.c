@@ -119,7 +119,7 @@ void post_pred_wrapper(int *S,
   
   Rpack_dmatrixs(model.dY,*n,*n,vEY,1);
 
-  if(s_MKL){
+  if(*s_MKL){
     *s_MKL=-1;
     double m_llk=-HUGE_VAL;
     for(unsigned int s=0; s<*S; s++){
