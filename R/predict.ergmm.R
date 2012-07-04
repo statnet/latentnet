@@ -58,7 +58,7 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
           observed=as.integer(NVL(observed,-1)),
           
           EY=double(n*n),
-          s.MKL=if(MKL) integer(1) else integer(0),
+          s.MKL=if(MKL) as.integer(TRUE) else as.integer(FALSE),
           verbose=as.integer(control[["verbose"]]),
 
           PACKAGE="latentnet")
