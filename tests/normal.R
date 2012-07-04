@@ -1,5 +1,5 @@
 library(latentnet)
-
+opttest({
 n<-20
 
 y.var<-1/16
@@ -39,3 +39,4 @@ y.fit<-ergmm(y~bilinear(d=2,G=2),response="v",family="normal",fam.par=list(var=y
 Z.mkl<-plot(y.fit,Z.ref=Z)
 points(Z,pch=5)
 cat("Mean squared difference:",sum((Z.mkl-Z)^2),"\n")
+},"Normal response variable")

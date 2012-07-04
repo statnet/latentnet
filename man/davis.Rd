@@ -81,12 +81,13 @@ eds. Dynamic Social Network Modeling and Analysis. Washington: The National
 Academies Press.
 }
 \examples{
+\donttest{
 data(davis)
 # Fit a 2D 2-cluster fit and plot.
 davis.fit<-ergmm(davis~euclidean(d=2,G=2)+rsociality)
 plot(davis.fit,pie=TRUE,rand.eff="sociality")
 }
-
+}
 \details{
 If the source of the data set does not specified otherwise,
 this data set is protected by the Creative Commons License

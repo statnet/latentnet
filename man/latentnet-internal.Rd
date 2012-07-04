@@ -165,6 +165,7 @@
 \alias{clust.homogeneity}
 
 \alias{NVL}
+\alias{opttest}
 
 \description{
   Internal latentnet functions.
