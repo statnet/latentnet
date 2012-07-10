@@ -27,6 +27,7 @@
   \code{\link{ergmm}}
 }
 \examples{
+\donttest{
 data(sampson)
 # Run two short MCMC-based fits.
 samp.fit1 <- ergmm(samplike ~ euclidean(d=2, G=3),
@@ -37,6 +38,7 @@ samp.fit2 <- ergmm(samplike ~ euclidean(d=2, G=3),
 # Combine them, and summarize the result.
 samp.fit <-  merge.ergmm(samp.fit1,samp.fit2)
 summary(samp.fit)
+}
 }
 \keyword{graphs}
 \keyword{models}

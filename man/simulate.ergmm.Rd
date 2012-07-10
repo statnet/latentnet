@@ -54,7 +54,7 @@
 #
 data(sampson)
 gest <- ergmm(samplike ~ euclidean(d=2,G=3),
-              control=ergmm.control(burnin=1000,interval=5))
+              control=ergmm.control(burnin=100,interval=5,sample.size=100),tofit="mcmc")
 #
 # Draw from the posterior
 #

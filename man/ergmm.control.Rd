@@ -89,10 +89,12 @@ control.ergmm(sample.size=4000,
 }
 \seealso{ \code{\link{ergmm}} }
 \examples{
+\donttest{
 data(sampson)
 ## Shorter run than default.
 samp.fit<-ergmm(samplike~euclidean(d=2,G=3)+rreceiver,
 control=ergmm.control(burnin=1000,sample.size= 2000,interval=5))
+}
 }
 \keyword{graphs}
 \keyword{misc}
