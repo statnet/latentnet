@@ -38,6 +38,7 @@
   Read K. (1954). Cultures of the central highlands, New Guinea. Southwestern Journal of Anthropology, 10, 1-43. 
 }
 \examples{
+\donttest{
 data(tribes)
 # Only model positive ties:
 tribes.fit<-ergmm(tribes~euclidean(d=2,G=3),response="sign.012",family="binomial",fam.par=list(trials=2))
@@ -49,6 +50,7 @@ tribes.fit3<-ergmm(tribes~euclidean(d=2,G=3),response="sign.012",family="binomia
 # Edge color must be set manually, for green ties to represent alliance
 # and for red ties to represent enmity.
 plot(tribes.fit3,edge.col=as.matrix(tribes,"pos",m="a")*3+as.matrix(tribes,"neg",m="a")*2,pie=TRUE)
+}
 }
 \keyword{datasets}
 \keyword{multivariate}
