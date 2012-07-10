@@ -37,12 +37,14 @@
 \seealso{ \code{\link{ergmm}},
   \code{\link[coda]{mcmc.list}}, \code{\link{mcmc.diagnostics.ergmm}} }
 \examples{
+\donttest{
 library(coda)
 data(sampson)
 monks.fit<-ergmm(samplike~euclidean(d=2,G=3))
 monks.fit.mcmc<-as.mcmc.list(monks.fit)
 plot(monks.fit.mcmc)
 raftery.diag(monks.fit.mcmc)
+}
 }
 \keyword{graphs}
 \keyword{debugging}

@@ -94,7 +94,7 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
  \code{latentnet}}. Journal of Statistical Software, 24(5).
 }
 \examples{
-
+\donttest{
 #
 # Use 'data(package = "latentnet")' to list the data sets in a
 #
@@ -123,5 +123,6 @@ mcmc.diagnostics(samp.fit)
 # Plot the fit.
 #
 plot(samp.fit)
+}
 }
 \keyword{graphs}

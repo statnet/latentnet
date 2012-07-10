@@ -9,6 +9,8 @@ print(summary(monks.nmr))
 # Should produce a meaningful error message.
 print(try(plot(monks.nmr)))
 
+opttest({
+  
 monks.dnmr<-ergmm(samplike~nodematch("group",diff=TRUE)+rreceiver)
 mcmc.diagnostics(monks.dnmr)
 print(summary(monks.dnmr))
@@ -23,3 +25,4 @@ print(summary(monks.nm))
 monks.dnm<-ergmm(samplike~nodematch("group",diff=TRUE))
 mcmc.diagnostics(monks.dnm)
 print(summary(monks.dnm))
+}, "Some non-latent-space")
