@@ -1,36 +1,40 @@
-citHeader("To cite 'latentnet' in publications use:")
+desc <- packageDescription("latentnet")
 
-year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
-vers <- paste("R package version", meta$Version)
+projhomepage <- "http://www.statnet.org"
 
-citEntry(entry="manual",
-         title = "latentnet: Latent position and cluster models for statistical networks",
-         author = personList(as.person("Pavel N. Krivitsky"),
-                             as.person("Mark S. Handcock")), 
-         year         = year,
-         url          = "http://statnetproject.org",
-         note = vers,
-         
-         textVersion = 
-         paste("Pavel N. Krivitsky and Mark S. Handcock (",year,"). ", 
-               "latentnet: Latent position and cluster models for statistical networks. ", vers,". ",
-               "URL http://statnetproject.org.",
-               sep="")
+
+
+auts <- eval(parse(text=desc$`Authors@R`))
+auts <- auts[sapply(auts, function(aut) "aut" %in% aut$role)]
+
+bibentry("Manual",
+         header = paste("`",desc$Package,"` is part of the Statnet suite of packages.  ",
+   "If you are using the `",desc$Package,"` package for research that will be published, ",
+   "we request that you acknowledge this by it as shown below.\n\n",
+   'For BibTeX format, use toBibtex(citation("',desc$Package,'")).',
+   sep=""),
+         footer = citFooter("We have invested a lot of time and effort in creating the",
+          "Statnet suite of packages for use by other researchers.",
+          "Please cite it in all papers where it is used."),
+         author = auts,
+         title = desc$Title,
+         year         = substr(desc$Date,1,4),
+         note         = paste("Version ", desc$Version,
+                        ".  Project home page at \\url{", projhomepage, "}", 
+                        sep=""),
+         address      = "Seattle, WA",
+         url          = paste("CRAN.R-project.org/package=",desc$Package,sep="")
          )
 
-citEntry(entry="article",
+         
+          
+bibentry("Article",
+	 header = "Also, please cite the following paper:",
          title = "Fitting position latent cluster models for social networks with latentnet",
          author = personList(as.person("Pavel N. Krivitsky"),
                              as.person("Mark S. Handcock")), 
          year         = 2008,
-         url          = "http://statnetproject.org",
          volume = 24,
          number = 5,
-         journal = "Journal of Statistical Software",
-         textVersion = 
-         paste("Pavel N. Krivitsky and Mark S. Handcock (2008). ", 
-               "Fitting position latent cluster models for social networks with latentnet. ", "Journal of Statistical Software, 25(5).",
-               sep="")
+         journal = "Journal of Statistical Software"	 
          )
-citFooter("We have invested a lot of time and effort in creating 'latentnet',",
-          "please cite it when using it for network analysis.")
