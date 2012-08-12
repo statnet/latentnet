@@ -118,7 +118,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   x[["mle"]]<-scale(x[["model"]],x[["mle"]])
 
   if(x[["model"]][["d"]] && "rotation" %in% latent.effect.invariances[[x[["model"]][["familyID"]]]]){
-    x[["mle"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mle"]][["Z"]])[["Bhat"]]
+    x[["mle"]][["Z"]]<-x[["mle"]][["Z"]]%*%procr(x[["model"]],Z.ref,x[["mle"]][["Z"]])
   }
   
   x
@@ -152,7 +152,7 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     
   if(x[["model"]][["d"]]>0 && !is.null(x[["pmode"]])){
     x[["pmode"]]<-scale(x[["model"]], x[["pmode"]])
-    P<-procOPA(x[["model"]],Z.ref,x[["pmode"]][["Z"]])[["R"]]
+    P<-procr(x[["model"]],x[["pmode"]][["Z"]],Z.ref)
     x[["pmode"]][["Z"]]<-x[["pmode"]][["Z"]]%*%P
     if(!is.null(x[["pmode"]][["Z.mean"]]))
       x[["pmode"]][["Z.mean"]]<-x[["pmode"]][["Z.mean"]]%*%P
@@ -178,7 +178,7 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
     x[["mkl"]]<-find.mkl(x[["model"]],x[["sample"]],x[["control"]])
   }
   if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-scale(x[["model"]],x[["mkl"]])
-  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mkl"]][["Z"]])[["Bhat"]]
+  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-x[["mkl"]][["Z"]]%*%procr(x[["model"]],x[["mkl"]][["Z"]],Z.ref)
   if(x[["control"]][["verbose"]]) cat("Finished.\n")
   x
 }
@@ -274,11 +274,17 @@ scale.ergmm.model<-function(x,theta,...){
   theta
 }
 
-# We are overriding "procOPA" to make it more flexible.
-procOPA <- function(x, ...) UseMethod("procOPA")
+procr <- function(x, ...) UseMethod("procr")
+procr.matrix <- function(x, ref, ..., scale=FALSE, reflect=TRUE){
+  ref <- sweep(ref, 2, colMeans(ref), "-")
+  x <- sweep(x, 2, colMeans(x), "-")
 
-procOPA.default <- function(x, ...) shapes::procOPA(x, ...)
+  M <- crossprod(x, ref)
+  M.svd <- svd(M)
+  R <- (if(reflect) M.svd$u%*%t(M.svd$v) else M.svd$u%*%diag(c(det(M.svd$u%*%t(M.svd$v)),rep(1,ncol(ref)-1)),nrow=ncol(ref))%*%t(M.svd$v)) * if(scale) sqrt(sum(ref^2)/sum(x^2)) else 1
+  R
+}
 
-procOPA.ergmm.model<-function (x,A,B,...){
-  procOPA(A,B,scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
+procr.ergmm.model <- function(x, A, ref, ...){
+  procr(A, ref, scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
 }
