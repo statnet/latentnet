@@ -245,7 +245,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   }else stop("Invalid latent space position estimate type.")
 
   if(!is.null(Z.ref)){
-    R<-procOPA(Z.ref,Z.pos,scale=FALSE,reflect=TRUE)[["R"]]
+    R<-procr(Z.pos,Z.ref,scale=FALSE,reflect=TRUE)
     Z.pos<-Z.pos%*%R
     if(G) Z.mean<-Z.mean%*%R
   }
