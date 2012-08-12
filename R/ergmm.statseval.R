@@ -30,7 +30,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   if(control[["tofit"]][["mle"]]) mcmc.out<-add.mcmc.mle.mle.ergmm(mcmc.out)
   if(control[["tofit"]][["mkl"]]) mcmc.out<-add.mkl.pos.ergmm(mcmc.out)
   if(control[["tofit"]][["mkl.mbc"]]) mcmc.out<-add.mkl.mbc.ergmm(mcmc.out)
-  if(control[["tofit"]][["procrustes"]]) mcmc.out<-proc.sample.ergmm(mcmc.out)
+  if(control[["tofit"]][["procrustes"]]) mcmc.out<-procr.sample.ergmm(mcmc.out)
 
   class(mcmc.out)<-"ergmm"
   return(mcmc.out)
@@ -49,7 +49,7 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   if(rerun) x<-add.mcmc.mle.mle.ergmm(x)
   if(rerun) x<-add.mkl.pos.ergmm(x)
   x<-add.mkl.mbc.ergmm(x)
-  x<-proc.sample.ergmm(x)
+  x<-procr.sample.ergmm(x)
   x
 }
 
@@ -183,10 +183,10 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
   x
 }
 
-proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
+procr.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   if(!is.null(x[["sample"]]) && x[["model"]][["d"]]>0 && "rotation" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]] && "reflection" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]]){
     if(x[["control"]][["verbose"]]) cat("Performing Procrustes transformation... ")
-    x[["sample"]]<-proc.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
+    x[["sample"]]<-procr.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
   x
@@ -272,19 +272,4 @@ scale.ergmm.model<-function(x,theta,...){
     theta[["beta"]][1]<-theta[["beta"]][1]+shift
   }
   theta
-}
-
-procr <- function(x, ...) UseMethod("procr")
-procr.matrix <- function(x, ref, ..., scale=FALSE, reflect=TRUE){
-  ref <- sweep(ref, 2, colMeans(ref), "-")
-  x <- sweep(x, 2, colMeans(x), "-")
-
-  M <- crossprod(x, ref)
-  M.svd <- svd(M)
-  R <- (if(reflect) M.svd$u%*%t(M.svd$v) else M.svd$u%*%diag(c(det(M.svd$u%*%t(M.svd$v)),rep(1,ncol(ref)-1)),nrow=ncol(ref))%*%t(M.svd$v)) * if(scale) sqrt(sum(ref^2)/sum(x^2)) else 1
-  R
-}
-
-procr.ergmm.model <- function(x, A, ref, ...){
-  procr(A, ref, scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
 }
