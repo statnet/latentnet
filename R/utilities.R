@@ -64,11 +64,3 @@ clust.homogeneity<-function(x,ref,soft=TRUE,marg=FALSE){
   else p.K
 }
 
-## Only run expr if environment variable ENABLE_latentnet_TESTS is set. Otherwise, skip them and optionally print a message documenting this.
-opttest <- function(expr, testname=NULL, testvar="ENABLE_latentnet_TESTS"){
-  if(Sys.getenv(testvar)!="")
-    eval.parent(expr)
-  else
-    if(!is.null(testname))
-      cat(testname,"test(s) skipped. Set",testvar,"environment variable to run.")
-}
