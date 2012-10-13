@@ -162,7 +162,11 @@
 \alias{xtabs.ergmm}
 \alias{clust.homogeneity}
 
-\alias{opttest}
+\alias{procr}
+\alias{procr.ergmm.model}
+\alias{procr.matrix}
+\alias{procr.sample.ergmm}
+\alias{procrustes.Z.mean.C}
 
 \description{
   Internal latentnet functions.

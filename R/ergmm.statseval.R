@@ -183,10 +183,10 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
   x
 }
 
-procr.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
+procr.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),...){
   if(!is.null(x[["sample"]]) && x[["model"]][["d"]]>0 && "rotation" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]] && "reflection" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]]){
     if(x[["control"]][["verbose"]]) cat("Performing Procrustes transformation... ")
-    x[["sample"]]<-procr.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
+    x[["sample"]]<-procrustes.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
   x

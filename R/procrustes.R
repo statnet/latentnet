@@ -1,4 +1,4 @@
-procr.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
+procrustes.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]
   G<-dim(sample[["Z.mean"]])[2]
   d<-dim(Z.ref)[2]
