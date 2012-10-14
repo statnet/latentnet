@@ -1,3 +1,13 @@
+2.4-3
+	Reworked the implementation of Procrustes so that latentnet no
+	longer depends on the shapes library.
+
+	Extracted commonly-used non-statistical functions into a new
+	package, statnet.common.
+
+	3D plots can now draw segments (for undirected graphs) and arrows
+	(for directed graphs, with package heplots) between vertices.
+
 2.4-2
 	Latentnet is now compliant with R 2.15.0.
 

@@ -13,8 +13,6 @@
 \alias{is.latent.cluster}
 \alias{is.receiver}
 \alias{is.sender}
-\alias{kief.wolf2.optim}
-\alias{kief.wolf.optim}  
  
 \alias{pack.optim}
 \alias{path.to.me}   
@@ -164,8 +162,11 @@
 \alias{xtabs.ergmm}
 \alias{clust.homogeneity}
 
-\alias{NVL}
-\alias{opttest}
+\alias{procr}
+\alias{procr.ergmm.model}
+\alias{procr.matrix}
+\alias{procr.sample.ergmm}
+\alias{procrustes.Z.mean.C}
 
 \description{
   Internal latentnet functions.

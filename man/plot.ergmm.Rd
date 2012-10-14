@@ -19,7 +19,7 @@
      rand.eff = NULL, rand.eff.cap = NULL,
      plot.means = TRUE, plot.vars = TRUE,
      suppress.axes = FALSE, jitter1D=1, curve1D=TRUE,
-     use.rgl = FALSE, vertex.3d.cex = 1/20,
+     use.rgl = FALSE, vertex.3d.cex = 1/20, edge.plot3d=TRUE,
      suppress.center=FALSE,density.par=list())
 
 }
@@ -105,7 +105,10 @@
     \code{FALSE}. If set to \code{TRUE} and a 3-dimensional plot is
     produced, edges are not plotted and
     argument \code{pie} has no effect.}
-  \item{vertex.3d.cex}{Controls the size of the plotting symbol when \code{use.rgl=TRUE}.}
+  \item{vertex.3d.cex}{Controls the size of the plotting symbol when
+    \code{use.rgl=TRUE}.}
+  \item{edge.plot3d}{If \code{TRUE} (the default) edges or arcs in a 3D
+    plot will be drawn. Otherwise, only vertices and clusters.}
   \item{zoom.on}{If given a list of vertex indices, sets the plotting
     region to the smallest that can fit those vertices.}
   \item{density.par}{A list of optional parameters for density plots:

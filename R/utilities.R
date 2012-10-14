@@ -64,23 +64,3 @@ clust.homogeneity<-function(x,ref,soft=TRUE,marg=FALSE){
   else p.K
 }
 
-## Concatenate a character list with commas and ands in the right places.
-.paste.and <- function(x, oq='', cq=''){
-  x <- paste(oq, x, cq, sep='')
-  if(length(x)==0) return('')
-  if(length(x)==1) return(x)
-  if(length(x)==2) return(paste(x[1],'and',x[2]))
-  if(length(x)>=3) return(paste(paste(x[-length(x)], collapse=", "),', and ',x[length(x)],sep=''))
-}
-
-## If EXPR is NULL, return NULLV, otherwise return EXPR.
-NVL <- function(EXPR, NULLV) if(!is.null(EXPR)) EXPR else NULLV
-  
-## Only run expr if environment variable ENABLE_latentnet_TESTS is set. Otherwise, skip them and optionally print a message documenting this.
-opttest <- function(expr, testname=NULL, testvar="ENABLE_latentnet_TESTS"){
-  if(Sys.getenv(testvar)!="")
-    eval.parent(expr)
-  else
-    if(!is.null(testname))
-      cat(testname,"test(s) skipped. Set",testvar,"environment variable to run.")
-}

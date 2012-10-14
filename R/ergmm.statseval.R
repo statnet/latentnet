@@ -30,7 +30,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   if(control[["tofit"]][["mle"]]) mcmc.out<-add.mcmc.mle.mle.ergmm(mcmc.out)
   if(control[["tofit"]][["mkl"]]) mcmc.out<-add.mkl.pos.ergmm(mcmc.out)
   if(control[["tofit"]][["mkl.mbc"]]) mcmc.out<-add.mkl.mbc.ergmm(mcmc.out)
-  if(control[["tofit"]][["procrustes"]]) mcmc.out<-proc.sample.ergmm(mcmc.out)
+  if(control[["tofit"]][["procrustes"]]) mcmc.out<-procr.sample.ergmm(mcmc.out)
 
   class(mcmc.out)<-"ergmm"
   return(mcmc.out)
@@ -49,7 +49,7 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   if(rerun) x<-add.mcmc.mle.mle.ergmm(x)
   if(rerun) x<-add.mkl.pos.ergmm(x)
   x<-add.mkl.mbc.ergmm(x)
-  x<-proc.sample.ergmm(x)
+  x<-procr.sample.ergmm(x)
   x
 }
 
@@ -118,7 +118,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   x[["mle"]]<-scale(x[["model"]],x[["mle"]])
 
   if(x[["model"]][["d"]] && "rotation" %in% latent.effect.invariances[[x[["model"]][["familyID"]]]]){
-    x[["mle"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mle"]][["Z"]])[["Bhat"]]
+    x[["mle"]][["Z"]]<-x[["mle"]][["Z"]]%*%procr(x[["model"]],Z.ref,x[["mle"]][["Z"]])
   }
   
   x
@@ -152,7 +152,7 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     
   if(x[["model"]][["d"]]>0 && !is.null(x[["pmode"]])){
     x[["pmode"]]<-scale(x[["model"]], x[["pmode"]])
-    P<-procOPA(x[["model"]],Z.ref,x[["pmode"]][["Z"]])[["R"]]
+    P<-procr(x[["model"]],x[["pmode"]][["Z"]],Z.ref)
     x[["pmode"]][["Z"]]<-x[["pmode"]][["Z"]]%*%P
     if(!is.null(x[["pmode"]][["Z.mean"]]))
       x[["pmode"]][["Z.mean"]]<-x[["pmode"]][["Z.mean"]]%*%P
@@ -178,15 +178,15 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
     x[["mkl"]]<-find.mkl(x[["model"]],x[["sample"]],x[["control"]])
   }
   if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-scale(x[["model"]],x[["mkl"]])
-  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-procOPA(x[["model"]],Z.ref,x[["mkl"]][["Z"]])[["Bhat"]]
+  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-x[["mkl"]][["Z"]]%*%procr(x[["model"]],x[["mkl"]][["Z"]],Z.ref)
   if(x[["control"]][["verbose"]]) cat("Finished.\n")
   x
 }
 
-proc.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
+procr.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),...){
   if(!is.null(x[["sample"]]) && x[["model"]][["d"]]>0 && "rotation" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]] && "reflection" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]]){
     if(x[["control"]][["verbose"]]) cat("Performing Procrustes transformation... ")
-    x[["sample"]]<-proc.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
+    x[["sample"]]<-procrustes.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
   x
@@ -272,13 +272,4 @@ scale.ergmm.model<-function(x,theta,...){
     theta[["beta"]][1]<-theta[["beta"]][1]+shift
   }
   theta
-}
-
-# We are overriding "procOPA" to make it more flexible.
-procOPA <- function(x, ...) UseMethod("procOPA")
-
-procOPA.default <- function(x, ...) shapes::procOPA(x, ...)
-
-procOPA.ergmm.model<-function (x,A,B,...){
-  procOPA(A,B,scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
 }

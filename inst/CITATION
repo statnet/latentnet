@@ -1,36 +1,16 @@
-citHeader("To cite 'latentnet' in publications use:")
+library(statnet.common)
+statnet.cite.head("latentnet")
+statnet.cite.pkg("latentnet")
 
-year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
-vers <- paste("R package version", meta$Version)
-
-citEntry(entry="manual",
-         title = "latentnet: Latent position and cluster models for statistical networks",
-         author = personList(as.person("Pavel N. Krivitsky"),
-                             as.person("Mark S. Handcock")), 
-         year         = year,
-         url          = "http://statnetproject.org",
-         note = vers,
-         
-         textVersion = 
-         paste("Pavel N. Krivitsky and Mark S. Handcock (",year,"). ", 
-               "latentnet: Latent position and cluster models for statistical networks. ", vers,". ",
-               "URL http://statnetproject.org.",
-               sep="")
-         )
-
-citEntry(entry="article",
+bibentry("Article",
          title = "Fitting position latent cluster models for social networks with latentnet",
          author = personList(as.person("Pavel N. Krivitsky"),
                              as.person("Mark S. Handcock")), 
          year         = 2008,
-         url          = "http://statnetproject.org",
          volume = 24,
          number = 5,
-         journal = "Journal of Statistical Software",
-         textVersion = 
-         paste("Pavel N. Krivitsky and Mark S. Handcock (2008). ", 
-               "Fitting position latent cluster models for social networks with latentnet. ", "Journal of Statistical Software, 25(5).",
-               sep="")
+         journal = "Journal of Statistical Software"	 
          )
-citFooter("We have invested a lot of time and effort in creating 'latentnet',",
-          "please cite it when using it for network analysis.")
+
+statnet.cite.foot("latentnet")
+
