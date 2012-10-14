@@ -22,6 +22,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                        jitter1D=1,curve1D=TRUE,
                        use.rgl=FALSE,
                        vertex.3d.cex=1/20,
+                       edge.plot3d=TRUE,
                        suppress.center=FALSE,
                        density.par=list()){
 
@@ -34,7 +35,10 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   G<-x[["model"]][["G"]]
   if(G<1) pie<-FALSE
 
-  if(use.rgl) if(!require(rgl)) stop("3D plots with use.rgl=TRUE option require the 'rgl' package.")
+  if(use.rgl){
+    if(!require(rgl)) stop("3D plots with use.rgl=TRUE option require the 'rgl' package.")
+    if(pie) stop("3D plots cannot make pie charts.")
+  }
   
   ## Set default axis labels.
   if(d==1){
@@ -337,15 +341,41 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   
     options(warn=old.warn)
   }else{
-    if(is.null(vertex.col))
-      plot3d(Z.pos,type="s",col=vertex.col,radius=vertex.cex*vertex.3d.cex,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
-    else{
-      cols<-unique(vertex.col)
-      for(col in cols){
-        plot3d(Z.pos[vertex.col==col,],type="s",col= col,radius=vertex.cex*vertex.3d.cex,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main,add=col!=cols[1])
+    vertex.radii <- vertex.cex*vertex.3d.cex
+    plot3d(Z.pos,type="s",col= vertex.col,radius=vertex.radii,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
+    if(labels){
+      Z.pos.r <- sqrt(rowSums(Z.pos^2))
+      text3d(Z.pos*(Z.pos.r+vertex.radii*2)/Z.pos.r,texts=Yg %v% "vertex.names")
+    }
+    if(edge.plot3d){
+      el<-as.matrix(Yg,matrix.type="edgelist")
+      if(is.directed(Yg) && require(heplots)){
+        medlen <- median(apply(el, 1, function(e){
+          Z1 <- Z.pos[e[1],]
+          Z2 <- Z.pos[e[2],]
+          dZ <- Z2-Z1
+          r1 <- vertex.radii[e[1]]
+          r2 <- vertex.radii[e[2]]
+          len <- sqrt(sum(dZ^2))
+          len - r1 - r2
+        }))
+
+        apply(el, 1, function(e){
+          Z1 <- Z.pos[e[1],]
+          Z2 <- Z.pos[e[2],]
+          dZ <- Z2-Z1
+          r1 <- vertex.radii[e[1]]
+          r2 <- vertex.radii[e[2]]
+          len <- sqrt(sum(dZ^2))
+          Z1edge <- Z1+r1/len*dZ
+          Z2edge <- Z2-r2/len*dZ
+          arrow3d(Z1edge,Z2edge,barblen=medlen*.1,n=4)
+        })
+      }else{
+        if(is.directed(Yg)) message("3D plotting of directed edges with arrows requires package heplots, which is not installed. Using line segments instead.")
+        segments3d(Z.pos[c(t(el)),])
       }
     }
-    if(labels) text3d(Z.pos,texts=Yg %v% "vertex.names")
   }
 
   if(!use.rgl){
