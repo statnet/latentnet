@@ -73,9 +73,9 @@ unsigned int *runifperm(unsigned int n, unsigned int *a){
 
 void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_Par *dest){
 #define tocopy(name) (source->name && (source->name != dest->name))
-  if(tocopy(Z)) copy_dmatrix(source->Z,dest->Z,model->verts,model->latent);
+  if(tocopy(Z)) dmatrix_copy_contents(source->Z,dest->Z,model->verts,model->latent);
   if(tocopy(coef)) copy_dvector(source->coef,dest->coef,model->coef);
-  if(tocopy(Z_mean)) copy_dmatrix(source->Z_mean,dest->Z_mean,model->clusters,model->latent);
+  if(tocopy(Z_mean)) dmatrix_copy_contents(source->Z_mean,dest->Z_mean,model->clusters,model->latent);
   if(tocopy(Z_var)) copy_dvector(source->Z_var,dest->Z_var,model->clusters?model->clusters:1);
   if(tocopy(Z_pK)) copy_dvector(source->Z_pK,dest->Z_pK,model->clusters);
   if(tocopy(sender)) copy_dvector(source->sender,dest->sender,model->verts);
