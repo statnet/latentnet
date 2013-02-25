@@ -176,7 +176,7 @@ void klswitch_wrapper(int *maxit, int *S, int *n, int *d, int *G,
 
 
 /*R_INLINE*/ void apply_perm(unsigned int *perm, ERGMM_MCMC_Par *to, double **pK, ERGMM_MCMC_Par *tmp, int n, int d, int G){
-  copy_dmatrix(to->Z_mean,tmp->Z_mean,G,d);
+  dmatrix_copy_contents(to->Z_mean,tmp->Z_mean,G,d);
   copy_dvector(to->Z_var,tmp->Z_var,G);
   copy_dvector(to->Z_pK,tmp->Z_pK,G);
   copy_ivector((int *)to->Z_K,(int *)tmp->Z_K,n);

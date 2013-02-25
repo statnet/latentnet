@@ -65,7 +65,7 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
   // Overwrite old parameter values with new ones.
   switch(cur->prop_Z){
   case PROP_ALL:
-    copy_dmatrix(new->Z,old->Z,model->verts,model->latent); break;
+    dmatrix_copy_contents(new->Z,old->Z,model->verts,model->latent); break;
   case PROP_NONE: break;
   default:
     copy_dvector(new->Z[cur->prop_Z],old->Z[cur->prop_Z],model->latent); break;
@@ -90,7 +90,7 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
     copy_dvector(new->coef,old->coef,model->coef);
 
   if(cur->prop_LV==PROP_ALL){
-    if(new->Z_mean) copy_dmatrix(new->Z_mean,old->Z_mean,model->clusters,model->latent);
+    if(new->Z_mean) dmatrix_copy_contents(new->Z_mean,old->Z_mean,model->clusters,model->latent);
     if(new->Z_var) copy_dvector(new->Z_var,old->Z_var,model->clusters?model->clusters:1);
   }
 
@@ -104,7 +104,7 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
   // Update the lpedge matrix.
   if(copy_lpedge){
     if(cur->prop_Z==PROP_ALL || cur->prop_RE==PROP_ALL || cur->prop_coef==PROP_ALL){
-      copy_dmatrix(new->lpedge,old->lpedge,model->verts,model->verts);
+      dmatrix_copy_contents(new->lpedge,old->lpedge,model->verts,model->verts);
     }
     else if(cur->prop_Z!=PROP_NONE){
       i=cur->prop_Z;
@@ -349,7 +349,7 @@ void ERGMM_MCMC_CV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_M
   rdirich(model->clusters,par->Z_pK);
   
   // Compute cluster means
-  init_dmatrix(cur->Z_bar,model->clusters,model->latent,0.0);
+  dmatrix_init(cur->Z_bar,model->clusters,model->latent,0.0);
   for(i=0;i<model->verts;i++)
     for(j=0;j<model->latent;j++)
       cur->Z_bar[par->Z_K[i]-1][j] += par->Z[i][j]/cur->n[par->Z_K[i]-1];

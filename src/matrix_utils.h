@@ -28,7 +28,7 @@ void print_ivector (int *a, unsigned int length, FILE *stream );
 void print_dmatrix (double **a, unsigned int nrow, unsigned int ncol, FILE* stream);
 void print_imatrix (int **a, unsigned int nrow, unsigned int ncol, FILE* stream);
 void init_dvector(double *x, unsigned int n, double value);
-void init_dmatrix(double **A, unsigned int n, unsigned int m, double value);
+void dmatrix_init(double **A, unsigned int n, unsigned int m, double value);
 void init_ivector(int *x, unsigned int n, int value);
 double *cat_dmectors(double *x, unsigned int nx, double *y, unsigned int ny);
 double *cat_dmector_scalar(double *x, unsigned int nx, double y, unsigned int end);
@@ -37,12 +37,14 @@ void dscalar_times_matrix(double x, double **A, unsigned int n, unsigned int m, 
 void dmatrix_plus_scalar_times_matrix(double x, double **A, unsigned int n, unsigned int m, double **B);
 void dmatrix_multiply(double **A,unsigned int na,unsigned int ma, double **B, unsigned int mb, 
 		      double **C);
+void dmatrix_crossprod(double **A,unsigned int na,unsigned int ma, double **B, unsigned int mb, 
+		       double **C);
 int *Runpack_ivectors(int *va, unsigned int n, int *a, unsigned int sample_size);
 void imatrix_multiply(int **A,unsigned int na,unsigned int ma, int **B, unsigned int mb, int **C);
 void dmatrix_addition(double **A, unsigned int n, unsigned int m, double **B);
-void init_imatrix(int **A, unsigned int n, unsigned int m, int value);
+void imatrix_init(int **A, unsigned int n, unsigned int m, int value);
 void t(double **A, unsigned int n, unsigned int m, double **tA);
-void copy_dmatrix(double **source,double **dest,unsigned int n,unsigned int m);
+void dmatrix_copy_contents(double **source,double **dest,unsigned int n,unsigned int m);
 double *copy_dvector(double *source,double *dest,unsigned int n);
 int *copy_ivector(int *source,int *dest, unsigned int n);
 double mean(double *x, unsigned int n);
@@ -51,6 +53,5 @@ double *Runpack_dvectors(double *va, unsigned int n, double *a, unsigned int sam
 double dmatrix_scale_to(double **A,unsigned int n, unsigned int m, double rms_wanted);
 void dmatrix_scale_by(double **A, unsigned int n, unsigned int m, double by);
 void dvector_scale_by(double *v, unsigned int n, double by);
-/*R_INLINE*/ int inverse(double **x, int n ,double **res, double *workspace);
-/*R_INLINE*/ int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors, double *workspace);
+int dgesvd_full_wrapper(double **A, int n, int m, double **U, double *S, double **tV, double *workspace, int lworkspace);
 #endif

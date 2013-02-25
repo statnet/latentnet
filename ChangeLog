@@ -1,6 +1,8 @@
 2.4-3
-	Reworked the implementation of Procrustes so that latentnet no
-	longer depends on the shapes library.
+	Reworked the implementation of Procrustes in two ways: 1)
+	latentnet no longer depends on the shapes library and; 2) the C
+	implementation of procrustes no longer uses the (deprecated)
+	EISPACK, replacing it with LAPACK.
 
 	Extracted commonly-used non-statistical functions into a new
 	package, statnet.common.
