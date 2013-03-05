@@ -138,6 +138,7 @@
 \value{If applicable, invisibly returns the vertex positions plotted.}
 \seealso{\code{\link{ergmm}},\code{\link{ergmm.object}}, \code{network}, \code{\link[network]{plot.network}}, \code{\link{plot}}}
 \examples{
+\donttest{
 #
 # Using Sampson's Monk data, let's fit a 
 # simple latent position model
@@ -172,6 +173,7 @@ samp.fit3 <- ergmm(samplike ~ euclidean(d=3))
 plot(samp.fit,use.rgl=FALSE)
 # Plot the resulting fit in 3D
 plot(samp.fit,use.rgl=TRUE)
+}
 }
 }
 \keyword{graphs}
