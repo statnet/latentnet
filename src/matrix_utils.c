@@ -1,13 +1,13 @@
 /****************************************/
 /* Matrix, vector, and memory utilities */
 /****************************************/
+#include "matrix_utils.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <R.h>
 #include <Rmath.h>
-#include <R_ext/Applic.h>
-#include "matrix_utils.h"
+#include <R_ext/Lapack.h> 
 
 
 /*  Allocates memory for a vector of doubles of length n */
@@ -302,7 +302,7 @@ void init_dvector(double *x, unsigned int n, double value)
   }
 }
 
-void init_dmatrix(double **A, unsigned int n, unsigned int m, double value)
+void dmatrix_init(double **A, unsigned int n, unsigned int m, double value)
 {
   unsigned int i,j;
   for(i=0;i<n;i++){
@@ -366,9 +366,8 @@ double *cat_dvector_scalar(double *x, unsigned int nx, double y, unsigned int en
 double *dvector_times_matrix(double *x, unsigned int n, double **A, unsigned int m, double *b)
 {
   
-  unsigned int i=0,j=0;
-  for(i=0;i<m;i++){
-    for(j=0;j<n;j++){
+  for(unsigned int i=0;i<m;i++){
+    for(unsigned int j=0;j<n;j++){
       b[i] += x[j]*A[j][i];
     }
   }
@@ -378,9 +377,8 @@ double *dvector_times_matrix(double *x, unsigned int n, double **A, unsigned int
 /* mutliply the scalar times the matrix and return the result in B*/
 void dscalar_times_matrix(double x, double **A, unsigned int n, unsigned int m, double **B)
 {
-  unsigned int i,j;
-  for(i=0;i<n;i++){
-    for(j=0;j<m;j++){
+  for(unsigned int i=0;i<n;i++){
+    for(unsigned int j=0;j<m;j++){
       B[i][j] = A[i][j] * x;
     } 
   }
@@ -389,23 +387,20 @@ void dscalar_times_matrix(double x, double **A, unsigned int n, unsigned int m, 
 /* multiply the scalar times the matrix and add the result to B*/
 void dmatrix_plus_scalar_times_matrix(double x, double **A, unsigned int n, unsigned int m, double **B)
 {
-  unsigned int i,j;
-  for(i=0;i<n;i++){
-    for(j=0;j<m;j++){
+  for(unsigned int i=0;i<n;i++){
+    for(unsigned int j=0;j<m;j++){
       B[i][j] += A[i][j] * x;
     } 
   }
 }
 
-/* Computes C0+AB, where A is na by ma and B is ma by mb, and C0 is the initial contents of C. */
+/* Computes C0+A*B, where A is na by ma and B is ma by mb, and C0 is the initial contents of C. */
 void dmatrix_multiply(double **A,unsigned int na,unsigned int ma, double **B, unsigned int mb, 
 			  double **C)
 {
-  unsigned int i=0,j=0,k=0;
- 
-  for(i=0;i<na;i++){
-    for(j=0;j<mb;j++){
-      for(k=0;k<ma;k++){
+  for(unsigned int i=0;i<na;i++){
+    for(unsigned int j=0;j<mb;j++){
+      for(unsigned int k=0;k<ma;k++){
 	C[i][j] += A[i][k]*B[k][j];
       }
     }
@@ -413,15 +408,28 @@ void dmatrix_multiply(double **A,unsigned int na,unsigned int ma, double **B, un
   return;
 }
 
+/* Computes C0+t(A)*B, where A is na by ma and B is na by mb, and C0 is the initial contents of C. */
+void dmatrix_crossprod(double **A,unsigned int na,unsigned int ma, double **B, unsigned int mb, 
+			  double **C)
+{
+  for(unsigned int i=0;i<ma;i++){
+    for(unsigned int j=0;j<mb;j++){
+      for(unsigned int k=0;k<na;k++){
+	C[i][j] += A[k][i]*B[k][j];
+      }
+    }
+  }
+  return;
+}
+
+
 /* Computes AB, where A is na by ma and B is ma by mb */
 void imatrix_multiply(int **A,unsigned int na,unsigned int ma, int **B, unsigned int mb, int **C)
 {
-  unsigned int i=0,j=0,k=0;
- 
   /* if(ma != nb) return (double**)(-1); */
-  for(i=0;i<na;i++){
-    for(j=0;j<mb;j++){
-      for(k=0;k<ma;k++){
+  for(unsigned int i=0;i<na;i++){
+    for(unsigned int j=0;j<mb;j++){
+      for(unsigned int k=0;k<ma;k++){
 	C[i][j] += A[i][k]*B[k][j];
       }
     }
@@ -442,7 +450,7 @@ void dmatrix_addition(double **A, unsigned int n, unsigned int m, double **B)
 
 
 /* Makes sure that all values of the matrix are the same*/
-void init_imatrix(int **A, unsigned int n, unsigned int m, int value)
+void imatrix_init(int **A, unsigned int n, unsigned int m, int value)
 {
   unsigned int i,j;
 
@@ -466,7 +474,7 @@ void t(double **A, unsigned int n, unsigned int m, double **tA)
 }
 
 
-void copy_dmatrix(double **source,double **dest,unsigned int n,unsigned int m)
+void dmatrix_copy_contents(double **source,double **dest,unsigned int n,unsigned int m)
 {
   unsigned int i;
   for(i=0;i<n;i++)
@@ -519,100 +527,39 @@ void dvector_scale_by(double *v, unsigned int n, double by){
     v[i]*=by;
 }
 
-/* Inverts a matrix "in place".
-   "workspace" must be an expendable block of memory of length (n*n*3+4*n)*sizeof(double)*/
-/*R_INLINE*/ int inverse(double **x, int n, double **res, double *workspace)
-{
-  /** QR decomposition solve x*x=I **/
-  /** res contains the result **/
-
-  int i,j, info = 0, rank, *pivot, p;
-  double tol = 1.0E-7, *qraux, *work;
-  double *xt, *yt, *rest;
-  
-  qraux = workspace;
-  work  = qraux+n;
-  rest = work+2*n;
-  yt = rest+n*n;
-  xt = yt+n*n;
-  pivot = (int *) (xt+n*n);
- 
-  for(i = 0; i < n; i++)
-    pivot[i] = i+1;
-  
-  /** Copy the matrix by column **/
-  for(i=0;i<n;i++)
-    for(j=0;j<n;j++)
-      xt[i*(n)+j]=x[j][i];
-  
-
-  p = n;
-  
-  F77_CALL(dqrdc2)(xt, &n, &n, &p, &tol, &rank,qraux, pivot, work);
-  
-  
-  /** Copy the matrix by column **/
-
-  for(i=0;i<n;i++)
-      for(j=0;j<n;j++)
-	yt[i*(n)+j]= j==i?1:0;
-  
-  F77_CALL(dqrcf)(xt, &n, &rank, qraux,yt, &n, rest, &info);
-  
-  /** Put back into a matrix **/
-  for(i=0;i<n;i++)
-    for(j=0;j<n;j++)
-      res[j][i]=rest[i*(n)+j];
-  return(rank==n? FOUND:NOTFOUND);
-}
-
-/* vectors is non zero if want eigen vectors returned.
-   length(EValues) = n
-   dim(EVectors) = n,n
-   "workspace" must be an expendable block of memory of length (n*n*2+n*3)*sizeof(double).
-*/
-/*R_INLINE*/ int sym_eigen(double **A, int n, int vectorsflag, double *EValues, double **EVectors,double *workspace)
-{
-  int err=0,i=0,j=0;
-  /*
-  double *vA = dvector(n*n);
-  double *vEVectors = dvector(n*n);
-  double *l=dvector(n);
-  double *fv1 = dvector(n);
-  double *fv2 = dvector(n);
-  */
-  //  Workaround...
+int dgesvd_full_wrapper(double **A, int n, int m, double **U, double *S, double **tV, double *workspace, int lworkspace){
+  char job = 'A';
   double *vA = workspace;
-  double *vEVectors = vA+n*n;
-  double *l=vEVectors+n*n;
-  double *fv1 = l+n;
-  double *fv2 = fv1+n;
+  double *vU = workspace+n*m;
+  double *vtV = vU+n*n;
+  double *work = vtV+m*m;
+  int lwork = lworkspace - (n*m+n*n+m*m), info;
 
-  /** Copy the matrix by column **/
-  /* make A into a vector to pass in*/
-  for(j=0;j<n;j++){
-    for(i=0;i<n;i++){
+  // Fortran is column-major.
+  for(unsigned int j=0;j<m;j++){
+    for(unsigned int i=0;i<n;i++){
       vA[(n*j)+i] = A[i][j];
     }
   }
+
+  // Note that n and m are swapped in Fortran.
+  F77_NAME(dgesvd)(&job, &job, &n, &m, vA, &n, S, vU, &n, vtV, &m, work, &lwork, &info);
   
-  
-  /*  int F77_NAME(rs)(int *nm, int *n, double *a, double *w,
-      int *matz, double *z, double *fv1, double *fv2, int *ierr) */
-  F77_NAME(rs)(&n, &n, vA, l, &vectorsflag, vEVectors, fv1, fv2, &err);
-  
-  for(i=0;i<n;i++){
-    EValues[i] = l[n-1-i];
-  }  
-  
-  /* put A and EVectors into matrices to return */
-  for(i=0;i<n;i++){
-    for(j=0;j<n;j++){
-      EVectors[i][j] = vEVectors[i + (n-(j+1))*n];
+  /* Store U. Fortran is column-major. */
+  for(unsigned int i=0;i<n;i++){
+    for(unsigned int j=0;j<n;j++){
+      U[i][j] = vU[i + j*n];
     }
   } 
   
-  return 0;
+  /* Store tV. Fortran is column-major. */
+  for(unsigned int i=0;i<m;i++){
+    for(unsigned int j=0;j<m;j++){
+      tV[i][j] = vtV[i + j*m];
+    }
+  } 
+  
+  return info;
 }
 
 /*

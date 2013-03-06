@@ -103,22 +103,22 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 
   // This was added because newer versions of R no longer pass a 0-length vector as NULL, so we have to do it here.
   if(*p==0){
-    vX=lpcoef_mcmc=coef_start=coef_prior_mean=coef_var=coef_mcmc=coef_rate=vcoef_eff_sender=coef_eff_sender_size=vcoef_eff_receiver=coef_eff_receiver_size=NULL;
+    vX=NULL; lpcoef_mcmc=NULL; coef_start=NULL; coef_prior_mean=NULL; coef_var=NULL; coef_mcmc=NULL; coef_rate=NULL; vcoef_eff_sender=NULL; coef_eff_sender_size=NULL; vcoef_eff_receiver=NULL; coef_eff_receiver_size=NULL;
   }
   if(*G==0){
-    Z_pK_start=vZ_mean_start=Z_K_start=Z_mean_prior_var=Z_pK_prior=Z_K_mcmc=Z_pK_mcmc=Z_mean_mcmc=NULL;
+    Z_pK_start=NULL; vZ_mean_start=NULL; Z_K_start=NULL; Z_mean_prior_var=NULL; Z_pK_prior=NULL; Z_K_mcmc=NULL; Z_pK_mcmc=NULL; Z_mean_mcmc=NULL;
   }
   if(*d==0){
-    lpZ_mcmc=lpLV_mcmc=vZ_start=Z_pK_start=vZ_mean_start=Z_var_start=Z_K_start=Z_var_prior=Z_mean_prior_var=Z_pK_prior=Z_var_prior_df=Z_mcmc=Z_K_mcmc=Z_pK_mcmc=Z_mean_mcmc=Z_var_mcmc=NULL;
+    lpZ_mcmc=NULL; lpLV_mcmc=NULL; vZ_start=NULL; Z_pK_start=NULL; vZ_mean_start=NULL; Z_var_start=NULL; Z_K_start=NULL; Z_var_prior=NULL; Z_mean_prior_var=NULL; Z_pK_prior=NULL; Z_var_prior_df=NULL; Z_mcmc=NULL; Z_K_mcmc=NULL; Z_pK_mcmc=NULL; Z_mean_mcmc=NULL; Z_var_mcmc=NULL;
   }
   if(res[0]==0&&res[2]==0){
-    sender_start=sender_var_start=sender_var_prior=sender_var_prior_df=sender_mcmc=sender_var_mcmc=vcoef_eff_sender=coef_eff_sender_size=NULL;
+    sender_start=NULL; sender_var_start=NULL; sender_var_prior=NULL; sender_var_prior_df=NULL; sender_mcmc=NULL; sender_var_mcmc=NULL; vcoef_eff_sender=NULL; coef_eff_sender_size=NULL;
   }
   if(res[1]==0){
-    receiver_start=receiver_var_start=receiver_var_prior=receiver_var_prior_df=receiver_mcmc=receiver_var_mcmc=vcoef_eff_receiver=coef_eff_receiver_size=NULL;
+    receiver_start=NULL; receiver_var_start=NULL; receiver_var_prior=NULL; receiver_var_prior_df=NULL; receiver_mcmc=NULL; receiver_var_mcmc=NULL; vcoef_eff_receiver=NULL; coef_eff_receiver_size=NULL;
   }
   if(res[0]==0&&res[1]==0&&res[2]==0){
-    lpRE_mcmc=lpREV_mcmc=NULL;
+    lpRE_mcmc=NULL; lpREV_mcmc=NULL;
     if(*d==0) Z_rate_move=NULL;
   }
 

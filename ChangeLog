@@ -1,12 +1,24 @@
-2.4-3
-	Reworked the implementation of Procrustes so that latentnet no
-	longer depends on the shapes library.
+2.4-4
+	The implementation of Procrustes analysis has been reworked in two
+	ways: 1) latentnet no longer depends on the shapes library; and 2)
+	the C implementation of procrustes no longer uses the (deprecated)
+	EISPACK, replacing it with LAPACK.
 
-	Extracted commonly-used non-statistical functions into a new
-	package, statnet.common.
+	Commonly used non-statistical functions have been extracted into a
+	new package, statnet.common, on which latentnet depends.
+
+	All contributors (as opposed to only the major ones) are now
+	listed in the DESCRIPTION file.
 
 	3D plots can now draw segments (for undirected graphs) and arrows
 	(for directed graphs, with package heplots) between vertices.
+
+	More examples and tests have been made conditional on environment
+	variable ENABLE_statnet_TESTS being set.
+
+2.4-3
+	In order to make upgrading from the preview release automatic,
+	this version number has been skipped.
 
 2.4-2
 	Latentnet is now compliant with R 2.15.0.

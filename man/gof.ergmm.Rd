@@ -60,6 +60,7 @@
   \code{\link[ergm]{ergm}}, \code{network},
   \code{\link{simulate.ergmm}}, \code{\link[ergm]{plot.gofobject}}}
 \examples{
+\donttest{
 #
 data(sampson)
 #
@@ -87,5 +88,6 @@ plot(monks.gof)
 # And now the odds 
 #
 plot(monks.gof, plotlogodds=TRUE)
+}
 }
 \keyword{models}

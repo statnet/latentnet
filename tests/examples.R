@@ -67,6 +67,38 @@ rm(list=ls())
 #
 data(sampson)
 #
+# test the gof.ergm function
+#
+samplike.fit <- ergmm(samplike ~ euclidean(d=2,G=3),
+                      control=ergmm.control(burnin=1000,interval=5))
+samplike.fit
+summary(samplike.fit)
+
+#
+# Plot the probabilities first
+#
+monks.gof <- gof(samplike.fit)
+monks.gof
+#
+# Place all three on the same page
+# with nice margins
+#
+par(mfrow=c(1,3))
+par(oma=c(0.5,2,1,0.5))
+#
+plot(monks.gof)
+#
+# And now the odds 
+#
+plot(monks.gof, plotlogodds=TRUE)
+}
+},"gof.ergmm.Rd")
+opttest({
+rm(list=ls())
+{
+#
+data(sampson)
+#
 # test the mcmc.diagnostics function
 #
 gest <- ergmm(samplike ~ euclidean(d=2),
@@ -93,6 +125,37 @@ samp.fit <-  merge.ergmm(samp.fit1,samp.fit2)
 summary(samp.fit)
 }
 },"merge.ergmm.Rd")
+opttest({
+rm(list=ls())
+{
+#
+# Using Sampson's Monk data, let's fit a 
+# simple latent position model
+#
+data(sampson)
+#
+# Using Sampson's Monk data, let's fit a
+# latent clustering random effects model
+# Store the burn-in.
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver, control=ergmm.control(store.burnin=TRUE))
+#
+# See if we have convergence in the MCMC
+mcmc.diagnostics(samp.fit)
+# We can also plot the burn-in:
+for(i in samp.fit$control$pilot.runs) mcmc.diagnostics(samp.fit,burnin=i)
+#
+# Plot the resulting fit.
+#
+plot(samp.fit,labels=TRUE,rand.eff="receiver")
+plot(samp.fit,pie=TRUE,rand.eff="receiver")
+plot(samp.fit,what="pmean",rand.eff="receiver")
+plot(samp.fit,what="cloud",rand.eff="receiver")
+plot(samp.fit,what="density",rand.eff="receiver")
+plot(samp.fit,what=5,rand.eff="receiver")
+
+
+}
+},"plot.ergmm.Rd")
 opttest({
 rm(list=ls())
 {

@@ -1,5 +1,6 @@
 .onAttach <- function(lib, pkg){
-  packageStartupMessage(mkStartupMessage("latentnet"))
+  sm <- statnetStartupMessage("latentnet",c("statnet"),FALSE)
+  if(!is.null(sm)) packageStartupMessage(sm)
     
   ## Remember where we loaded this instance of latentnet, so that
   ## the snowFT slave functions could do the same.
