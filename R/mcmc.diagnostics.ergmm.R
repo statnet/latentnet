@@ -55,6 +55,10 @@ mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"
 
 # We have to redefine this generic, since we need to pass additional arguments to as.mcmc().
 as.mcmc<-function(x,...) UseMethod("as.mcmc")
+as.mcmc.default <- function(x, ...) coda:::as.mcmc.default(x)
+as.mcmc.list.default <- function(x, ...) coda:::as.mcmc.list.default(x)
+as.mcmc.mcmc.list <- function(x, ...) coda:::as.mcmc.mcmc.list(x)
+
 as.mcmc.ergmm<-as.mcmc.list.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,
                              vertex.i=c(1),...){

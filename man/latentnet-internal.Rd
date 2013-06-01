@@ -100,6 +100,9 @@
 \alias{scale}
 \alias{get.beta.ext}
 \alias{as.mcmc}
+\alias{as.mcmc.default}
+\alias{as.mcmc.mcmc.list}
+\alias{as.mcmc.list.default}
 
 \alias{post.predict.C}
 \alias{post.predict.R}
