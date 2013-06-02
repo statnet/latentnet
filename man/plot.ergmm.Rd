@@ -148,7 +148,8 @@ data(sampson)
 # Using Sampson's Monk data, let's fit a
 # latent clustering random effects model
 # Store the burn-in.
-samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver, control=ergmm.control(store.burnin=TRUE))
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver,
+                  control=ergmm.control(store.burnin=TRUE))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
