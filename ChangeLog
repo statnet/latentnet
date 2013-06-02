@@ -1,3 +1,8 @@
+2.4-5
+	A workaround for the overridden as.mcmc() generic has been added.
+
+	All examples lines are now shorter than 100 characters.
+
 2.4-4
 	The implementation of Procrustes analysis has been reworked in two
 	ways: 1) latentnet no longer depends on the shapes library; and 2)
