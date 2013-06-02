@@ -61,7 +61,12 @@ lapply(fits,plot)
 }
 
 # Compute the BICs for the fits and plot them:
-(bics<-reshape(as.data.frame(t(sapply(fits,function(x)c(G=x$model$G,unlist(bic.ergmm(x))[c("Y","Z","overall")])))),list(c("Y","Z","overall")),idvar="G",v.names="BIC",timevar="Component",times=c("likelihood","clustering","overall"),direction="long"))
+(bics<-reshape(
+    as.data.frame(t(sapply(fits,
+                           function(x)c(G=x$model$G,unlist(bic.ergmm(x))[c("Y","Z","overall")])))),
+    list(c("Y","Z","overall")),idvar="G",v.names="BIC",timevar="Component",
+    times=c("likelihood","clustering","overall"),direction="long"
+    ))
 
 with(bics,interaction.plot(G,Component,BIC,type="b",xlab="Clusters", ylab="BIC"))
 
