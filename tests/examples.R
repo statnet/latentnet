@@ -1,6 +1,7 @@
-library(latentnet)
+library(statnet.common)
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 library(coda)
 data(sampson)
@@ -12,6 +13,7 @@ raftery.diag(monks.fit.mcmc)
 },"as.mcmc.list.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 data(davis)
 # Fit a 2D 2-cluster fit and plot.
@@ -21,15 +23,7 @@ plot(davis.fit,pie=TRUE,rand.eff="sociality")
 },"davis.Rd")
 opttest({
 rm(list=ls())
-{
-data(sampson)
-## Shorter run than default.
-samp.fit<-ergmm(samplike~euclidean(d=2,G=3)+rreceiver,
-control=ergmm.control(burnin=1000,sample.size= 2000,interval=5))
-}
-},"ergmm.control.Rd")
-opttest({
-rm(list=ls())
+library(latentnet)
 {
 #
 # Use 'data(package = "latentnet")' to list the data sets in a
@@ -63,6 +57,17 @@ plot(samp.fit)
 },"ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
+{
+data(sampson)
+## Shorter run than default.
+samp.fit<-ergmm(samplike~euclidean(d=2,G=3)+rreceiver,
+control=ergmm.control(burnin=1000,sample.size= 2000,interval=5))
+}
+},"ergmm.control.Rd")
+opttest({
+rm(list=ls())
+library(latentnet)
 {
 #
 data(sampson)
@@ -95,6 +100,7 @@ plot(monks.gof, plotlogodds=TRUE)
 },"gof.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 #
 data(sampson)
@@ -112,6 +118,7 @@ mcmc.diagnostics(gest)
 },"mcmc.diagnostics.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 data(sampson)
 # Run two short MCMC-based fits.
@@ -127,6 +134,7 @@ summary(samp.fit)
 },"merge.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 #
 # Using Sampson's Monk data, let's fit a 
@@ -137,7 +145,8 @@ data(sampson)
 # Using Sampson's Monk data, let's fit a
 # latent clustering random effects model
 # Store the burn-in.
-samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver, control=ergmm.control(store.burnin=TRUE))
+samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver,
+                  control=ergmm.control(store.burnin=TRUE))
 #
 # See if we have convergence in the MCMC
 mcmc.diagnostics(samp.fit)
@@ -158,6 +167,7 @@ plot(samp.fit,what=5,rand.eff="receiver")
 },"plot.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 data(sampson)
 monks.fit<-ergmm(samplike~euclidean(d=2,G=3),tofit="mcmc")
@@ -166,6 +176,7 @@ heatmap(predict(monks.fit),Rowv=NA,Colv=NA)
 },"predict.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 data(sampson)
 # Fit the model for cluster sizes 1 through 4:
@@ -179,7 +190,12 @@ fits<-list(
 
 
 # Compute the BICs for the fits and plot them:
-(bics<-reshape(as.data.frame(t(sapply(fits,function(x)c(G=x$model$G,unlist(bic.ergmm(x))[c("Y","Z","overall")])))),list(c("Y","Z","overall")),idvar="G",v.names="BIC",timevar="Component",times=c("likelihood","clustering","overall"),direction="long"))
+(bics<-reshape(
+    as.data.frame(t(sapply(fits,
+                           function(x)c(G=x$model$G,unlist(bic.ergmm(x))[c("Y","Z","overall")])))),
+    list(c("Y","Z","overall")),idvar="G",v.names="BIC",timevar="Component",
+    times=c("likelihood","clustering","overall"),direction="long"
+    ))
 
 with(bics,interaction.plot(G,Component,BIC,type="b",xlab="Clusters", ylab="BIC"))
 
@@ -191,15 +207,17 @@ plot(fits[[bestG]])
 },"summary.ergmm.Rd")
 opttest({
 rm(list=ls())
+library(latentnet)
 {
 data(tribes)
 # Only model positive ties:
-tribes.fit<-ergmm(tribes~euclidean(d=2,G=3),response="sign.012",family="binomial",fam.par=list(trials=2))
+tribes.fit<-ergmm(tribes~euclidean(d=2,G=3),response="pos")
 # Edge color must be set manually, for green ties to represent alliance
 # and for red ties to represent enmity.
 plot(tribes.fit,edge.col=as.matrix(tribes,"pos",m="a")*3+as.matrix(tribes,"neg",m="a")*2,pie=TRUE)
 # Model both positive and negative ties:
-tribes.fit3<-ergmm(tribes~euclidean(d=2,G=3),response="sign.012",family="binomial.logit",fam.par=list(trials=2))
+tribes.fit3<-ergmm(tribes~euclidean(d=2,G=3),response="sign.012",
+                   family="binomial.logit",fam.par=list(trials=2))
 # Edge color must be set manually, for green ties to represent alliance
 # and for red ties to represent enmity.
 plot(tribes.fit3,edge.col=as.matrix(tribes,"pos",m="a")*3+as.matrix(tribes,"neg",m="a")*2,pie=TRUE)
