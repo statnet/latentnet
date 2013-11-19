@@ -3,6 +3,8 @@ useDynLib(latentnet)
 importFrom(utils, packageDescription)
 importFrom(abind, abind)
 importFrom(sna, geodist)
+importFrom(mvtnorm, dmvnorm)
+import(network,statnet.common,coda)
 
 # Export all names that do not begin with a dot.
 exportPattern("^[^\\.]")
