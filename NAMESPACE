@@ -4,7 +4,7 @@ importFrom(utils, packageDescription)
 importFrom(abind, abind)
 importFrom(sna, geodist)
 importFrom(mvtnorm, dmvnorm)
-import(network,statnet.common,coda)
+import(network,statnet.common,coda,ergm)
 
 # Export all names that do not begin with a dot.
 exportPattern("^[^\\.]")
