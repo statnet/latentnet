@@ -11,7 +11,6 @@ gof.ergmm <- function (object, ..., nsim=100,
                       GOF=~idegree+odegree+distance, 
 		      verbose=FALSE) {
 
-  if(!require(ergm,quietly=TRUE)) stop("gof.ergmm requires package 'ergm' to use.")
   formula <- object[["model"]][["formula"]]
 
   trms <- ergm.getterms(formula)
