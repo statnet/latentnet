@@ -8,7 +8,7 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
   if(inherits(LHS,"try-error")){
     stop("Invalid network. Is the left-hand-side of the formula correct?")
   }
-  
+
   if(is.matrix(LHS))
     warning("The model formula LHS is a matrix. Assuming a binary, unipartite, directed graph with no loops. It is *strongly* recommended to convert the matrix to a network with attributes corresponding to what you intend.")
   
@@ -37,24 +37,31 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
               )
 
   model<-fam.par.check(model)
+
+  latentnet.terms<-.ergmm.available.terms()
   
-  if(model[["intercept"]]){
-    model<-InitErgmm.latentcov(model,matrix(1,network.size(Yg),network.size(Yg)),"edges")
-  }
-              
   for (term in as.list(attr(terms,"variables"))[-(1:2)]){
-    if (is.call(term)){
-      init.call<-list()
-      init.call<-list(as.name(paste("InitErgmm.", term[[1]], sep = "")),
-                      model=model)
-      
-      init.call<-c(init.call,as.list(term)[-1])
+    if(as.character(if(length(term)>1) term[[1]] else term) %in% latentnet.terms){
+      if (is.call(term)){
+        init.call<-list()
+        init.call<-list(as.name(paste("InitErgmm.", term[[1]], sep = "")),
+                        model=model)
+        
+        init.call<-c(init.call,as.list(term)[-1])
+      }else{
+        init.call <- list(as.name(paste("InitErgmm.", term, sep = "")),model=model)
+      }
+      model <- eval(as.call(init.call), attr(terms,".Environment"))
     }else{
-      init.call <- list(as.name(paste("InitErgmm.", term, sep = "")),model=model)
+
+      model <- do.call(.import.ergm.term, c(model=list(model),
+                                           if(is.call(term)) c(list(as.character(term[[1]])), as.list(term)[-1]) else as.character(term)))
     }
-    model <- eval(as.call(init.call), attr(terms,".Environment"))
   }
 
+  model <- .ergmm.add.intercept(model)
+
+  
   if(model[["d"]]>0) model[["latentID"]] <- latent.effect.IDs[[model[["latent"]]]]
 
   if(prior[["adjust.beta.var"]]) model[["prior"]][["beta.var"]]<-model[["prior"]][["beta.var"]]/sapply(1:model[["p"]],function(i) mean((model[["X"]][[i]][observed.dyads(model[["Yg"]])])^2))
@@ -95,4 +102,36 @@ get.beta.eff<-function(model){
   }
   
   out
+}
+
+
+## ergm.to.cov <- function(x){
+##   latentnet.terms <- c(.ergmm.available.terms(),"1","0")
+##   l <- term.list.formula(x[[3]])
+##   l <- Filter(Negate(is.null),
+##               lapply(l, function(term){
+##                 if(as.character(if(length(term)>1) term[[1]] else term) %in% latentnet.terms) return(NULL)
+##                 else  if(is.call(term)){
+##                   for(name in c("mean","var"))
+##                     if(name %in% names(term)) term[[name]]<-NULL
+##                 }
+##                 X <- ergmMPLE(append.rhs.formula(x[-3], list(term)), output="array")$predictor
+##               }
+##                      ))
+## }
+  
+.ergmm.available.terms <- function() sub(grep(x=c(sapply(suppressWarnings(find("^InitErgmm.*$",simple.words=FALSE,mode="function")), ls)),pattern="^InitErgmm.*$",perl=TRUE,value=TRUE),pattern="^InitErgmm\\.",replacement="",perl=TRUE)
+
+.ergmm.add.intercept <- function(model){
+  if(model[["intercept"]] &&
+     {
+       # If there aren't any terms that have a constant, nonzero predictor for every observed dyad...
+       o <- observed.dyads(model[["Yg"]])
+       !any(sapply(model[["X"]], function(xm){x<-c(xm)[c(o)]; x[1]!=0 && all(x==x[1])}))
+     })
+    .ergmm.add.fixed(model,
+                     matrix(1,network.size(model[["Yg"]]),network.size(model[["Yg"]])),
+                     mean=0, var=9, coef.names="(Intercept)",
+                     where="prepend") # Somewhat kludgely, prepend the Intercept term with default priors.
+  else model
 }

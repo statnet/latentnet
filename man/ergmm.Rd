@@ -19,6 +19,7 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
       verbose=FALSE)
 }
 \arguments{
+  
   \item{formula}{An \R formula object, of the form
     \code{g ~ <term 1> + <term 2> ...},
     where \code{g} is a network object or a matrix that can be coerced to a
@@ -27,7 +28,14 @@ ergmm(formula, response=NULL, family="Bernoulli",fam.par=NULL,
     that can be fitted.
     To create a network object in \R, use the \code{network} function,
     then add nodal attributes to it using \code{set.vertex.attribute} 
-    if necessary.}
+    if necessary.
+
+    Note that, as in \code{\link{lm}}, the model will include an
+    \code{\link{intercept}} term. This behavior can be overridden by
+    including a \code{-1} or \code{+0} term in the formula, and a
+    \code{\link[=terms.ergmm]{1(mean=...,var=...)}} term can be used
+    to set a prior different from default.}
+  
   \item{response}{An optional edge attribute that serves as the response
     variable. By default, presence (1) or absence (0) of an edge in
     \code{g} is used.}
