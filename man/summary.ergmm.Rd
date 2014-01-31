@@ -9,8 +9,10 @@
   point estimates, standard errors, and BIC calculation.
 }
 \usage{
-\method{summary}{ergmm}(object, point.est = c("pmean", "mkl"),
-                        quantiles = c(0.025, 0.975), se = FALSE, \dots)
+\method{summary}{ergmm}(object, point.est=c(
+                                     if(!is.null(object[["mle"]])) "mle",
+                                     if(!is.null(object[["sample"]])) c("pmean","mkl")
+                                     ), quantiles=c(.025,.975),se="mle"\%in\%point.est,\dots)
 
 bic.ergmm(object)
 }
@@ -18,9 +20,13 @@ bic.ergmm(object)
 \arguments{
   \item{object}{ An \code{\link[=ergmm.object]{ergmm}} object to be summarized.}
   \item{point.est}{ Point estimates to compute: a character vector with
-    some subset of the following: "mle", "pmean","mkl","pmode". }
+    some subset of \code{"mle"}, \code{"pmean"},
+  \code{"mkl"}, and \code{"pmode"}. Defaults
+  to a concatenation of \code{"mle"} (if fit), \code{"pmean"}, and
+  \code{"mkl"} (if MCMC was run).}
   \item{quantiles}{ Posterior quantiles (credible intervals) to compute. }
-  \item{se}{ Whether to compute standard errors. }
+  \item{se}{ Whether to compute standard errors. Defaults to \code{TRUE}
+  if MLE was fit.}
   \item{\dots}{Additional arguments. Currently unused.}
 }
 \value{

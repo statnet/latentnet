@@ -7,7 +7,10 @@ print.ergmm.model<-function(x,...){
   cat("Family:",x[["family"]],"\n")
 
   cat("Terms:\n")
-  if(x[["intercept"]]) cat("- intercept\n")
+  if(length(x[["coef.names"]])){
+    cat("- fixed effects:\n")
+    cat(paste(" - ",x[["coef.names"]],sep="",collapse="\n"),"\n")
+  }
   if(x[["d"]]>0){
     cat("- latent space of",x[["d"]],"dimensions")
     if(x[["G"]]>0){
