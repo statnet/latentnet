@@ -2,6 +2,16 @@
 	The deprecated term `latent` has been removed. Use `euclidean`
 	instead.
 
+	summary() and print functions have somewhat more intelligent
+	defaults.
+
+	latentnet can now use ergm() terms as covariates in the model (and
+	the prior can still be specified). These should work seamlessly
+	for networks without self-loops. ergmm() terms to model self-loops
+	explicitly have been added.
+
+	Intercepts are handled a bit more intelligently.
+
 2.4-5
 	A workaround for the overridden as.mcmc() generic has been added.
 
