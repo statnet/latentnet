@@ -4,6 +4,7 @@ importFrom(utils, packageDescription)
 importFrom(abind, abind)
 importFrom(sna, geodist)
 importFrom(mvtnorm, dmvnorm)
+importFrom(tools,file_path_as_absolute)
 import(network,statnet.common,coda,ergm)
 
 # Export all names that do not begin with a dot.
