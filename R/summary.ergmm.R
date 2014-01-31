@@ -1,4 +1,7 @@
-summary.ergmm <- function (object, point.est=c("pmean","mkl"), quantiles=c(.025,.975),se=FALSE,...)
+summary.ergmm <- function (object, point.est=c(
+                                     if(!is.null(object[["mle"]])) "mle",
+                                     if(!is.null(object[["sample"]])) c("pmean","mkl")
+                                     ), quantiles=c(.025,.975),se="mle"%in%point.est,...)
 {
   extraneous.argcheck(...)
   ## Just for convenience.
@@ -168,7 +171,7 @@ print.summary.ergmm<-function(x,...){
   
   digits = max(3, getOption("digits") - 3)
   
-  cat ("MCMC sample of size ", control[["sample.size"]], ", draws are ",
+  if(!is.null(x[["pmean"]])) cat ("MCMC sample of size ", control[["sample.size"]], ", draws are ",
        control[["interval"]]," iterations apart, after burnin of ",control[["burnin"]], " iterations.\n",sep="")
        
   if(!is.null(x[["pmean"]])){
