@@ -414,7 +414,7 @@
 }
 \seealso{
   \code{\link{ergmm}}
-  \code{\link[ergm]{terms-ergmm}}
+  \code{\link[ergm]{terms-ergm}}
 }
 \keyword{graphs}
 \keyword{models}
