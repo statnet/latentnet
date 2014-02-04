@@ -35,7 +35,7 @@ InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1
 InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)
-    stop(paste("latent() model term expected at least 1 argument, got ",
+    stop(paste("bilinear() model term expected at least 1 argument, got ",
                nargs()-1, sep=""), call.=FALSE)
   if(d<=0) stop("Invalid latent space dimensionality given", call.=FALSE)
   if(!is.null(model[["d"]]) && model[["d"]]>0){
