@@ -1,3 +1,7 @@
+2.5-1
+	A bug in importing of ergm terms for undirected networks has been
+	fixed.
+	
 2.5-0
 	The deprecated term `latent` has been removed. Use `euclidean`
 	instead.
