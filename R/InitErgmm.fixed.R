@@ -28,6 +28,8 @@
   Xtmp <- list()
   for(i in seq_len(p)){
     xm <- seldrop(X[,,i,drop=FALSE],3)
+    # If the network is undirected, symmetrize:
+    if(!is.directed(Yg)) xm <- xm + t(xm)
     
     # If the network is bipartite and the matrix has b1*b2 dimensions,
     # it needs to be augment to (b1+b2)*(b1+b2):
