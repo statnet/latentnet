@@ -7,6 +7,8 @@
 \alias{dlpY.deta.fs}
 \alias{dlpY.deta.Poisson.log}
 \alias{dlpY.deta.normal.identity}
+\alias{dlpY.ddispersion.fs}
+\alias{dlpY.ddispersion.normal.identity}
 \alias{lpYc.Bernoulli.logit}
 \alias{lpYc.binomial.logit}
 \alias{lpYc.normal.identity}
@@ -58,16 +60,17 @@
      \item{binomial families}{a mandatory \code{trials} parameter for the
        number of trials (same for every dyad) whose success the response
        counts represent}
-     \item{normal}{a mandatory \code{var} parameter for the variance of
+     \item{normal}{a mandatory \code{prior.var} and \code{prior.var.df} parameter for the prior scale and degrees of freedom of the variance of
        the dyad values}
    }
  }
 \details{
   Each supported family has a family of \R functions, of the form
   \code{pY.}-, \code{lpY.}-, \code{EY.}-,
-  \code{dlpY.deta.}-, \code{lpYc.}-, \code{rsm.}-, followed by the family's \R name,
+  \code{dlpY.deta.}-, \code{dlpY.ddispersion.}-, \code{lpYc.}-, \code{rsm.}-, followed by the family's \R name,
   for the respective family's \R name, representing the family's
-  likelihood, log-likelihood, expectation, derivative of log-likelihood,
+  likelihood, log-likelihood, expectation, derivative of log-likelihood with repect to the linear predictor,
+  derivative of log-likelihood with respect to the dispersion parameter,
   log-normalizing-constant, and random sociomatrix generation functions.
 
   On the \code{C} side, similar functions exist, but becuase of static

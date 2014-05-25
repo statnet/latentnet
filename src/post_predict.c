@@ -36,6 +36,7 @@ void post_pred_wrapper(int *S,
 		       double *Z_mcmc, 
 		       double *coef_mcmc,
 		       double *sender_mcmc, double *receiver_mcmc,
+           double *dispersion_mcmc,
 		       
 		       int *vobserved_ties,
 
@@ -56,7 +57,9 @@ void post_pred_wrapper(int *S,
   if(res[1]==0){
     receiver_mcmc=NULL;
   }
-
+  if(res[3]==0){
+    dispersion_mcmc=NULL;
+  }
 
   unsigned int i,j,k;
   unsigned int **observed_ties = (unsigned int **) (*vobserved_ties>=0 ? Runpack_imatrix(vobserved_ties,*n,*n,NULL) : NULL);
@@ -88,8 +91,9 @@ void post_pred_wrapper(int *S,
 			    *n, // verts
 			    *d, // latent
 			    *p, // coef
-			    0,
-			    res[2],
+			    0, // clusters
+			    res[2], // sociality
+          res[3], // dispersion
 			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
   };
   
@@ -103,13 +107,15 @@ void post_pred_wrapper(int *S,
 			  0, // sender_var
 			  receiver_mcmc? Runpack_dvectors(receiver_mcmc+s,*n,receiver,*S):NULL, // receiver
 			  0, // receiver_var
+			  dispersion_mcmc? dispersion_mcmc[s]:0, // dispersion
 			  NULL, // Z_K
 			  0, // llk
 			  NULL, // lpedge
 			  0, // lpZ		  
 			  0, // lpLV
 			  0, // lpcoef
-			  0 // lpRE
+			  0, // lpRE
+			  0  // lpdispersion
     };
     if(model.sociality) par.receiver=par.sender;
     ergmm_par_pred(&model,&par);
@@ -132,13 +138,15 @@ void post_pred_wrapper(int *S,
 			    0, // sender_var
 			    receiver_mcmc? Runpack_dvectors(receiver_mcmc+s,*n,receiver,*S):NULL, // receiver
 			    0, // receiver_var
+			    dispersion_mcmc? dispersion_mcmc[s]:0, // dispersion
 			    NULL, // Z_K
 			    0, // llk
 			    NULL, // lpedge
 			    0, // lpZ		  
 			    0, // lpLV
 			    0, // lpcoef
-			    0 // lpRE
+			    0, // lpRE
+			    0  // lpdispersion
       };
       
       double llk=ERGMM_MCMC_lp_Y(&model,&par,FALSE);

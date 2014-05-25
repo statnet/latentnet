@@ -4,6 +4,7 @@ nterms.model<-function(model){
    +(if(model[["sender"]]) nrow(model[["beta.eff.sender"]]) else 0)
    +(if(model[["receiver"]]) nrow(model[["beta.eff.receiver"]]) else 0)
    +(if(model[["sociality"]]) nrow(model[["beta.eff.sociality"]]) else 0)
+   +(if(model[["dispersion"]]) 1 else 0)
    )
 }
 
@@ -82,10 +83,11 @@ get.beta.ext<-function(model,sample){
   n<-network.size(model[["Yg"]])
   ## Construct the "extended" beta: not just the coefficients, but also the scale of latent space and all random effects.
   betas<-cbind(if(model[["p"]]) sample[["beta"]], # covariate coefs
-                if(model[["d"]]) log(apply(sqrt(apply(sample[["Z"]]^2,1:2,sum)),1,mean)), # scale of Z
-                if(model[["sender"]]) tcrossprod(sample[["sender"]],model[["beta.eff.sender"]])/n, # sender eff.
-                if(model[["receiver"]]) tcrossprod(sample[["receiver"]],model[["beta.eff.receiver"]])/n, # receiver eff.
-                if(model[["sociality"]]) tcrossprod(sample[["sociality"]],model[["beta.eff.sociality"]]/n) # sociality eff.
+               if(model[["d"]]) log(apply(sqrt(apply(sample[["Z"]]^2,1:2,sum)),1,mean)), # scale of Z
+               if(model[["sender"]]) tcrossprod(sample[["sender"]],model[["beta.eff.sender"]])/n, # sender eff.
+               if(model[["receiver"]]) tcrossprod(sample[["receiver"]],model[["beta.eff.receiver"]])/n, # receiver eff.
+               if(model[["sociality"]]) tcrossprod(sample[["sociality"]],model[["beta.eff.sociality"]]/n), # sociality eff.
+               if(model[["dispersion"]]) log(sample[["dispersion"]]) # dispersion scale.
         )
   sweep(betas,2,apply(betas,2,mean))
 }

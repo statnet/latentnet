@@ -76,6 +76,7 @@ as.mcmc.ergmm<-as.mcmc.list.ergmm<-function(x,burnin=FALSE,
                                                            Z=cbind(rep(vertex.i,each=d),rep(1:d,length(vertex.i))),
                                                            sender=vertex.i,
                                                            receiver=vertex.i,
-                                                           sociality=vertex.i) else which.vars,
+                                                           sociality=vertex.i,
+                                                           dispersion=1) else which.vars,
                               start,thin)
 }

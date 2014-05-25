@@ -94,6 +94,10 @@ sim.1.ergmm<-function(model,par,prior=list()){
     mypar[["receiver"]]<-rnorm(nv,0,sqrt(mypar[["receiver.var"]]))
   }
 
+  if(model[["dispersion"]] && is.null(mypar[["dispersion"]])){
+    mypar[["dispersion"]]<-with(prior,dispersion*dispersion.df/rchisq(1,dispersion.df))
+  }
+
   eta<-ergmm.eta(model,mypar)
 
   sm<-rsm.fs[[model[["familyID"]]]](eta,model[["fam.par"]])

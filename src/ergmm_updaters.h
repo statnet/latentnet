@@ -2,7 +2,7 @@
 #define ERGMM_UPDATERS_H
 
 #include "ergmm_structs.h"
-void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsigned int Z, unsigned int RE, unsigned int coef, unsigned int LV, unsigned int REV);
+void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsigned int Z, unsigned int RE, unsigned int coef, unsigned int LV, unsigned int REV, unsigned int dispersion);
 /* The main difference between accepting and rejecting is the direction, so
    they are just macros. (The other main difference is whether lpedge needs
    to be copied.)

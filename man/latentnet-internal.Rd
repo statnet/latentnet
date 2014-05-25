@@ -142,6 +142,8 @@
 \alias{ergmm.lpREV.grad}
 \alias{ergmm.lpZ}
 \alias{ergmm.lpZ.grad}
+\alias{ergmm.lpdispersion}
+\alias{ergmm.lpdispersion.grad}
 \alias{ergmm.eta}
 \alias{ergmm.EY}
 \alias{lp.works}

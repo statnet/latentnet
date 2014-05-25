@@ -11,7 +11,8 @@ ergmm.initvals <- function(model,user.start,prior,control){
                     Z.pK=model[["G"]]>0 && is.null(user.start[["pZ.K"]]),
                     sender.var=model[["sender"]] && is.null(user.start[["sender.var"]]), ## sender
                     receiver.var=model[["receiver"]] && is.null(user.start[["receiver.var"]]), ## receiver
-                    sociality.var=model[["sociality"]] && is.null(user.start[["sociality.var"]])
+                    sociality.var=model[["sociality"]] && is.null(user.start[["sociality.var"]]),
+                    dispersion=model[["dispersion"]] && is.null(user.start[["dispersion"]])
                     )
 
   Yg<- model[["Yg"]]
@@ -100,6 +101,10 @@ ergmm.initvals <- function(model,user.start,prior,control){
     pm[["receiver.var"]]<-var(pm[["receiver"]])
   }
 
+  if(need.to.fit[["dispersion"]]){
+    pm[["dispersion"]]<-1
+  }
+
   if(control[["verbose"]]) cat("Finished.\n")
   
   if(control[["verbose"]]) cat("Finding the conditional posterior mode... ")
@@ -115,7 +120,8 @@ ergmm.initvals <- function(model,user.start,prior,control){
                       Z.pK=model[["G"]]>0,
                       sender.var=model[["sender"]], ## sender
                       receiver.var=model[["receiver"]], ## receiver
-                      sociality.var=model[["sociality"]]
+                      sociality.var=model[["sociality"]],
+                      dispersion=model[["dispersion"]]
                       )
     user.start<-list()
   }

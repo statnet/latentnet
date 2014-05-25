@@ -20,4 +20,5 @@ print.ergmm.model<-function(x,...){
   if(x[["sender"]]) cat("- random sender effects\n")
   if(x[["receiver"]]) cat("- random receiver effects\n")
   if(x[["sociality"]]) cat("- random sociality effects\n")
+  if(x[["dispersion"]]) cat("- dispersion parameter\n")
 }

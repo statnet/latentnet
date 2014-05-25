@@ -20,6 +20,8 @@ double ERGMM_MCMC_logp_coef(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_
 double ERGMM_MCMC_logp_coef_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior);
 double ERGMM_MCMC_logp_REV(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MCMC_Priors *prior);
 double ERGMM_MCMC_logp_REV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior);
+double ERGMM_MCMC_logp_dispersion(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MCMC_Priors *prior);
+double ERGMM_MCMC_logp_dispersion_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior);
 
 void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,	int *latent_eff, int *family, int *res,
 			int *dir, int *viY, double *vdY,
@@ -28,6 +30,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d,	int *latent_eff, int *family, in
 			double *vX, double *vZ,
 			double *coef,
 			double *sender, double *receiver,
+			double dispersion,
 			int *vobserved_ties,
 			double *llk);
 

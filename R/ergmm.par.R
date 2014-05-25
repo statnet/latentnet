@@ -2,8 +2,9 @@
 
 ERGMM.PAR_VAR_NAMES<-c("beta","Z","sender","receiver","sociality",
                        "Z.var","Z.mean","Z.K",
-                       "sender.var","receiver.var","sociality.var")
-ERGMM.PAR_LLK_NAMES<-c("beta","Z","sender","receiver","sociality")
+                       "sender.var","receiver.var","sociality.var",
+                       "dispersion")
+ERGMM.PAR_LLK_NAMES<-c("beta","Z","sender","receiver","sociality","dispersion")
 
 del.iteration<-function(mcmcsample,i){
   for(name in names(mcmcsample)){

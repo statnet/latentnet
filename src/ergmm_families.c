@@ -212,7 +212,7 @@ double ERGMM_MCMC_E_edge_Poisson_cont_log(ERGMM_MCMC_Model *model, ERGMM_MCMC_Pa
 /* 6 normal_identity */
 double ERGMM_MCMC_lp_edge_normal_identity(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double diff=model->dY[i][j]-ERGMM_MCMC_etaij(model,par,i,j);
-  return(-diff*diff/model->dconst[0]/2);
+  return(-diff*diff/par->dispersion/2-log(par->dispersion)/2);
 }
 
 void ERGMM_MCMC_set_lp_Yconst_normal_identity(ERGMM_MCMC_Model *model){
@@ -224,13 +224,13 @@ void ERGMM_MCMC_set_lp_Yconst_normal_identity(ERGMM_MCMC_Model *model){
     for(i=0;i<model->verts;i++)
       for(j=0;j<model->verts;j++)
 	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->lp_Yconst+=-M_LN_SQRT_2PI-log(model->dconst[0])/2;
+	  model->lp_Yconst+=-M_LN_SQRT_2PI;
   }
   else{
     for(i=0;i<model->verts;i++)
       for(j=0;j<=i;j++)
 	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->lp_Yconst+=-M_LN_SQRT_2PI-log(model->dconst[0])/2;
+	  model->lp_Yconst+=-M_LN_SQRT_2PI;
   }
 }
 
