@@ -4,63 +4,64 @@
 # decide when exp(eta)==exp(eta)+1
 
 ## Bernoulli logit
-lpY.Bernoulli.logit<-function(Y,eta,fam.par=NULL){
+lpY.Bernoulli.logit<-function(Y,eta,dispersion=NULL,fam.par=NULL){
   ifelse(eta>=nlog.double.eps,eta*(Y-1),eta*Y-log1p(exp(eta)))
 }
-lpYc.Bernoulli.logit<-function(Y,eta,fam.par=NULL){
+lpYc.Bernoulli.logit<-function(Y,eta,dispersion=NULL,fam.par=NULL){
   ifelse(eta>=nlog.double.eps,eta*(Y-1),eta*Y-log1p(exp(eta)))
 }
-pY.Bernoulli.logit<-function(Y=1,eta,fam.par=NULL){
+pY.Bernoulli.logit<-function(Y=1,eta,dispersion=NULL,fam.par=NULL){
   ifelse(eta>=nlog.double.eps,exp(eta*(Y-1)),exp(eta*Y)/(exp(eta)+1))
 }
-dlpY.deta.Bernoulli.logit<-function(Y,eta,fam.par=NULL) Y-EY.Bernoulli.logit(eta,fam.par)
-rsm.Bernoulli.logit<-function(eta,fam.par=NULL){
+dlpY.deta.Bernoulli.logit<-function(Y,eta,dispersion=NULL,fam.par=NULL) Y-EY.Bernoulli.logit(eta,fam.par)
+rsm.Bernoulli.logit<-function(eta,dispersion=NULL,fam.par=NULL){
   n<-dim(eta)[1]
-  matrix(rbinom(n*n,1,pY.Bernoulli.logit(eta=eta,fam.par=NULL)),n,n)
+  matrix(rbinom(n*n,1,pY.Bernoulli.logit(eta=eta,dispersion=NULL,fam.par=NULL)),n,n)
 }
-EY.Bernoulli.logit<-function(eta,fam.par=NULL) 1/(1+exp(-eta))
+EY.Bernoulli.logit<-function(eta,dispersion=NULL,fam.par=NULL) 1/(1+exp(-eta))
 
 ## Binomial logit
 
-lpY.binomial.logit<-function(Y,eta,fam.par){
+lpY.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par){
   ifelse(eta>=nlog.double.eps,eta*(Y-fam.par[["trials"]])+lchoose(fam.par[["trials"]],Y),
          eta*Y-fam.par[["trials"]]*log1p(exp(eta))+lchoose(fam.par[["trials"]],Y))
 }
-lpYc.binomial.logit<-function(Y,eta,fam.par){
+lpYc.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par){
   ifelse(eta>=nlog.double.eps,eta*(Y-fam.par[["trials"]]),
          eta*Y-fam.par[["trials"]]*log1p(exp(eta)))
 }
-pY.binomial.logit<-function(Y,eta,fam.par) exp(lpY.binomial.logit(Y,eta,fam.par))
-dlpY.deta.binomial.logit<-function(Y,eta,fam.par) (Y-EY.binomial.logit(eta,fam.par))
-rsm.binomial.logit<-function(eta,fam.par){
+pY.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par) exp(lpY.binomial.logit(Y,eta,dispersion=NULL,fam.par))
+dlpY.deta.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par) (Y-EY.binomial.logit(eta,dispersion=NULL,fam.par))
+rsm.binomial.logit<-function(eta,dispersion=NULL,fam.par){
   n<-dim(eta)[1]
-  matrix(rbinom(n*n,fam.par[["trials"]],EY.binomial.logit(eta,fam.par)/fam.par[["trials"]]),n,n)
+  matrix(rbinom(n*n,fam.par[["trials"]],EY.binomial.logit(eta,dispersion=NULL,fam.par)/fam.par[["trials"]]),n,n)
 }
-EY.binomial.logit<-function(eta,fam.par) fam.par[["trials"]]/(1+exp(-eta))
+EY.binomial.logit<-function(eta,dispersion=NULL,fam.par) fam.par[["trials"]]/(1+exp(-eta))
 
 ## Poisson log
 
-lpY.Poisson.log<-function(Y,eta,fam.par=NULL) dpois(Y,EY.Poisson.log(eta,fam.par),TRUE)
-lpYc.Poisson.log<-function(Y,eta,fam.par=NULL) Y*eta-exp(eta)
-pY.Poisson.log<-function(Y,eta,fam.par=NULL) dpois(Y,EY.Poisson.log(eta,fam.par),FALSE)
-dlpY.deta.Poisson.log<-function(Y,eta,fam.par=NULL) Y-EY.Poisson.log(eta,fam.par)
-rsm.Poisson.log<-function(eta,fam.par=NULL){
+lpY.Poisson.log<-function(Y,eta,dispersion=NULL,fam.par=NULL) dpois(Y,EY.Poisson.log(eta,dispersion=NULL,fam.par),TRUE)
+lpYc.Poisson.log<-function(Y,eta,dispersion=NULL,fam.par=NULL) Y*eta-exp(eta)
+pY.Poisson.log<-function(Y,eta,dispersion=NULL,fam.par=NULL) dpois(Y,EY.Poisson.log(eta,dispersion=NULL,fam.par),FALSE)
+dlpY.deta.Poisson.log<-function(Y,eta,dispersion=NULL,fam.par=NULL) Y-EY.Poisson.log(eta,dispersion=NULL,fam.par)
+rsm.Poisson.log<-function(eta,dispersion=NULL,fam.par=NULL){
   n<-dim(eta)[1]
   matrix(rpois(n*n,exp(eta)),n,n)
 }
-EY.Poisson.log<-function(eta,fam.par=NULL) exp(eta)
+EY.Poisson.log<-function(eta,dispersion=NULL,fam.par=NULL) exp(eta)
 
 ## normal identity
 
-lpY.normal.identity<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),TRUE)
-lpYc.normal.identity<-function(Y,eta,fam.par=NULL) -(Y-eta)^2/fam.par$var/2
-pY.normal.identity<-function(Y,eta,fam.par=NULL) dnorm(Y,eta,sqrt(fam.par$var),FALSE)
-dlpY.deta.normal.identity<-function(Y,eta,fam.par=NULL) (Y-eta)/fam.par$var
-rsm.normal.identity<-function(eta,fam.par=NULL){
+lpY.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) dnorm(Y,eta,sqrt(dispersion),TRUE)
+lpYc.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) -(Y-eta)^2/dispersion/2-log(dispersion)/2
+pY.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) dnorm(Y,eta,sqrt(dispersion),FALSE)
+dlpY.deta.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) (Y-eta)/dispersion
+dlpY.ddispersion.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) sum(na.omit(c(Y-eta))^2/dispersion^2/2-1/dispersion/2)
+rsm.normal.identity<-function(eta,dispersion=NULL,fam.par=NULL){
   n<-dim(eta)[1]
-  matrix(rnorm(n*n,eta,sqrt(fam.par$var)),n,n)
+  matrix(rnorm(n*n,eta,sqrt(dispersion)),n,n)
 }
-EY.normal.identity<-function(eta,fam.par=NULL) eta
+EY.normal.identity<-function(eta,dispersion=NULL,fam.par=NULL) eta
 
 ## Dispatcher functions
 
@@ -119,6 +120,14 @@ dlpY.deta.fs<-c(dlpY.deta.Bernoulli.logit,
                 dlpY.deta.Poisson.log,
                 dlpY.deta.normal.identity)
 
+dlpY.ddispersion.fs<-c(function(...) 0,
+                       function(...) 0,
+                       function(...) 0,
+                       function(...) 0,
+                       function(...) 0,
+                       function(...) 0,
+                       dlpY.ddispersion.normal.identity)
+
 rsm.fs<-c(rsm.Bernoulli.logit,
           rsm.binomial.logit,
           rsm.Poisson.log,
@@ -147,9 +156,11 @@ fam.par.check<-function(model){
     model[["dconsts"]]<-model[["fam.par"]][["trials"]]
   }
   if(model[["familyID"]]==7){
-    if(is.null(model[["fam.par"]][["var"]]))
-      stop("Binomial (cont) family requires parameter `var'.")
-    model[["dconsts"]]<-model[["fam.par"]][["var"]]
+    if(is.null(model[["fam.par"]][["prior.var"]])||is.null(model[["fam.par"]][["prior.var.df"]]))
+      stop("Normal family requires prior parameters `prior.var` and `prior.var.df`.")
+    model[["prior"]][["dispersion"]]<-model[["fam.par"]][["prior.var"]]
+    model[["prior"]][["dispersion.df"]]<-model[["fam.par"]][["prior.var.df"]]
+    model[["dispersion"]]<-TRUE
   }
   model
 }

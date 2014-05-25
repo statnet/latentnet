@@ -26,6 +26,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, in
 			double *vX, double *vZ,
 			double *coef,
 			double *sender, double *receiver,
+			double dispersion,
 			int *vobserved_ties,
 			double *llk){
 
@@ -77,6 +78,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, in
 			    *p, // coef
 			    0,
 			    res[2],
+			    dispersion!=0?1:0,
 			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
   };
   
@@ -92,13 +94,15 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, in
 			   0, // sender_var
 			   receiver,
 			   0, // receiver_var
+			   dispersion,
 			   NULL, // Z_K
 			   0, // llk
 			   NULL, // lpedge
 			   0, // lpZ		  
 			   0, // lpLV
 			   0, // lpcoef
-			   0 // lpRE
+			   0, // lpRE
+			   0  // lpdispersion
   };
 
   *llk = ERGMM_MCMC_lp_Y(&model,&params,FALSE);
@@ -379,4 +383,18 @@ double ERGMM_MCMC_logp_REV_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *c
     return(0);
   }
   return(ERGMM_MCMC_logp_REV(model,cur->prop,prior)-cur->state->lpREV);
+}
+
+double ERGMM_MCMC_logp_dispersion(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, ERGMM_MCMC_Priors *prior){
+  par->lpdispersion=0;
+  if(model->dispersion) par->lpdispersion+=dsclinvchisq(par->dispersion,prior->dispersion_var_df,prior->dispersion_var,1);
+  return(par->lpdispersion);
+}
+
+double ERGMM_MCMC_logp_dispersion_diff(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, ERGMM_MCMC_Priors *prior){
+  if(cur->prop_dispersion==PROP_NONE){
+    cur->prop->lpdispersion=cur->state->lpdispersion;
+    return(0);
+  }
+  return(ERGMM_MCMC_logp_dispersion(model,cur->prop,prior)-cur->state->lpdispersion);
 }

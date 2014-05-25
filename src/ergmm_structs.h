@@ -24,15 +24,16 @@
 typedef struct {
   double **Z, *coef, **Z_mean, *Z_var, *Z_pK;
   double *sender,sender_var,*receiver,receiver_var;
+  double dispersion;
   unsigned int *Z_K;
-  double llk, **lpedge, lpZ, lpLV, lpcoef, lpRE, lpREV;
+  double llk, **lpedge, lpZ, lpLV, lpcoef, lpRE, lpREV, lpdispersion;
 } ERGMM_MCMC_Par;
 
 typedef struct {
   ERGMM_MCMC_Par *state,*prop;
   double **Z_bar,*deltas, *pK;
   unsigned int *n;
-  unsigned int prop_Z, prop_RE, prop_coef, prop_LV, prop_REV, after_Gibbs;
+  unsigned int prop_Z, prop_RE, prop_coef, prop_LV, prop_REV, prop_dispersion, after_Gibbs;
   unsigned int *update_order;
 } ERGMM_MCMC_MCMCState;
 
@@ -52,14 +53,14 @@ typedef struct {
 /* The structure to house the parameters of the prior distribution. 
  */
 typedef struct {
-  double Z_mean_var, Z_var, Z_var_df, *coef_mean, *coef_var, Z_pK, sender_var, sender_var_df, receiver_var, receiver_var_df;
+  double Z_mean_var, Z_var, Z_var_df, *coef_mean, *coef_var, Z_pK, sender_var, sender_var_df, receiver_var, receiver_var_df, dispersion_var, dispersion_var_df;
 } ERGMM_MCMC_Priors;
 
 /* The structure to house the MCMC draws.
  */
 typedef struct {
-  double *llk, *lpZ, *lpcoef, *lpRE, *lpLV, *lpREV;
-  double *Z, *Z_rate_move, *coef, *coef_rate, *Z_mean, *Z_var, *Z_pK, *sender, *sender_var, *receiver, *receiver_var;
+  double *llk, *lpZ, *lpcoef, *lpRE, *lpLV, *lpREV, *lpdispersion;
+  double *Z, *Z_rate_move, *coef, *coef_rate, *Z_mean, *Z_var, *Z_pK, *sender, *sender_var, *receiver, *receiver_var, *dispersion;
   int *Z_K;
 } ERGMM_MCMC_ROutput;
 
@@ -81,7 +82,7 @@ struct ERGMM_MCMC_Model_struct{
   int *iconst;
   double *dconst;
   unsigned int verts, latent, coef, clusters;
-  unsigned int sociality;
+  unsigned int sociality, dispersion;
   double (*latent_eff)(double *u, double *v, unsigned int dim);
 } ;
 

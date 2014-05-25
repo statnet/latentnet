@@ -67,7 +67,7 @@ ergmm.eta<-function(model,theta){
 ergmm.EY<-function(model,theta,NA.unobserved=TRUE){
   eta<-ergmm.eta(model,theta)
   if(NA.unobserved) eta[!observed.dyads(model[["Yg"]])]<-NA
-  EY.fs[[model[["familyID"]]]](eta,fam.par=model[["fam.par"]])
+  EY.fs[[model[["familyID"]]]](eta,dispersion=theta[["dispersion"]],fam.par=model[["fam.par"]])
 }
 
 ergmm.lpY<-function(model,theta,given=list(),up.to.const=FALSE){
@@ -77,7 +77,7 @@ ergmm.lpY<-function(model,theta,given=list(),up.to.const=FALSE){
   n<-network.size(Yg)
   eta<-ergmm.eta(model,theta)
   obs<-observed.dyads(Yg)
-  lpY<-if(up.to.const) lpYc.fs[[model[["familyID"]]]](Ym[obs],eta[obs],model[["fam.par"]]) else lpY.fs[[model[["familyID"]]]](Ym[obs],eta[obs],model[["fam.par"]])
+  lpY<-if(up.to.const) lpYc.fs[[model[["familyID"]]]](Ym[obs],eta[obs],dispersion=theta[["dispersion"]],model[["fam.par"]]) else lpY.fs[[model[["familyID"]]]](Ym[obs],eta[obs],dispersion=theta[["dispersion"]],model[["fam.par"]])
   return(sum(lpY))
 }
 
@@ -87,7 +87,7 @@ ergmm.lpY.grad<-function(model,theta,given=list()){
   obs<-observed.dyads(model[["Yg"]])
   eta<-ergmm.eta(model,theta)
   
-  dlpY.deta <- dlpY.deta.fs[[model[["familyID"]]]](model[["Ym"]],eta,model[["fam.par"]])
+  dlpY.deta <- dlpY.deta.fs[[model[["familyID"]]]](model[["Ym"]],eta,dispersion=theta[["dispersion"]],model[["fam.par"]])
   dlpY.deta[!obs] <- 0
 
   grad<-list()
@@ -103,6 +103,10 @@ ergmm.lpY.grad<-function(model,theta,given=list()){
   else{
     if(not.given("sender",theta,given)) grad[["sender"]] <- sapply(1:n,function(i) sum(dlpY.deta[i,][obs[i,]]))
     if(not.given("receiver",theta,given)) grad[["receiver"]] <-  sapply(1:n,function(i) sum(dlpY.deta[,i][obs[,i]]))
+  }
+  
+  if(not.given("dispersion",theta,given)){
+    grad[["dispersion"]] <- dlpY.ddispersion.fs[[model[["familyID"]]]](model[["Ym"]],eta,dispersion=theta[["dispersion"]],model[["fam.par"]])
   }
   
   grad
@@ -159,6 +163,7 @@ ergmm.lpY.C<-function(model,theta){
             beta=as.double(theta[["beta"]]),
 
             sender=if(is.null(theta[["sociality"]])) as.double(theta[["sender"]]) else as.double(theta[["sociality"]]), receiver=as.double(theta[["receiver"]]), lock.RE=as.integer(!is.null(theta[["sociality"]])),
+            dispersion=NVL(theta[["dispersion"]],0),
             
             observed=as.integer(NVL(observed,-1)),
 
@@ -194,7 +199,8 @@ pack.optim<-function(theta,fit.vars=NULL){
     return(c(theta[["beta"]],theta[["Z"]],
              theta[["sender"]],theta[["receiver"]],theta[["sociality"]],
              theta[["Z.var"]],theta[["Z.mean"]],
-             theta[["sender.var"]],theta[["receiver.var"]],theta[["sociality.var"]]))
+             theta[["sender.var"]],theta[["receiver.var"]],theta[["sociality.var"]],
+             theta[["dispersion"]]))
   else
     return(c(if(fit.vars[["beta"]])theta[["beta"]],
              if(fit.vars[["Z"]])theta[["Z"]],
@@ -208,7 +214,8 @@ pack.optim<-function(theta,fit.vars=NULL){
              
              if(fit.vars[["sender.var"]])theta[["sender.var"]],
              if(fit.vars[["receiver.var"]])theta[["receiver.var"]],
-             if(fit.vars[["sociality.var"]])theta[["sociality.var"]]))
+             if(fit.vars[["sociality.var"]])theta[["sociality.var"]],
+             if(fit.vars[["dispersion"]])theta[["dispersion"]]))
 }
 
 reg.fit.vars<-function(fit.vars){
@@ -226,9 +233,9 @@ inv.fit.vars<-function(fit.vars){
 
 FIT_ALL<-list(beta=TRUE,Z=TRUE,sender=TRUE,receiver=TRUE,sociality=TRUE,
               Z.var=TRUE,Z.mean=TRUE,
-              sender.var=TRUE,receiver.var=TRUE,sociality.var=TRUE)
+              sender.var=TRUE,receiver.var=TRUE,sociality.var=TRUE,dispersion=TRUE)
 
-FIT_MLE<-list(beta=TRUE,Z=TRUE,sender=TRUE,receiver=TRUE,sociality=TRUE)
+FIT_MLE<-list(beta=TRUE,Z=TRUE,sender=TRUE,receiver=TRUE,sociality=TRUE,dispersion=TRUE)
 
 unpack.optim<-function(v,fit.vars,model){
   p<-model[["p"]]
@@ -245,7 +252,8 @@ unpack.optim<-function(v,fit.vars,model){
                   Z.mean*G*d +
                   sender.var +
                   receiver.var +
-                  sociality.var)
+                  sociality.var +
+                  dispersion)
   if(length(v)!=v.must.be){
     stop(paste("Input vector wrong length: ", length(v),
                " but should be ",v.must.be,".",
@@ -303,10 +311,15 @@ unpack.optim<-function(v,fit.vars,model){
     pos<-pos+1
   }
 
+  if(fit.vars[["dispersion"]]){
+    ret[["dispersion"]]<-v[pos+1]
+    pos<-pos+1
+  }
+
   ret
 }
 
-mk.lp.optim.fs<-function(fit.vars,model,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+mk.lp.optim.fs<-function(fit.vars,model,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV","lpdispersion")){
   fit.vars<-reg.fit.vars(fit.vars)
   return(list(
               f=function(v){
@@ -339,7 +352,7 @@ find.mle<-function(model,start,given=list(),control,
 
 
 
-find.mpe<-function(model,start,given=list(),prior=list(),control,fit.vars=NULL,opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV"),
+find.mpe<-function(model,start,given=list(),prior=list(),control,fit.vars=NULL,opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV","lpdispersion"),
                    hessian=FALSE,mlp=TRUE){
   if(is.null(fit.vars)){
     fit.vars<-list()
@@ -380,7 +393,8 @@ find.mpe<-function(model,start,given=list(),prior=list(),control,fit.vars=NULL,o
                       Z.mean=rep(-Inf,d*G),
                       sender.var=sqrt(.Machine[["double.eps"]]),
                       receiver.var=sqrt(.Machine[["double.eps"]]),
-                      sociality.var=sqrt(.Machine[["double.eps"]])),
+                      sociality.var=sqrt(.Machine[["double.eps"]]),
+                      dispersion=sqrt(.Machine[["double.eps"]])),
                       fit.vars=fit.vars),
                     control=optim.control,hessian=hessian)
             ##  )
@@ -408,10 +422,10 @@ ergmm.lp<-function(model,theta,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lp
   lpRE<-if("lpRE" %in% opt) ergmm.lpRE(theta,given=given) else 0
   lpBeta<-if("lpBeta" %in% opt) ergmm.lpBeta(theta,prior,given=given) else 0
   lpREV<-if("lpREV" %in% opt) ergmm.lpREV(theta,prior,given=given) else 0
-  
   lpLV<-if("lpLV" %in% opt) ergmm.lpLV(theta,prior,given=given) else 0
+  lpdispersion<-if("lpdispersion" %in% opt) ergmm.lpdispersion(theta,prior,given=given) else 0
   
-  lpAll<-lpY+lpZ+lpRE+lpBeta+lpREV+lpLV
+  lpAll<-lpY+lpZ+lpRE+lpBeta+lpREV+lpLV+lpdispersion
                                                       
   return(lpAll)
 }
@@ -468,23 +482,25 @@ cmp.lists<-function(x,y){
   out
 }
 
-ergmm.lp.grad<-function(model,theta,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+ergmm.lp.grad<-function(model,theta,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV","lpdispersion")){
   
   grad<-sum.lists(if("lpY" %in% opt) if(not.given("beta",theta,given)||
                                         not.given("Z",theta,given)||
                                         not.given("sender",theta,given)||
                                         not.given("receiver",theta,given)||
-                                        not.given("sociality",theta,given)) ergmm.lpY.grad(model,theta,given=given),
+                                        not.given("sociality",theta,given)||
+                                        not.given("dispersion",theta,given)) ergmm.lpY.grad(model,theta,given=given),
                   if("lpZ" %in% opt) ergmm.lpZ.grad(theta,given=given),
                   if("lpRE" %in% opt) ergmm.lpRE.grad(theta,given=given),
                   if("lpBeta" %in% opt) ergmm.lpBeta.grad(theta,prior,given=given),
                   if("lpREV" %in% opt) ergmm.lpREV.grad(theta,prior,given=given),
-                  if("lpLV" %in% opt) ergmm.lpLV.grad(theta,prior,given=given))
+                  if("lpLV" %in% opt) ergmm.lpLV.grad(theta,prior,given=given),
+                  if("lpdispersion" %in% opt) ergmm.lpdispersion.grad(theta,prior,given=given))
   
   grad
 }
 
-ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=list(),opt=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV","lpdispersion")){
   which.vars[["Z.K"]]<-FALSE
   which.vars<-reg.fit.vars(which.vars)
   for(var in names(which.vars)) if(!(var %in% names(theta))) which.vars[[var]]<-FALSE
@@ -620,6 +636,19 @@ ergmm.lpLV.grad<-function(theta,prior,given=list()){
   deriv
 }
 
-lpsum<-function(theta,which=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV")){
+ergmm.lpdispersion<-function(theta,prior,given=list()){
+  theta<-merge.lists(theta,given)
+  (if(not.given("dispersion",theta,given)) dsclinvchisq(theta[["dispersion"]],prior[["dispersion.df"]],prior[["dispersion"]],TRUE) else 0)
+}
+
+ergmm.lpdispersion.grad<-function(theta,prior,given=list()){
+  theta<-merge.lists(theta,given)
+  deriv<-list()
+  if(not.given("dispersion",theta,given)) deriv[["dispersion"]]<-prior[["dispersion.df"]]*prior[["dispersion"]]/theta[["dispersion"]]^2/2-(prior[["dispersion.df"]]/2+1)/theta[["dispersion"]]
+  deriv
+}
+
+
+lpsum<-function(theta,which=c("lpY","lpZ","lpBeta","lpRE","lpREV","lpLV","lpdispersion")){
   sum(sapply(which,function(lp) if(is.null(theta[[lp]])) 0 else theta[[lp]]))
 }

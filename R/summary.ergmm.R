@@ -82,6 +82,10 @@ summary.ergmm <- function (object, point.est=c(
         mle[["sociality.var"]]<-mean(mle[["sociality"]]^2)
       }
 
+      if(model[["dispersion"]]){
+        mle[["dispersion"]]<-mle[["dispersion"]]
+      }
+      
       object[["mle"]]<-mle
     }
     summ[["mle"]]<-object[["mle"]]
@@ -178,6 +182,8 @@ print.summary.ergmm<-function(x,...){
     cat("Covariate coefficients posterior means:\n")
     printCoefmat(as.matrix(x[["pmean"]][["coef.table"]]),P.values=TRUE,has.Pvalue=TRUE)
     cat("\n")
+    if(!is.null(x[["pmean"]][["dispersion"]]))
+      cat("Dispersion parameter: ",x[["pmean"]][["dispersion"]],".\n", sep="")
     if(!is.null(x[["pmean"]][["sender.var"]]))
       cat("Sender effect variance: ",x[["pmean"]][["sender.var"]],".\n", sep="")
     if(!is.null(x[["pmean"]][["receiver.var"]]))
@@ -190,6 +196,8 @@ print.summary.ergmm<-function(x,...){
     cat("Covariate coefficients MLE:\n")
     printCoefmat(as.matrix(x[["mle"]][["coef.table"]]),P.values=length(names(x[["mle"]][["coef.table"]]))>1)
     cat("\n")
+    if(!is.null(x[["mle"]][["dispersion"]]))
+      cat("Dispersion parameter: ",x[["mle"]][["dispersion"]],".\n", sep="")
   }
   if(!is.null(x[["bic"]])){
     cat("Overall BIC:       ", x[["bic"]][["overall"]],"\n")
@@ -212,12 +220,18 @@ print.summary.ergmm<-function(x,...){
   if(!is.null(x[["mkl"]])){
     cat("Covariate coefficients MKL:\n")
     print(x[["mkl"]][["coef.table"]])
-    cat("\n\n")
+    cat("\n")
+    if(!is.null(x[["mkl"]][["dispersion"]]))
+      cat("Dispersion parameter: ",x[["mkl"]][["dispersion"]],".\n", sep="")
+    cat("\n")
   }
   if(!is.null(x[["pmode"]])){
     cat("Covariate coefficients posterior mode:\n")
     print(x[["pmode"]][["coef.table"]])
-    cat("\n\n")
+    cat("\n")
+    if(!is.null(x[["pmode"]][["dispersion"]]))
+      cat("Dispersion parameter: ",x[["pmode"]][["dispersion"]],".\n", sep="")
+    cat("\n")
   }
 }
 

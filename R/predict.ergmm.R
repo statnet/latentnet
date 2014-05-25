@@ -41,7 +41,7 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
           d = as.integer(d),
           latent=as.integer(NVL(model[["latentID"]],0)),
           family=as.integer(NVL(model[["familyID"]],0)),
-          res=as.integer(with(model,c(sender,receiver,sociality))),
+          res=as.integer(with(model,c(sender,receiver,sociality,dispersion))),
           
           dir=as.integer(is.directed(model[["Yg"]])),
           iconsts=as.integer(model[["iconsts"]]),
@@ -54,6 +54,7 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
           beta = as.double(sample[["beta"]]), # coef
           sender = if(model[["sociality"]]) as.double(sample[["sociality"]]) else as.double(sample[["sender"]]),
           receiver = as.double(sample[["receiver"]]),
+          dispersion = as.double(sample[["dispersion"]]),
           
           observed=as.integer(NVL(observed,-1)),
           

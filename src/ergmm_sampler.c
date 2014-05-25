@@ -49,6 +49,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 			double *lpRE_mcmc,
 			double *lpLV_mcmc,
 			double *lpREV_mcmc,
+			double *lpdispersion_mcmc,
 			   
 			double *vZ_start,
 
@@ -91,6 +92,11 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 			double *sender_var_mcmc,
 			double *receiver_var_mcmc,
 
+			double *dispersion_start,
+			double *dispersion_prior,
+			double *dispersion_prior_df,
+			double *dispersion_mcmc,
+
 			int *vobserved_ties,
 
 			double *deltas,
@@ -121,6 +127,10 @@ void ERGMM_MCMC_wrapper(int *sample_size,
     lpRE_mcmc=NULL; lpREV_mcmc=NULL;
     if(*d==0) Z_rate_move=NULL;
   }
+  if(res[3]==0){
+    lpdispersion_mcmc=NULL;
+    dispersion_mcmc=NULL;
+  }
 
 
   int i=0,j=0,k=0;
@@ -136,9 +146,10 @@ void ERGMM_MCMC_wrapper(int *sample_size,
      + latent space            : 1
      + sender                  : ~p
      + receiver (no sociality) : ~p
+     + dispersion              : 1
   */
 
-  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (vcoef_eff_sender?*coef_eff_sender_size:0)+(vcoef_eff_receiver?*coef_eff_receiver_size:0);
+  unsigned int group_prop_size = *p + (*d ? 1 : 0) + (vcoef_eff_sender?*coef_eff_sender_size:0)+(vcoef_eff_receiver?*coef_eff_receiver_size:0) + (lpdispersion_mcmc?1:0);
   double **group_deltas = Runpack_dmatrix(deltas+GROUP_DELTAS_START, group_prop_size, group_prop_size, NULL);
   double **coef_eff_sender = vcoef_eff_sender? Runpack_dmatrix(vcoef_eff_sender, *coef_eff_sender_size, *n, NULL) : NULL;
   double **coef_eff_receiver = vcoef_eff_receiver? Runpack_dmatrix(vcoef_eff_receiver, *coef_eff_receiver_size, *n, NULL) : NULL;
@@ -172,7 +183,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 
 		  X,
 
-		  llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
+		  llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc, lpdispersion_mcmc,
 		    
 		  Z_start, 
 		  Z_pK_start,Z_mean_start,Z_var_start,(unsigned int *)Z_K_start,
@@ -195,6 +206,12 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 		  receiver_var_prior_df ? *receiver_var_prior_df : 0,
 		  sender_mcmc, receiver_mcmc, 
 		  sender_var_mcmc, receiver_var_mcmc,
+
+		  dispersion_mcmc? *dispersion_start:0,
+		  dispersion_mcmc? *dispersion_prior:0,
+		  dispersion_mcmc? *dispersion_prior_df:0,
+		  dispersion_mcmc,
+
 		  res[2],
 		  observed_ties,
 		  deltas[0],deltas[1],group_deltas,group_prop_size,
@@ -221,7 +238,7 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 
 		     double ***X,
 
-		     double *llk_mcmc, double *lpZ_mcmc, double *lpcoef_mcmc, double *lpRE_mcmc, double *lpLV_mcmc, double *lpREV_mcmc,
+		     double *llk_mcmc, double *lpZ_mcmc, double *lpcoef_mcmc, double *lpRE_mcmc, double *lpLV_mcmc, double *lpREV_mcmc, double *lpdispersion_mcmc,
 
 		     double **Z_start,
 		     double *Z_pK_start, double **Z_mean_start, double *Z_var_start, unsigned int *Z_K_start,
@@ -241,6 +258,10 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 		     double receiver_var_prior, double receiver_var_prior_df,
 		     double *sender_mcmc, double *receiver_mcmc,
 		     double *sender_var_mcmc, double *receiver_var_mcmc,
+
+		     double dispersion_start, double dispersion_prior,
+		     double dispersion_prior_df, double *dispersion_mcmc,
+
 		     unsigned int sociality,
 		     unsigned int **observed_ties,
 		     
@@ -273,6 +294,7 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			    p, // coef
 			    G, // clusters
 			    sociality,
+			    dispersion_mcmc!=NULL,
 			    d ? ERGMM_MCMC_latent_eff[latent_eff] : NULL
   };
   ERGMM_MCMC_set_lp_Yconst[family](&model);
@@ -298,7 +320,9 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			     sender_var_prior,
 			     sender_var_prior_df,
 			     receiver_var_prior,
-			     receiver_var_prior_df};
+			     receiver_var_prior_df,
+			     dispersion_prior,
+			     dispersion_prior_df};
   
   ERGMM_MCMC_Par state = {Z_start, // Z
 			  coef_start, // coef
@@ -309,6 +333,7 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			  sender_var_start,
 			  model.sociality?sender_start:receiver_start,
 			  receiver_var_start,
+			  dispersion_start,
 			  Z_K_start, // Z_K
 			  0, // llk
 			  dmatrix(model.verts,model.verts), // lpedge
@@ -316,7 +341,8 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			  0, // lpLV
 			  0, // lpcoef
 			  0, // lpRE
-			  0 // lpREV
+			  0, // lpREV
+			  0, // lpdispersion
   };
 
   ERGMM_MCMC_Par prop = {model.latent ? dmatrix(model.verts,model.latent):NULL, // Z
@@ -327,7 +353,8 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			 sender_start ? dvector(model.verts):NULL, // sender
 			 0, // sender_var
 			 receiver_start && !model.sociality ? dvector(model.verts):NULL, // receiver
-			 0,
+			 0, // receiver_var
+			 0, // dispersion
 			 state.Z_K, // prop.Z_K === state.Z_K
 			 0, // llk
 			 dmatrix(model.verts,model.verts), // lpedge
@@ -335,7 +362,8 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 			 0, // lpLV
 			 0, // lpcoef
 			 0, // lpRE
-			 0 // lpREV
+			 0, // lpREV
+			 0 // lpdispersion
   };
   if(model.sociality) prop.receiver=prop.sender;
 
@@ -350,16 +378,18 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
 				PROP_NONE, // prop_coef
 				PROP_NONE, // prop_LV
 				PROP_NONE, // prop_REV
+				PROP_NONE, // prop_dispersion
 				FALSE, // after_Gibbs
 				(model.latent || sender_start || receiver_start) ? (unsigned int *) ivector(model.verts) : NULL // update_order
   };
   
-  ERGMM_MCMC_ROutput outlists = {llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc,
+  ERGMM_MCMC_ROutput outlists = {llk_mcmc, lpZ_mcmc, lpcoef_mcmc, lpRE_mcmc, lpLV_mcmc, lpREV_mcmc, lpdispersion_mcmc,
 				 Z_mcmc, Z_rate_move,
 				 coef_mcmc,coef_rate,
 				 Z_mean_mcmc,Z_var_mcmc,Z_pK_mcmc,
 				 sender_mcmc,sender_var_mcmc,
 				 receiver_mcmc,receiver_var_mcmc,
+				 dispersion_mcmc,
 				 K_mcmc};
 
   if(model.clusters>0)
@@ -373,6 +403,7 @@ void ERGMM_MCMC_init(unsigned int sample_size, unsigned int interval,
   if(state.coef) ERGMM_MCMC_logp_coef(&model, &state, &prior);
   if(model.latent) ERGMM_MCMC_logp_LV(&model, &state, &prior);
   if(state.sender || state.receiver) ERGMM_MCMC_logp_REV(&model, &state, &prior);
+  if(model.dispersion) ERGMM_MCMC_logp_dispersion(&model, &state, &prior);
   copy_MCMC_Par(&model,&state,&prop);
   ERGMM_MCMC_store_iteration(0,&model,&state,&setting,&outlists);
   ERGMM_MCMC_store_iteration(1,&model,&state,&setting,&outlists);
@@ -424,9 +455,10 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
 
     // If we have a new posterior mode (actually, the highest joint density of all variables but K observed to date), store it.
     if( cur->state->llk + cur->state->lpZ + cur->state->lpLV + 
-	cur->state->lpcoef + cur->state->lpRE + cur->state->lpREV >
+	cur->state->lpcoef + cur->state->lpRE + cur->state->lpREV + cur->state->lpdispersion >
 	GET_DEFAULT(outlists->llk,1,0) + GET_DEFAULT(outlists->lpZ,1,0) + GET_DEFAULT(outlists->lpLV,1,0) + 
-	GET_DEFAULT(outlists->lpcoef,1,0) + GET_DEFAULT(outlists->lpRE,1,0) + GET_DEFAULT(outlists->lpREV,1,0) )
+	GET_DEFAULT(outlists->lpcoef,1,0) + GET_DEFAULT(outlists->lpRE,1,0) + GET_DEFAULT(outlists->lpREV,1,0) +
+	GET_DEFAULT(outlists->lpdispersion,1,0) )
       ERGMM_MCMC_store_iteration(1,model,cur->state,setting,outlists);
 
     /* every interval save the results */
@@ -466,6 +498,8 @@ void ERGMM_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM
     outlists->lpLV[pos] = par->lpLV;
   if(outlists->lpREV)
     outlists->lpREV[pos] = par->lpREV;
+  if(outlists->lpdispersion)
+    outlists->lpdispersion[pos] = par->lpdispersion;
 
   // Covariate coefficients.
   Rpack_dvectors(par->coef,model->coef,outlists->coef+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
@@ -505,6 +539,11 @@ void ERGMM_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM
   if(par->receiver && !model->sociality){
     Rpack_dvectors(par->receiver,model->verts,outlists->receiver+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
     outlists->receiver_var[pos] = par->receiver_var;
+  }      
+
+  // Dispersion.
+  if(model->dispersion){
+    outlists->dispersion[pos] = par->dispersion;
   }      
       
 }

@@ -18,7 +18,7 @@
   *** It MUST be called BEFORE the proposals are made. ***
   Gibbs-updating is OK, as long as the affected probabilities are updated.
  */
-void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsigned int Z, unsigned int RE, unsigned int coef, unsigned int LV, unsigned int REV){
+void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsigned int Z, unsigned int RE, unsigned int coef, unsigned int LV, unsigned int REV, unsigned int dispersion){
   // If the state has been Gibbs-updated, it means prop is inconsistent.
   if(cur->after_Gibbs) copy_MCMC_Par(model,cur->state,cur->prop);
   cur->after_Gibbs=FALSE;
@@ -38,6 +38,8 @@ void ERGMM_MCMC_propose(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur, unsi
   }
 
   if(coef!=PROP_NONE) cur->prop_coef=PROP_ALL;
+
+  if(dispersion!=PROP_NONE) cur->prop_dispersion=PROP_ALL;
 
   if(LV!=PROP_NONE && cur->state->Z){
     cur->prop_LV=PROP_ALL;
@@ -89,6 +91,9 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
   if(cur->prop_coef==PROP_ALL)
     copy_dvector(new->coef,old->coef,model->coef);
 
+  if(cur->prop_dispersion==PROP_ALL)
+    old->dispersion=new->dispersion;
+
   if(cur->prop_LV==PROP_ALL){
     if(new->Z_mean) dmatrix_copy_contents(new->Z_mean,old->Z_mean,model->clusters,model->latent);
     if(new->Z_var) copy_dvector(new->Z_var,old->Z_var,model->clusters?model->clusters:1);
@@ -103,7 +108,7 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
 
   // Update the lpedge matrix.
   if(copy_lpedge){
-    if(cur->prop_Z==PROP_ALL || cur->prop_RE==PROP_ALL || cur->prop_coef==PROP_ALL){
+    if(cur->prop_Z==PROP_ALL || cur->prop_RE==PROP_ALL || cur->prop_coef==PROP_ALL || cur->prop_dispersion==PROP_ALL){
       dmatrix_copy_contents(new->lpedge,old->lpedge,model->verts,model->verts);
     }
     else if(cur->prop_Z!=PROP_NONE){
@@ -157,6 +162,12 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
     cur->prop_coef=PROP_NONE;
   }
 
+  if(cur->prop_dispersion!=PROP_NONE){
+    old->llk=new->llk;
+    old->lpdispersion=new->lpdispersion;
+    cur->prop_dispersion=PROP_NONE;
+  }
+
   if(cur->prop_LV!=PROP_NONE){
     old->lpLV=new->lpLV;
     // A jump in latent space variables can also affect the probability of Z.
@@ -187,7 +198,7 @@ unsigned int ERGMM_MCMC_Z_RE_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prio
     i=cur->update_order[iord];
     // Make the proposal...
     
-    ERGMM_MCMC_propose(model,cur,i,i,PROP_NONE,PROP_NONE,PROP_NONE);
+    ERGMM_MCMC_propose(model,cur,i,i,PROP_NONE,PROP_NONE,PROP_NONE,PROP_NONE);
     if(model->latent){
       for(j=0;j<model->latent;j++){ 
 	par->Z[i][j] = cur->state->Z[i][j] + rnorm(0,setting->Z_delta);
@@ -225,7 +236,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_M
   ERGMM_MCMC_Par *par=cur->prop;
   
   // Signal the proposal (of everything).
-  ERGMM_MCMC_propose(model,cur,PROP_ALL,PROP_ALL,PROP_ALL,PROP_ALL,PROP_NONE);
+  ERGMM_MCMC_propose(model,cur,PROP_ALL,PROP_ALL,PROP_ALL,PROP_ALL,PROP_NONE,PROP_ALL);
 
   for(unsigned int j=0; j<setting->group_prop_size; j++) 
     cur->deltas[j] = 0;
@@ -285,6 +296,12 @@ unsigned int ERGMM_MCMC_coef_up_scl_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_M
     }
   }
 
+  if(model->dispersion){
+    double logh=cur->deltas[prop_pos++];
+    par->dispersion*=exp(2*logh);
+    acc_adjust+=2*logh;
+  }
+
   /* Calculate the log-likelihood-ratio.
      Note that even functions that don't make sense in context
      (e.g. logp_Z for a non-latent-space model) are safe to call and return 0). */
@@ -294,6 +311,7 @@ unsigned int ERGMM_MCMC_coef_up_scl_Z_shift_RE(ERGMM_MCMC_Model *model,  ERGMM_M
 	       +ERGMM_MCMC_logp_Z_diff(model,cur)
 	       +ERGMM_MCMC_logp_LV_diff(model,cur,prior)
 	       +ERGMM_MCMC_logp_RE_diff(model,cur)
+	       +ERGMM_MCMC_logp_dispersion_diff(model,cur,prior)
 	       +acc_adjust
 	       );
   
@@ -439,3 +457,4 @@ void ERGMM_MCMC_REV_up(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior, ERGMM_
   ERGMM_MCMC_logp_RE(model,par);
   ERGMM_MCMC_logp_REV(model,par,prior);
 }
+

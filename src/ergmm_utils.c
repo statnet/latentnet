@@ -82,6 +82,7 @@ void copy_MCMC_Par(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *source, ERGMM_MCMC_P
   if(source->sender) dest->sender_var=source->sender_var;
   if(!model->sociality && tocopy(receiver)) copy_dvector(source->receiver,dest->receiver,model->verts);
   if(source->receiver) dest->receiver_var=source->receiver_var;
+  if(model->dispersion) dest->dispersion=source->dispersion;
   if(tocopy(Z_K)) copy_ivector((int *) source->Z_K,(int *) dest->Z_K,model->verts);
 #undef tocopy
 
