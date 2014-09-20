@@ -51,7 +51,7 @@
 .import.ergm.term <-function(model, term.name, ..., mean=0, var=9){
   Yg<-model[["Yg"]]
   f <- ~Yg
-  f[[3]] <- as.call(c(list(term.name), ...))
+  f[[3]] <- as.call(c(list(term.name), as.name(...)))
   if(!is.dyad.independent(f)) warning("Term `", term.name, "` induces dyadic dependence. Likelihood will be effectively replaced by pseudolikelihood.", call.=FALSE)
   if(has.loops(Yg)) warning("Imported ergm term `", term.name, "` will set its dyadic covariate for self-loops, X[i,i,k], to 0. Use `loopfactor` and `loopcov` to model self-loops.", call.=FALSE)
   
