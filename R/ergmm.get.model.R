@@ -56,7 +56,7 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
     }else{
 
       model <- do.call(.import.ergm.term, c(model=list(model),
-                                           if(is.call(term)) c(list(as.character(term[[1]])), as.list(term)[-1]) else as.character(term)))
+                                           if(is.call(term)) c(list(as.character(term[[1]])), as.character(term)[-1]) else as.character(term)))
     }
   }
 
