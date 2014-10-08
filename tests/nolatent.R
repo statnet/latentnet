@@ -25,4 +25,15 @@ print(summary(monks.nm))
 monks.dnm<-ergmm(samplike~nodematch("group",diff=TRUE))
 mcmc.diagnostics(monks.dnm)
 print(summary(monks.dnm))
+
+# tests importing of ergm terms with local variable as inputs
+set.seed(1)
+nw <- samplike
+n <- network.size(samplike)
+covar <- matrix(rbinom(n^2, 1, 0.2), nrow=n)
+covar.nw <- network(covar)
+test3 <- ergmm(nw ~ euclidean(d = 2) + edgecov(covar)) 
+test4 <- ergmm(nw ~ euclidean(d = 2) + edgecov(covar.nw)) 
+
+
 }, "Some non-latent-space")
