@@ -48,10 +48,13 @@
   model
 }
 
-.import.ergm.term <-function(model, term.name, ..., mean=0, var=9){
+.import.ergm.term <-function(model, term.index, term.name, ..., mean=0, var=9){
   Yg<-model[["Yg"]]
   f <- ~Yg
-  f[[3]] <- as.call(c(list(term.name), as.name(...)))
+  
+  # this is a stupid hack to pick out one term from the formula; is there a better way?
+  f[[3]] <- as.list(attr(terms(model$formula), 'variables'))[[term.index+2]]
+  #f[[3]] <- as.call(c(list(term.name), ...))
   if(!is.dyad.independent(f)) warning("Term `", term.name, "` induces dyadic dependence. Likelihood will be effectively replaced by pseudolikelihood.", call.=FALSE)
   if(has.loops(Yg)) warning("Imported ergm term `", term.name, "` will set its dyadic covariate for self-loops, X[i,i,k], to 0. Use `loopfactor` and `loopcov` to model self-loops.", call.=FALSE)
   
