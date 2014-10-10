@@ -222,7 +222,7 @@ print.summary.ergmm<-function(x,...){
     print(x[["mkl"]][["coef.table"]])
     cat("\n")
     if(!is.null(x[["mkl"]][["dispersion"]]))
-      cat("Dispersion parameter: ",x[["mkl"]][["dispersion"]],".\n", sep="")
+      cat("Dispersion parameter: ",x[["mkl"]][["dispersion"]]," (probably invalid).\n", sep="")
     cat("\n")
   }
   if(!is.null(x[["pmode"]])){
