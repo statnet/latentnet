@@ -1,10 +1,3 @@
-.mcmc.diagnostics <- function(x, ...)
-  UseMethod("mcmc.diagnostics")
-  
-.mcmc.diagnostics.default <- function(x,...){
-  stop("An object must be given as an argument ")
-}
-
 mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"),
                                    burnin=FALSE,
                                    which.vars=NULL,
