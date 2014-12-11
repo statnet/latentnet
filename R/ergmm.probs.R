@@ -560,7 +560,7 @@ ergmm.lpZ.grad<-function(theta,given=list()){
                                                            function(g)
                                                            (sum(Z.dev[theta[["Z.K"]]==g,,drop=FALSE]^2)-d*sum(theta[["Z.K"]]==g)/theta[["Z.var"]][g])/2)
     
-    if(not.given("Z.mean",theta,given) && G) deriv[["Z.mean"]]<-t(sapply(1:G,function(g) apply(Z.dev[theta[["Z.K"]]==g,,drop=FALSE],2,sum)))
+    if(not.given("Z.mean",theta,given) && G) deriv[["Z.mean"]]<-do.call(rbind,lapply(1:G,function(g) apply(Z.dev[theta[["Z.K"]]==g,,drop=FALSE],2,sum)))
   }
   deriv
 }
