@@ -1,4 +1,4 @@
-mcmc.diagnostics.ergmm <- function(x,which.diags=c("cor","acf","trace","raftery"),
+mcmc.diagnostics.ergmm <- function(object,which.diags=c("cor","acf","trace","raftery"),
                                    burnin=FALSE,
                                    which.vars=NULL,
                                    vertex.i=c(1),...){
