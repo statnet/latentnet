@@ -4,9 +4,9 @@ mcmc.diagnostics.ergmm <- function(object,which.diags=c("cor","acf","trace","raf
                                    vertex.i=c(1),...){
   extraneous.argcheck(...)
   
-  if(is.null(x[["sample"]])) stop("MCMC was not run for this ERGMM fit.")
+  if(is.null(object[["sample"]])) stop("MCMC was not run for this ERGMM fit.")
 
-  x <- as.mcmc.list.ergmm(x,burnin,which.vars,vertex.i)
+  x <- as.mcmc.list.ergmm(object,burnin,which.vars,vertex.i)
   oldask=par("ask")
   on.exit(par(ask=oldask))
   par(ask=dev.interactive())
