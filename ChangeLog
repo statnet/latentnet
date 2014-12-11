@@ -1,16 +1,19 @@
 2.6-0
-  Normal model with identity link can now estimate the dispersion
-  (variance) parameter. (Before, it had to be specified.)
+	Normal model with identity link can now estimate the dispersion
+	(variance) parameter. (Before, it had to be specified.)
+
+	Improved compatibility with ergm 3.2, including removal of
+	mcmc.diagnostics() and other prototypes.
 
 2.5-1
 	A bug in importing of ergm terms for undirected networks has been
 	fixed.
-	
+
 2.5-0
 	The deprecated term `latent` has been removed. Use `euclidean`
 	instead.
 
-	summary() and print functions have somewhat more intelligent
+	summary() and print() functions have somewhat more intelligent
 	defaults.
 
 	latentnet can now use ergm() terms as covariates in the model (and
