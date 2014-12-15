@@ -20,7 +20,7 @@ other monks.
 
 The data were gathered at three times to capture changes in group sentiment
 over time.
-They were represent three time points in the period during which a
+They represent three time points in the period during which a
 new cohort entered the monastery near the end of the study but
 before the major conflict began. 
 
@@ -35,15 +35,32 @@ periods.  For this, a tie from monk A to monk B exists if A
 nominated B as one of his three best friends at any of the
 three time points.
 
-This data is standard in the social network analysis
+The graph is stored as an \code{\link[network]{network}} objects.
+It has three vertex attributes:
+
+\describe{
+\item{group}{Groups of novices as classified by Sampson: 
+``loyal'', ``outcasts'', and ``Turks''. There is also an 
+interstitial group not represented here.}
+\item{cloisterville}{An indicator of attendance the minor
+seminary of ``Cloisterville'' before coming to the monastery.}
+\item{vertex.names}{The given names of the novices and their IDs in the
+  original dataset.}
+}
+In addition, it has an edge attribute, \code{nominations}, giving the
+number of times (out of 3) that monk A nominated monk B.
+
+This data set is standard in the social network analysis
 literature, having been modeled by Holland and Leinhardt
 (1981), Reitz (1982), Holland, Laskey and Leinhardt (1983),
 and Fienberg, Meyer, and Wasserman (1981), Hoff, Raftery, and Handcock
 (2002), etc.
 This is only a small piece of the data collected by Sampson.
 
-For additional examples of \code{network}s see the \code{netdata}
-package which is part of the \code{statnet} package.
+This dataset was updated for version 2.5 (March 2012) to add the \code{cloisterville} variable and refine the names. This information is from
+de Nooy, Mrvar, and Batagelj (2005).
+The original vertex names were: 
+Romul_10, Bonaven_5, Ambrose_9, Berth_6, Peter_4, Louis_11, Victor_8, Winf_12, John_1, Greg_2, Hugh_14, Boni_15, Mark_7, Albert_16, Amand_13, Basil_3, Elias_17, Simp_18.
 }
 \usage{
  data(sampson)
@@ -51,7 +68,9 @@ package which is part of the \code{statnet} package.
 \source{
  Sampson, S.~F. (1968), \emph{A novitiate in a period of change: An
  experimental and case study of relationships,} 
- Unpublished ph.d. dissertation, Department of Sociology, Cornell University.
+ Unpublished Ph.D. dissertation, Department of Sociology, Cornell University.
+
+ \url{http://vlado.fmf.uni-lj.si/pub/networks/data/esna/sampson.htm}
 }
 \seealso{network, \code{\link[network]{plot.network}}, \code{\link{ergmm}}}
 \references{
@@ -59,6 +78,9 @@ package which is part of the \code{statnet} package.
  \emph{Social structure from multiple networks. I. Blockmodels of roles and
  positions.}
  American Journal of Sociology, 81(4), 730-780.
+
+ Wouter de Nooy, Andrej Mrvar, Vladimir Batagelj (2005) \emph{Exploratory Social Network Analysis with Pajek},
+ Cambridge: Cambridge University Press
 }
 \examples{
 data(sampson)
