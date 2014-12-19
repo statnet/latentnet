@@ -1,3 +1,12 @@
+#  File R/InitErgmm.random.R in package latentnet, part of the Statnet suite
+#  of packages for network analysis, http://statnet.org .
+#
+#  This software is distributed under the GPL-3 license.  It is free,
+#  open source, and has the attribution requirements (GPL Section 7) at
+#  http://statnet.org/attribution
+#
+#  Copyright 2003-2014 Statnet Commons
+#######################################################################
 InitErgmm.rsender<-function(model, var=1, var.df=3){
   if (!is.directed(model[["Yg"]]))
     stop("Sender effects are not allowed with an undirected network; use 'sociality'", call.=FALSE)

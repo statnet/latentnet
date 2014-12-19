@@ -1,3 +1,12 @@
+#  File R/ergmm.midarrow.R in package latentnet, part of the Statnet suite
+#  of packages for network analysis, http://statnet.org .
+#
+#  This software is distributed under the GPL-3 license.  It is free,
+#  open source, and has the attribution requirements (GPL Section 7) at
+#  http://statnet.org/attribution
+#
+#  Copyright 2003-2014 Statnet Commons
+#######################################################################
 ergmm.midarrow <- function(x0, y0, x1, y1, length = 0.25, angle = 30, code = 2, 
                      col = par("fg"), lty = NULL, lwd = par("lwd"), xpd = NULL)
 {

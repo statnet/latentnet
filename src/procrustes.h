@@ -1,3 +1,12 @@
+/*  File src/procrustes.h in package latentnet, part of the Statnet suite
+ *  of packages for network analysis, http://statnet.org .
+ *
+ *  This software is distributed under the GPL-3 license.  It is free,
+ *  open source, and has the attribution requirements (GPL Section 7) at
+ *  http://statnet.org/attribution
+ *
+ *  Copyright 2003-2014 Statnet Commons
+ */
 #ifndef PROCRUSTES_H
 #define PROCRUSTES_H
 void procr_transform_wrapper(int *S, int *n, int *d, int *G, double *vZo,
