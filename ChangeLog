@@ -5,6 +5,14 @@
 	Improved compatibility with ergm 3.2, including removal of
 	mcmc.diagnostics() and other prototypes.
 
+	A number of bugs have been fixed.
+
+	Kirk Li and Li Wang have been added as contributors for making
+	many of these fixes.
+
+	Sampson's monks dataset included with latentnet now has some
+	additional attributes.
+
 2.5-1
 	A bug in importing of ergm terms for undirected networks has been
 	fixed.
