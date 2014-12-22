@@ -30,7 +30,7 @@ bayesmbc<-function(G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=50
 }
 
 bayesmbc.snowFT<-function(threads,G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=500,verbose=FALSE){
-  if(!require(snowFT)) stop("Package 'snowFT' required for multithreaded model based clustering MCMC.")
+  if(!requireNamespace("snowFT",quietly=TRUE)) stop("Package 'snowFT' required for multithreaded model based clustering MCMC.")
   start<-mbc.VII.EM(G,Z)
   state<-start<-with(start,list(Z=Z,
                                 Z.mean=Z.mean,

@@ -15,7 +15,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
     with(control,
          if(sample.size%%threads || (burnin/interval)%%threads)
          stop("Please make the MCMC sample size and the ratio burnin/interval a multiple of the number of threads."))
-    if(!require(snowFT))
+    if(!requireNamespace("snowFT", quietly=TRUE))
       stop("Package 'snowFT' is required for multithreaded MCMC.")
   }
   
