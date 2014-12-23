@@ -238,7 +238,7 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
   if(!requireNamespace("snowFT",quietly=TRUE)) stop("Package 'snowFT' is required for multithreaded MCMC.")
   mcmc.out.l<-snowFT::performParallel(threads,rep(1:param.sets,reps),
                               ergmm.MCMC.snowFT.slave,
-                              lib=path.to.me,
+                              lib=.latentnetEnv$path.to.me,
                               model.l=model.l,
                               start.l=start.l,
                               prior.l=prior.l,

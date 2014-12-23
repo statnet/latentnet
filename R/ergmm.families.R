@@ -1,17 +1,17 @@
 ### family-specific functions
 
-# Here, nlog.double.eps=-log(.Machine[["double.eps"]]) defined in .First.lib is used to
+# Here, nlog.double.eps=-log(.Machine[["double.eps"]]) defined in .onLoad is used to
 # decide when exp(eta)==exp(eta)+1
 
 ## Bernoulli logit
 lpY.Bernoulli.logit<-function(Y,eta,dispersion=NULL,fam.par=NULL){
-  ifelse(eta>=nlog.double.eps,eta*(Y-1),eta*Y-log1p(exp(eta)))
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-1),eta*Y-log1p(exp(eta)))
 }
 lpYc.Bernoulli.logit<-function(Y,eta,dispersion=NULL,fam.par=NULL){
-  ifelse(eta>=nlog.double.eps,eta*(Y-1),eta*Y-log1p(exp(eta)))
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-1),eta*Y-log1p(exp(eta)))
 }
 pY.Bernoulli.logit<-function(Y=1,eta,dispersion=NULL,fam.par=NULL){
-  ifelse(eta>=nlog.double.eps,exp(eta*(Y-1)),exp(eta*Y)/(exp(eta)+1))
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,exp(eta*(Y-1)),exp(eta*Y)/(exp(eta)+1))
 }
 dlpY.deta.Bernoulli.logit<-function(Y,eta,dispersion=NULL,fam.par=NULL) Y-EY.Bernoulli.logit(eta,fam.par)
 rsm.Bernoulli.logit<-function(eta,dispersion=NULL,fam.par=NULL){
@@ -23,11 +23,11 @@ EY.Bernoulli.logit<-function(eta,dispersion=NULL,fam.par=NULL) 1/(1+exp(-eta))
 ## Binomial logit
 
 lpY.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par){
-  ifelse(eta>=nlog.double.eps,eta*(Y-fam.par[["trials"]])+lchoose(fam.par[["trials"]],Y),
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-fam.par[["trials"]])+lchoose(fam.par[["trials"]],Y),
          eta*Y-fam.par[["trials"]]*log1p(exp(eta))+lchoose(fam.par[["trials"]],Y))
 }
 lpYc.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par){
-  ifelse(eta>=nlog.double.eps,eta*(Y-fam.par[["trials"]]),
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-fam.par[["trials"]]),
          eta*Y-fam.par[["trials"]]*log1p(exp(eta)))
 }
 pY.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par) exp(lpY.binomial.logit(Y,eta,dispersion=NULL,fam.par))
