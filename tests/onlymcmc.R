@@ -9,8 +9,9 @@
 #######################################################################
 library(latentnet)
 
+# Also test parallel code.
 data(sampson)
-onlymcmc <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver,tofit="mcmc",control=control.ergmm(burnin=100,interval=1,sample.size=1000,pilot.runs=0))
+onlymcmc <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver,tofit="mcmc",control=control.ergmm(burnin=100,interval=1,sample.size=1000,pilot.runs=0,threads=2))
 
 mcmc.diagnostics(onlymcmc)
 

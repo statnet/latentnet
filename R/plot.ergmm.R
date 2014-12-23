@@ -45,7 +45,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   if(G<1) pie<-FALSE
 
   if(use.rgl){
-    if(!require(rgl)) stop("3D plots with use.rgl=TRUE option require the 'rgl' package.")
+    if(!requireNamespace("rgl", quietly=TRUE)) stop("3D plots with use.rgl=TRUE option require the 'rgl' package.")
     if(pie) stop("3D plots cannot make pie charts.")
   }
   
@@ -208,7 +208,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     Z.pos <- summ[["mkl"]][["Z"]]
     if(d!=2) stop("Density plots are only available for 2D latent space models.")
 
-    if(!require(KernSmooth,quietly=TRUE)){
+    if(!requireNamespace("KernSmooth",quietly=TRUE)){
       stop("The 'density' option requires the 'KernSmooth' package.")
     }
 
@@ -219,7 +219,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     if(density.par[["totaldens"]]){
       plot(Z.all,type='n',xlab=xlab,ylab=ylab,...)
       title(main=paste("Posterior density of",deparse(substitute(x))), cex.main=0.7, ...)
-      Z.bkde <- bkde2D(Z.all,0.2,c(201,201))
+      Z.bkde <- KernSmooth::bkde2D(Z.all,0.2,c(201,201))
       image(Z.bkde[["x1"]],Z.bkde[["x2"]],Z.bkde[["fhat"]],col=grey(seq(1,0,length=255)),add=TRUE)
       box()
     }
@@ -228,7 +228,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       Z.K.all <- c(t(x[["sample"]][["Z.K"]]))
       for(i in 1:G){
         plot(Z.all,main=paste("Class",i),type="n",...)
-        Z.bkde <- bkde2D(Z.all[Z.K.all==i,],0.2,c(101,101))
+        Z.bkde <- KernSmooth::bkde2D(Z.all[Z.K.all==i,],0.2,c(101,101))
         col<-c(col2rgb(cluster.col[i])/255)
         image(Z.bkde[["x1"]],Z.bkde[["x2"]],Z.bkde[["fhat"]],add=TRUE,
               col=rgb(seq(1,col[1],length=255),
@@ -351,14 +351,14 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     options(warn=old.warn)
   }else{
     vertex.radii <- vertex.cex*vertex.3d.cex
-    plot3d(Z.pos,type="s",col= vertex.col,radius=vertex.radii,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
+    rgl::plot3d(Z.pos,type="s",col= vertex.col,radius=vertex.radii,xlab=xlab,ylab=ylab,zlab=zlab,xlim=xlim,ylim=ylim,zlim=zlim,alpha=1,main=main)
     if(labels){
       Z.pos.r <- sqrt(rowSums(Z.pos^2))
-      text3d(Z.pos*(Z.pos.r+vertex.radii*2)/Z.pos.r,texts=Yg %v% "vertex.names")
+      rgl::text3d(Z.pos*(Z.pos.r+vertex.radii*2)/Z.pos.r,texts=Yg %v% "vertex.names")
     }
     if(edge.plot3d){
       el<-as.matrix(Yg,matrix.type="edgelist")
-      if(is.directed(Yg) && require(heplots)){
+      if(is.directed(Yg) && requireNamespace("heplots",quietly=TRUE)){
         medlen <- median(apply(el, 1, function(e){
           Z1 <- Z.pos[e[1],]
           Z2 <- Z.pos[e[2],]
@@ -378,11 +378,11 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
           len <- sqrt(sum(dZ^2))
           Z1edge <- Z1+r1/len*dZ
           Z2edge <- Z2-r2/len*dZ
-          arrow3d(Z1edge,Z2edge,barblen=medlen*.1,n=4)
+          heplots::arrow3d(Z1edge,Z2edge,barblen=medlen*.1,n=4)
         })
       }else{
         if(is.directed(Yg)) message("3D plotting of directed edges with arrows requires package heplots, which is not installed. Using line segments instead.")
-        segments3d(Z.pos[c(t(el)),])
+        rgl::segments3d(Z.pos[c(t(el)),])
       }
     }
   }
@@ -440,7 +440,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       symbols(Z.mean,circles=sqrt(Z.var),fg=cluster.col,inches=FALSE,add=TRUE,asp=1)
     else
       for(c in seq_len(G)){
-        spheres3d(Z.mean[c,],radius=sqrt(Z.var[c]),color=cluster.col[c],alpha=0.2)
+        rgl::spheres3d(Z.mean[c,],radius=sqrt(Z.var[c]),color=cluster.col[c],alpha=0.2)
       }
   }
   
@@ -518,7 +518,7 @@ THron3d<-function(x,y=NULL,z=NULL,size=1,...){
   v.right<-c(1,0,0)+xyz-centroid
   v.far<-c(1/2,0,sqrt(3)/2)+xyz-centroid
   v.top<-c(1/2,1/sqrt(2),sqrt(3)/4)+xyz-centroid
-  triangles3d(rbind(v.left,v.right,v.top,
+  rgl::triangles3d(rbind(v.left,v.right,v.top,
                     v.left,v.top,v.far,
                     v.left,v.right,v.far,
                     v.top,v.right,v.far)*size,y=NULL,z=NULL,...)

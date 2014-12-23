@@ -5,7 +5,8 @@
 	Improved compatibility with ergm 3.2, including removal of
 	mcmc.diagnostics() and other prototypes.
 
-	A number of bugs have been fixed.
+	A number of bugs have been fixed, including some code warnings
+	from the latest versions of R.
 
 	Kirk Li and Li Wang have been added as contributors for making
 	many of these fixes.
