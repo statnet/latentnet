@@ -98,10 +98,10 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
 
     best.perms.l<-{
       if(threads==1)
-        list(klswitch.step2.snowFT.slave(1,lib=path.to.me,Q=Q,pK.l=pK.l))
+        list(klswitch.step2.snowFT.slave(1,lib=.latentnetEnv$path.to.me,Q=Q,pK.l=pK.l))
       else snowFT::performParallel(threads,1:threads,
                            klswitch.step2.snowFT.slave,
-                           lib=path.to.me,
+                           lib=.latentnetEnv$path.to.me,
                            Q=Q,
                            pK.l=pK.l)
     }
