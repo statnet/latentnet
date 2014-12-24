@@ -11,7 +11,7 @@ Authors@R: c(
 	   person("Li","Wang",role=c("ctb"),email="lxwang@gmail.com"),
            person("Kirk","Li",role=c("ctb"),email="kirkli@uw.edu")
 	   )
-Description: A package to fit and simulate latent position and cluster models for statistical networks. 
+Description: Fit and simulate latent position and cluster models for statistical networks. 
 Depends: statnet.common, network, ergm (>= 3.2.0)
 Imports: sna, mvtnorm, abind, coda, tools
 Suggests: KernSmooth, snowFT, rgl, heplots, rlecuyer
