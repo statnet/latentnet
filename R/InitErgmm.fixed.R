@@ -159,7 +159,8 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
     cn<-x
   }else{
     xm<-as.matrix(x)
-    cn<-if(!is.null(attrname)) attrname else paste("matrix",length(model[["X"]])+1)
+    cn<-if(!is.null(attrname)) attrname else 
+				paste("latentcov", as.character(sys.call(0)[[3]]),	sep = ".")
   }
 
   .ergmm.add.fixed(model, xm, mean, var, cn)
