@@ -1,3 +1,21 @@
+2.6-1
+	A bug in the calculation of BIC has been fixed: the effective
+	number of parameters in the likelihood was not correctly
+	calculated. If the BIC is only used in selecting the number of
+	clusters, the qualitative results should not be affected (i.e.,
+	the selected cluster count should be the same). (This BIC should
+	not, in general, be used to select the latent space dimension or
+	whether or not to include random effects.)
+
+	bic.ergmm() no longer prints out a warning with random actor
+	effects models.
+
+	bic.ergmm() now takes an additional argument, eff.obs, specifying
+	how to calculate the effective number of observations. The default
+	prior to this release has been the number of actors in the
+	network. The new default is the number of ties, as Handcock et
+	al. (2007) recommend.
+
 2.6-0
 	Normal model with identity link can now estimate the dispersion
 	(variance) parameter. (Before, it had to be specified.)

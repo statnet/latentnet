@@ -12,9 +12,10 @@
 \method{summary}{ergmm}(object, point.est=c(
                                      if(!is.null(object[["mle"]])) "mle",
                                      if(!is.null(object[["sample"]])) c("pmean","mkl")
-                                     ), quantiles=c(.025,.975),se="mle"\%in\%point.est,\dots)
+                                     ), quantiles=c(.025,.975),se="mle"\%in\%point.est,
+                                     bic.eff.obs=c("ties", "dyads", "actors"),\dots)
 
-bic.ergmm(object)
+bic.ergmm(object, eff.obs=c("ties", "dyads", "actors"), ...)
 }
 
 \arguments{
@@ -26,8 +27,25 @@ bic.ergmm(object)
   \code{"mkl"} (if MCMC was run).}
   \item{quantiles}{ Posterior quantiles (credible intervals) to compute. }
   \item{se}{ Whether to compute standard errors. Defaults to \code{TRUE}
-  if MLE was fit.}
-  \item{\dots}{Additional arguments. Currently unused.}
+    if MLE was fit.}
+  \item{eff.obs, bic.eff.obs}{What effective sample size to use for BIC calculation?
+    \describe{
+      
+      \item{\code{"ties"}}{the number of non-missing ties in the
+	network. This is the approach recommended by Handcock et
+	al. (2007) and the default. Not well-defined for valued networks.}
+
+      \item{\code{"dyads"}}{the number of non-missing dyads (potential
+	ties) in the network.}
+
+      \item{\code{"actors"}}{the number of actors in the network. The
+	default prior to 2.6.1.}
+
+      \item{a number}{to specify a specific sample size.}
+    }
+  }
+      
+  \item{\dots}{Additional arguments. }
 }
 \value{
   For \code{summary}, an object of class
@@ -35,10 +53,17 @@ bic.ergmm(object)
   available.
 
   The BICs are available as the element "bic" of the object
-  returned. Note that BIC computed for the random effects models may not
-  be correct.
-
+  returned.
+  
   \code{bic.ergmm} returns the BIC for the model directly.
+}
+\details{
+  Note that BIC computed for the random effects models uses the
+  same formualtion as Handcock et al., so it is likely correct, but
+  has not been peer-reviewed.
+
+  Also, it is not necessarily appropriate to use this BIC to select the
+  dimension of latent space and whether or not to include random actor effects.
 }
 \seealso{ \code{\link{ergmm.object}},
   \code{\link{ergmm}}
@@ -47,7 +72,13 @@ bic.ergmm(object)
 \references{ Chris Fraley and Adrian E. Raftery
   (2002). \emph{Model-based clustering, discriminant analysis, and
   density estimation}. Journal of the American Statistical Association,
-  97(458), 611-631.
+97(458), 611-631.
+
+  Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum (2007).
+ \emph{Model-Based Clustering for Social Networks}.
+ Journal of the Royal Statistical Society: Series A (Statistics in
+ Society), 170(2), 301-354.
+
 }
 
 \examples{

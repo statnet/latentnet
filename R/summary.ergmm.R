@@ -1,7 +1,8 @@
 summary.ergmm <- function (object, point.est=c(
                                      if(!is.null(object[["mle"]])) "mle",
-                                     if(!is.null(object[["sample"]])) c("pmean","mkl")
-                                     ), quantiles=c(.025,.975),se="mle"%in%point.est,...)
+                                     if(!is.null(object[["sample"]])) c("pmean","mkl")),
+                           quantiles=c(.025,.975),se="mle"%in%point.est,
+                           bic.eff.obs=c("ties", "dyads", "actors"), ...)
 {
   extraneous.argcheck(...)
   ## Just for convenience.
@@ -150,7 +151,7 @@ summary.ergmm <- function (object, point.est=c(
   }
 
   if(!is.null(object[["mkl"]])){
-    summ[["bic"]]<-bic.ergmm(object)
+    summ[["bic"]]<-bic.ergmm(object, eff.obs = bic.eff.obs, ...)
   }
 
   class(summ)<-'summary.ergmm'
@@ -235,7 +236,8 @@ print.summary.ergmm<-function(x,...){
   }
 }
 
-bic.ergmm<-function(object){
+bic.ergmm<-function(object, eff.obs=c("ties", "dyads", "actors"), ...){
+  extraneous.argcheck(...)
   if(is.null(object[["mkl"]])){
     stop("MKL estimates were not computed for this fit.")
   }
@@ -244,9 +246,17 @@ bic.ergmm<-function(object){
 
   n<-network.size(model[["Yg"]])
   
+  if(is.character(eff.obs)){
+    eff.obs <- switch(match.arg(eff.obs),
+                      ties = {if(!all(match(model[["Ym"]], c(0,1)) > 0, na.rm=TRUE)) warning('Number of "ties" in a valued network may not be well-defined.'); network.edgecount(model[["Yg"]])},
+                      dyads = network.dyadcount(model[["Yg"]]),
+                      actors = n)
+  }
+  
+  
   condZRE<-with(object,find.mle(model,mkl,given=list(Z=mkl[["Z"]],sender=mkl[["sender"]],receiver=mkl[["receiver"]],sociality=mkl[["sociality"]]),control=object[["control"]]))
 
-  bic<-with(model,list(Y = -2*condZRE[["lpY"]] + (p+n*d + (sender + receiver + sociality)*n )*log(n),
+  bic<-with(model,list(Y = -2*condZRE[["lpY"]] + (p)*log(eff.obs),
                               Z =
                               if(d>0){
                                 if(G>0){
