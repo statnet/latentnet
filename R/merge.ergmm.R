@@ -55,7 +55,7 @@ combine.2ergmm<-function(fit1,fit2){
   fit1[["sampling.start"]]<-c(fit1[["sampling.start"]],fit2[["sampling.start"]])
 
   # MCMC sample itself
-  fit1[["sample"]]<-stack.ergmm.par.list.list(c(unstack.ergmm.par.list(fit1[["sample"]]),unstack.ergmm.par.list(fit2[["sample"]])))
+  fit1[["sample"]]<-.stack.ergmm.par.list.list(c(unstack.ergmm.par.list(fit1[["sample"]]),unstack.ergmm.par.list(fit2[["sample"]])))
 
   # Control
   if(!("controls" %in% names(fit1)))

@@ -129,7 +129,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
     if(control[["verbose"]]>1) cat(i,"")
     pm.old<-pm
     pm<-find.mpe(model,pm,
-                 given=merge.lists(list(Z.K=pm[["Z.K"]]),user.start),
+                 given=.merge.lists(list(Z.K=pm[["Z.K"]]),user.start),
                  prior=prior,control=control,fit.vars=need.to.fit)
     if(is.null(pm)) stop("Problem fitting. Starting values may have to be supplied by the user.")
     if(need.to.fit[["Z.K"]])pm[["Z.K"]]<-try(mbc.VII.EM(G,pm[["Z"]],resume=list(Z.mean=pm[["Z.mean"]],Z.var=pm[["Z.var"]],Z.pK=pm[["Z.pK"]]))[["Z.K"]])

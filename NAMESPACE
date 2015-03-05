@@ -5,7 +5,30 @@ importFrom(abind, abind)
 importFrom(sna, geodist)
 importFrom(mvtnorm, dmvnorm)
 importFrom(tools,file_path_as_absolute)
+importFrom(stats,simulate)
+importFrom(utils,unstack)
 import(network,statnet.common,coda,ergm)
+
+# ergmm methods:
+S3method(gof,ergmm)
+S3method(mcmc.diagnostics,ergmm)
+S3method(merge,ergmm)
+S3method(plot,ergmm)
+S3method(predict,ergmm)
+S3method(print,ergmm)
+S3method(summary,ergmm)
+S3method(simulate,ergmm)
+
+# ergmm.model methods:
+S3method(print,ergmm.model)
+S3method(simulate,ergmm.model)
+
+# summary.ergmm methods:
+S3method(print,summary.ergmm)
+
+# ergmm.par.list methods:
+S3method(length,ergmm.par.list)
+S3method(unstack,ergmm.par.list)
 
 # Export all names that do not begin with a dot.
 exportPattern("^[^\\.]")

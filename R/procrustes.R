@@ -1,4 +1,4 @@
-procrustes.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
+.procrustes.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]
   G<-dim(sample[["Z.mean"]])[2]
   d<-dim(Z.ref)[2]
@@ -23,8 +23,8 @@ procrustes.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
   sample
 }
 
-procr <- function(x, ...) UseMethod("procr")
-procr.matrix <- function(x, ref, ..., scale=FALSE, reflect=TRUE){
+.procr <- function(x, ...) UseMethod(".procr")
+.procr.matrix <- function(x, ref, ..., scale=FALSE, reflect=TRUE){
   ref <- sweep(ref, 2, colMeans(ref), "-")
   x <- sweep(x, 2, colMeans(x), "-")
 
@@ -34,6 +34,6 @@ procr.matrix <- function(x, ref, ..., scale=FALSE, reflect=TRUE){
   R
 }
 
-procr.ergmm.model <- function(x, A, ref, ...){
-  procr(A, ref, scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
+.procr.ergmm.model <- function(x, A, ref, ...){
+  .procr(A, ref, scale="scaling" %in% latent.effect.invariances[[x[["latentID"]]]],reflect="reflection" %in% latent.effect.invariances[[x[["latentID"]]]])
 }

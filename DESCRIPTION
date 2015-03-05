@@ -1,6 +1,6 @@
 Package: latentnet
-Version: 2.6-2326.1-2015.02.19-17.10.40
-Date: 2015-02-19
+Version: 2.7-2326-2328.1-2015.03.05-13.15.20
+Date: 2015-03-05
 Title:  Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
 	   person("Pavel N.", "Krivitsky", role=c("aut","cre"), email="pavel@uow.edu.au"),

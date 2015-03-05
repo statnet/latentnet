@@ -252,6 +252,7 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
                                          function(i) lpsum(mcmc.out.l[[i]][["mcmc.pmode"]])))]][["mcmc.pmode"]]
   result.list<-list(sample=list(),mcmc.mle=mcmc.mle,mcmc.pmode=mcmc.pmode)
   for(i in 1:length(mcmc.out.l)) result.list[["sample"]][[i]]<-mcmc.out.l[[i]][["sample"]]
+  class(result.list$sample) <- "ergmm.mcmc.list.list"
   result.list
 }
 
