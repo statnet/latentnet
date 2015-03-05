@@ -94,11 +94,6 @@ this data set is protected by the Creative Commons License
 \url{http://creativecommons.org/licenses/by-nc-nd/2.5/}.
 
 When publishing results obtained using this data set the original authors
-should be cited.  In addition this package should be cited as:
-
-Mark S. Handcock, David Hunter, Carter T. Butts, Steven M. Goodreau,
-and Martina Morris. 2003 
-\emph{statnet: An R package for the Statistical Modeling of Social Networks}
-\url{http://www.csde.washington.edu/statnet}.
+should be cited.  In addition this package should be cited.
 }
 \keyword{datasets}
