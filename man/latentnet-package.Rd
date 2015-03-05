@@ -1,4 +1,5 @@
-\name{latentnet}
+\name{latentnet-package}
+\alias{latentnet-package}
 \alias{latentnet}
 \title{Latent position and cluster models for networks}
 \description{

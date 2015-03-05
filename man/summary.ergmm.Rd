@@ -63,7 +63,27 @@ bic.ergmm(object, eff.obs=c("ties", "dyads", "actors"), ...)
   has not been peer-reviewed.
 
   Also, it is not necessarily appropriate to use this BIC to select the
-  dimension of latent space and whether or not to include random actor effects.
+  dimension of latent space and whether or not to include random actor
+  effects.
+
+  Prior to version 2.6.1, there was a bug in BIC calculation that used
+  \eqn{p + n(d+r+s)} as the sample size (where \eqn{p} is the number of
+  fixed effects, \eqn{n} the number of actors, \eqn{d}, the latent space
+  dimension, and \eqn{r} and \eqn{s} indicators of presence of sender
+  and receiver (or sociality) effects). This value should have been just
+  \eqn{p}.
+
+  The following applications could have produced different results:
+  \itemize{
+    \item{Using the BIC to select latent space dimension.}
+    \item{Using the BIC to decide whether or not to include random
+      effects.}
+  }
+  The following applications could not (i.e., would be off by a constant):
+  \itemize{
+    \item{Using the BIC to select the number of clusters.}
+    \item{Using the BIC to select the fixed effects to be used.}
+  }
 }
 \seealso{ \code{\link{ergmm.object}},
   \code{\link{ergmm}}

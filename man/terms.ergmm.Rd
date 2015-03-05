@@ -119,7 +119,7 @@
   latent model term, with
 	optional clustering.}
       Adds a term to the model equal to the inner product of the latent positions:
-      \eqn{Z_i \cdot Z_j||}{sum(Z[i]*Z[j])}, where \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]}
+      \eqn{Z_i \cdot Z_j}{sum(Z[i]*Z[j])}, where \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]}
       are the positions of their respective actors in an unobserved social
       space. These positions may optionally have a finite spherical
       Gaussian mixture clustering structure. \emph{Note: For a
