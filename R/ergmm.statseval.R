@@ -10,7 +10,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   sample.size <- control[["sample.size"]]
 
   if(!is.null(Z.ref)){
-    control[["Z.ref"]]<-scale(model, list(Z=Z.ref))[["Z"]]
+    control[["Z.ref"]]<-.scale.ergmm.model(model, list(Z=Z.ref))[["Z"]]
   }
   if(!is.null(Z.K.ref)){
     control[["Z.K.ref"]]<-Z.K.ref
@@ -30,7 +30,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
   if(control[["tofit"]][["mle"]]) mcmc.out<-add.mcmc.mle.mle.ergmm(mcmc.out)
   if(control[["tofit"]][["mkl"]]) mcmc.out<-add.mkl.pos.ergmm(mcmc.out)
   if(control[["tofit"]][["mkl.mbc"]]) mcmc.out<-add.mkl.mbc.ergmm(mcmc.out)
-  if(control[["tofit"]][["procrustes"]]) mcmc.out<-procr.sample.ergmm(mcmc.out)
+  if(control[["tofit"]][["procrustes"]]) mcmc.out<-.procr.sample.ergmm(mcmc.out)
 
   class(mcmc.out)<-"ergmm"
   return(mcmc.out)
@@ -38,7 +38,7 @@ ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z
 
 statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   if(!is.null(Z.ref)){
-    control[["Z.ref"]]<-scale(x[["model"]], list(Z=Z.ref))
+    control[["Z.ref"]]<-.scale.ergmm.model(x[["model"]], list(Z=Z.ref))
   }
   
   if(!is.null(Z.K.ref)){
@@ -49,7 +49,7 @@ statsreeval.ergmm<-function(x,Z.ref=NULL,Z.K.ref=NULL,rerun=FALSE){
   if(rerun) x<-add.mcmc.mle.mle.ergmm(x)
   if(rerun) x<-add.mkl.pos.ergmm(x)
   x<-add.mkl.mbc.ergmm(x)
-  x<-procr.sample.ergmm(x)
+  x<-.procr.sample.ergmm(x)
   x
 }
 
@@ -106,7 +106,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
     
     if(x[["control"]][["verbose"]]) cat("Using the highest-likelihood iteration to seed another MLE fit... ")
     mle2 <- find.mle.loop(x[["model"]],x[["mcmc.mle"]],control=x[["control"]])
-    mle2<-scale(x[["model"]],mle2)
+    mle2<-.scale.ergmm.model(x[["model"]],mle2)
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
   else mle2<-list(lpY=-Inf)
@@ -115,10 +115,10 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   
   if(mle2[["lpY"]]>mle1[["lpY"]]) x[["mle"]]<-mle2 else x[["mle"]]<-mle1
   
-  x[["mle"]]<-scale(x[["model"]],x[["mle"]])
+  x[["mle"]]<-.scale.ergmm.model(x[["model"]],x[["mle"]])
 
   if(x[["model"]][["d"]] && "rotation" %in% latent.effect.invariances[[x[["model"]][["familyID"]]]]){
-    x[["mle"]][["Z"]]<-x[["mle"]][["Z"]]%*%procr(x[["model"]],Z.ref,x[["mle"]][["Z"]])
+    x[["mle"]][["Z"]]<-x[["mle"]][["Z"]]%*%.procr(x[["model"]],Z.ref,x[["mle"]][["Z"]])
   }
   
   x
@@ -151,8 +151,8 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
   if(is.null(x[["pmode"]]) || pmode2[["mlp"]]>x[["pmode"]][["mlp"]]) x[["pmode"]]<-pmode2
     
   if(x[["model"]][["d"]]>0 && !is.null(x[["pmode"]])){
-    x[["pmode"]]<-scale(x[["model"]], x[["pmode"]])
-    P<-procr(x[["model"]],x[["pmode"]][["Z"]],Z.ref)
+    x[["pmode"]]<-.scale.ergmm.model(x[["model"]], x[["pmode"]])
+    P<-.procr(x[["model"]],x[["pmode"]][["Z"]],Z.ref)
     x[["pmode"]][["Z"]]<-x[["pmode"]][["Z"]]%*%P
     if(!is.null(x[["pmode"]][["Z.mean"]]))
       x[["pmode"]][["Z.mean"]]<-x[["pmode"]][["Z.mean"]]%*%P
@@ -177,16 +177,16 @@ add.mkl.pos.ergmm<-function(x, Z.ref=best.avail.Z.ref.ergmm(x)){
     if(x[["control"]][["verbose"]]) cat("Fitting the MKL locations... ")
     x[["mkl"]]<-find.mkl(x[["model"]],x[["sample"]],x[["control"]])
   }
-  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-scale(x[["model"]],x[["mkl"]])
-  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-x[["mkl"]][["Z"]]%*%procr(x[["model"]],x[["mkl"]][["Z"]],Z.ref)
+  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]]<-.scale.ergmm.model(x[["model"]],x[["mkl"]])
+  if(!is.null(x[["mkl"]][["Z"]])) x[["mkl"]][["Z"]]<-x[["mkl"]][["Z"]]%*%.procr(x[["model"]],x[["mkl"]][["Z"]],Z.ref)
   if(x[["control"]][["verbose"]]) cat("Finished.\n")
   x
 }
 
-procr.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),...){
+.procr.sample.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x),...){
   if(!is.null(x[["sample"]]) && x[["model"]][["d"]]>0 && "rotation" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]] && "reflection" %in% latent.effect.invariances[[x[["model"]][["latentID"]]]]){
     if(x[["control"]][["verbose"]]) cat("Performing Procrustes transformation... ")
-    x[["sample"]]<-procrustes.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
+    x[["sample"]]<-.procrustes.Z.mean.C(x[["sample"]],Z.ref,verbose=x[["control"]][["verbose"]])
     if(x[["control"]][["verbose"]]) cat("Finished.\n")
   }
   x
@@ -232,10 +232,7 @@ best.avail.Z.K.ref.ergmm<-function(x){
   return(mbc.VII.EM(x[["model"]][["G"]],best.avail.Z.ref.ergmm(x))[["Z.K"]])
 }
 
-# We are overriding the generic for "scale" to make it more flexible.
-scale<-function (x, ...) UseMethod("scale")
-
-scale.ergmm.model<-function(x,theta,...){
+.scale.ergmm.model<-function(x,theta,...){
   extraneous.argcheck(...)
   if(!is.null(theta[["Z"]])){
     if("translation" %in% latent.effect.invariances[[x[["latentID"]]]]){

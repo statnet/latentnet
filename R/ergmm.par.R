@@ -73,7 +73,7 @@ length.ergmm.par.list<-function(x){
   }
 }
 
-stack.ergmm.par.list.list<-function(x,...){
+.stack.ergmm.par.list.list<-function(x,...){
   extraneous.argcheck(...)
   mcmcsample<-list()
 

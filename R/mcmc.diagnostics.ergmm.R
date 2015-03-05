@@ -46,17 +46,6 @@ mcmc.diagnostics.ergmm <- function(object,which.diags=c("cor","acf","trace","raf
   }
 }
 
-# We have to redefine this generic, since we need to pass additional arguments to as.mcmc().
-as.mcmc<-function(x,...) UseMethod("as.mcmc")
-                                     # copying function defintions from coda
-as.mcmc.default <- function(x, ...) if (is.mcmc(x)) x else mcmc(x)
-as.mcmc.list.default <- function(x, ...) if (is.mcmc.list(x)) x else mcmc.list(x)
-as.mcmc.mcmc.list <- function(x, ...) {
-  if (nchain(x) == 1) 
-    return(x[[1]])
-  else stop("Can't coerce mcmc.list to mcmc object:\n more than 1 chain")
-}
-
 as.mcmc.ergmm<-as.mcmc.list.ergmm<-function(x,burnin=FALSE,
                              which.vars=NULL,
                              vertex.i=c(1),...){

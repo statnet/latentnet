@@ -17,7 +17,6 @@
 \alias{pack.optim}
 \alias{path.to.me}   
 \alias{proc.sample.ergmm}
-\alias{proc.Z.mean.C} 
 \alias{reg.fit.vars}
 
 \alias{not.given}
@@ -71,7 +70,6 @@
 
 \alias{cmp.lists}
 \alias{merge.lists}
-\alias{sum.lists}
 \alias{filter.list}
 \alias{zero.list}
 
@@ -96,8 +94,6 @@
 \alias{switch.Q.K}
 \alias{labelswitch.K}
 \alias{get.beta.eff}
-\alias{scale.ergmm.model}
-\alias{scale}
 \alias{get.beta.ext}
 \alias{as.mcmc}
 \alias{as.mcmc.default}
@@ -167,11 +163,11 @@
 \alias{xtabs.ergmm}
 \alias{clust.homogeneity}
 
-\alias{procr}
-\alias{procr.ergmm.model}
-\alias{procr.matrix}
-\alias{procr.sample.ergmm}
-\alias{procrustes.Z.mean.C}
+%% \alias{procr}
+%% \alias{procr.ergmm.model}
+%% \alias{procr.matrix}
+%% \alias{procr.sample.ergmm}
+%% \alias{procrustes.Z.mean.C}
 
 \description{
   Internal latentnet functions.

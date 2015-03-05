@@ -1,4 +1,4 @@
-2.6-1
+2.7-0
 	A bug in the calculation of BIC has been fixed: the effective
 	number of parameters in the likelihood was not correctly
 	calculated. If the BIC is only used in selecting the number of
@@ -15,6 +15,9 @@
 	prior to this release has been the number of actors in the
 	network. The new default is the number of ties, as Handcock et
 	al. (2007) recommend.
+
+	latentnet no longer accesses unexported object in coda's
+	namespace, as it no longer needs to redefine coda's generics.
 
 2.6-0
 	Normal model with identity link can now estimate the dispersion

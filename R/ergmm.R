@@ -79,7 +79,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
             burnin.state<-sapply(1:burnin.control[["threads"]],
                                  function(thread) burnin.sample[[thread]][[burnin.size]],
                                  simplify=FALSE)
-            burnin.sample<-stack.ergmm.par.list.list(burnin.sample)
+            burnin.sample<-.stack.ergmm.par.list.list(burnin.sample)
           }
           if(control[["store.burnin"]]) burnin.samples[[length(burnin.samples)+1]]<-burnin.sample
           if(control[["pilot.runs"]]){
@@ -107,7 +107,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
                                     prior.l=list(prior),
                                     control.l=list(control),
                                     sample.size.l=list(ceiling(control[["sample.size"]]/control[["threads"]])))
-      mcmc.out[["sample"]] <- stack.ergmm.par.list.list(mcmc.out[["sample"]])
+      mcmc.out[["sample"]] <- .stack.ergmm.par.list.list(mcmc.out[["sample"]])
     }
     if(control[["verbose"]]) cat("Finished.\n")
   }
