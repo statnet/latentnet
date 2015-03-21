@@ -1,8 +1,5 @@
 \name{gof}
 \alias{gof.ergmm}
-\alias{gof.default}
-\alias{gof.formula}
-\alias{gof.ergmm}
 \alias{gof}
 \title{Conduct Goodness-of-Fit Diagnostics on a Exponential Family
   Random Graph Mixed Model Fit}

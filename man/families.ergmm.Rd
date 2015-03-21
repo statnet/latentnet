@@ -24,7 +24,6 @@
 \alias{EY.fs}
 \alias{EY.Poisson.log}
 \alias{EY.normal.identity}
-\alias{mk.lp.optim.fs}
 \alias{pY.fs}
 \alias{pY.Poisson.log}
 \alias{pY.Bernoulli.logit}

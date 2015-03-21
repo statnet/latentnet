@@ -18,6 +18,7 @@ S3method(predict,ergmm)
 S3method(print,ergmm)
 S3method(summary,ergmm)
 S3method(simulate,ergmm)
+S3method(as.mcmc,ergmm)
 
 # ergmm.model methods:
 S3method(print,ergmm.model)
@@ -29,6 +30,10 @@ S3method(print,summary.ergmm)
 # ergmm.par.list methods:
 S3method(length,ergmm.par.list)
 S3method(unstack,ergmm.par.list)
+S3method(as.mcmc.list,ergmm.par.list)
+S3method(`[`,ergmm.par.list)
+S3method(`[[`,ergmm.par.list)
+S3method(`$`,ergmm.par.list)
 
 # Export all names that do not begin with a dot.
-exportPattern("^[^\\.]")
+export(as.mcmc.ergmm,as.mcmc.list.ergmm,ergmm.control,control.ergmm,print.ergmm,show.ergmm,as.ergmm.par.list,as.mcmc.list.ergmm.par.list,"[.ergmm.par.list","[[.ergmm.par.list","$.ergmm.par.list",length.ergmm.par.list,unstack.ergmm.par.list,del.iteration,ergmm.prior,ergmm,latent,latentcluster,gof.ergmm,mcmc.diagnostics.ergmm,merge.ergmm,plot.ergmm,plot3d.ergmm,predict.ergmm,simulate.ergmm.model,simulate.ergmm,summary.ergmm,print.summary.ergmm,bic.ergmm,InitErgmm.intercept,InitErgmm.Intercept,InitErgmm.1,InitErgmm.loops,InitErgmm.loopcov,InitErgmm.loopfactor,InitErgmm.euclidean,InitErgmm.bilinear,InitErgmm.latentcov,InitErgmm.receivercov,InitErgmm.rreceiver,InitErgmm.rsender,InitErgmm.rsociality,InitErgmm.sendercov,InitErgmm.socialitycov,ergmm.drawpie)

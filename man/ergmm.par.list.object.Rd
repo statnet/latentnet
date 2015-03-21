@@ -7,7 +7,6 @@
 \alias{[[.ergmm.par.list}
 \alias{$.ergmm.par.list}
 \alias{length.ergmm.par.list}
-\alias{stack.ergmm.par.list.list}
 \alias{unstack.ergmm.par.list}
 \alias{del.iteration}
 \title{A List of ERGMM Parameter Configuration}

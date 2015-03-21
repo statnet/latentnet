@@ -3,9 +3,10 @@
 	number of parameters in the likelihood was not correctly
 	calculated. If the BIC is only used in selecting the number of
 	clusters, the qualitative results should not be affected (i.e.,
-	the selected cluster count should be the same). (This BIC should
-	not, in general, be used to select the latent space dimension or
-	whether or not to include random effects.)
+	the selected cluster count should be the same), and similarly if
+	it is used to select the fixed effects to use in the model. (This
+	BIC should not, in general, be used to select the latent space
+	dimension or whether or not to include random effects.)
 
 	bic.ergmm() no longer prints out a warning with random actor
 	effects models.
@@ -18,6 +19,11 @@
 
 	latentnet no longer accesses unexported object in coda's
 	namespace, as it no longer needs to redefine coda's generics.
+
+	latentnet now exports the minimum necesary functions. Current
+	dependencies should not be affected, but if you would like some
+	function to be exported for your package, please let the
+	maintainer know.
 
 2.6-0
 	Normal model with identity link can now estimate the dispersion

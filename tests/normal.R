@@ -17,7 +17,7 @@ dm<--as.matrix(dist(Z))
 ym<-rnorm(n*n,2+dm,sqrt(y.var))
 
 set.edge.value(y,"v",ym)
-image(getYm(y,"v"))
+image(as.matrix(y,a="v",m="a"))
 y.fit<-ergmm(y~euclidean(d=2,G=2),response="v",family="normal",fam.par=list(prior.var=y.var.prior,prior.var.df=2),verbose=TRUE)
 
 Z.mkl<-plot(y.fit,Z.ref=Z)
@@ -32,7 +32,7 @@ dm<-tcrossprod(Z)
 ym<-rnorm(n*n,2+dm,sqrt(y.var))
 
 set.edge.value(y,"v",ym)
-image(getYm(y,"v"))
+image(as.matrix(y,a="v",m="a"))
 y.fit<-ergmm(y~bilinear(d=2,G=2),response="v",family="normal",fam.par=list(prior.var=y.var.prior,prior.var.df=2),verbose=TRUE)
 
 Z.mkl<-plot(y.fit,Z.ref=Z)
@@ -44,7 +44,7 @@ cat("No latent space:\n")
 
 ym<-rnorm(n*n,0,sqrt(y.var))
 set.edge.value(y,"v",ym)
-image(getYm(y,"v"))
+image(as.matrix(y,a="v",m="a"))
 y.fit<-ergmm(y~1,response="v",family="normal",fam.par=list(prior.var=y.var.prior,prior.var.df=2),verbose=TRUE)
 summary(y.fit)
 
