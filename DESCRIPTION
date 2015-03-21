@@ -1,6 +1,6 @@
 Package: latentnet
-Version: 2.7-2326-2328.1-2015.03.05-13.15.20
-Date: 2015-03-05
+Version: 2.7-2365.1-2015.03.21-17.24.44
+Date: 2015-03-21
 Title:  Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
 	   person("Pavel N.", "Krivitsky", role=c("aut","cre"), email="pavel@uow.edu.au"),
@@ -14,6 +14,6 @@ Authors@R: c(
 Description: Fit and simulate latent position and cluster models for statistical networks. 
 Depends: statnet.common, network, ergm (>= 3.2.0)
 Imports: sna, mvtnorm, abind, coda, tools
-Suggests: KernSmooth, snowFT, rgl, heplots, rlecuyer
+Suggests: KernSmooth, snowFT, rgl, heplots, rlecuyer, ergm.userterms
 License: GPL-3 + file LICENSE
 URL: http://www.statnet.org
