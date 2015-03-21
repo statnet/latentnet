@@ -108,7 +108,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                     deparse(substitute(x)),sep="")
 
   }else if(what=="mle"){
-    summ<-summary(x,point.est=c("mle"),se=FALSE)
+    summ<-summary(x,point.est=c("mle"),se=FALSE, bic.eff.obs=NULL)
     Z.pos <- summ[["mle"]][["Z"]]
     summ<-summ[["mle"]]
     Z.mean<-summ[["Z.mean"]]
@@ -121,7 +121,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                     deparse(substitute(x)))
 
   }else if(what=="pmean"){
-    summ<-summary(x,point.est=c("pmean"))
+    summ<-summary(x,point.est=c("pmean"), bic.eff.obs=NULL)
     Z.pos <- summ[["pmean"]][["Z"]]
     summ<-summ[["pmean"]]
     Z.mean<-summ[["Z.mean"]]
@@ -133,7 +133,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                     deparse(substitute(x)))
 
   }else if(what=="mkl"){
-    summ<-summary(x,point.est=c("pmean","mkl"))
+    summ<-summary(x,point.est=c("pmean","mkl"), bic.eff.obs=NULL)
     Z.pos <- summ[["mkl"]][["Z"]]
     if(!is.null(x[["mkl"]][["mbc"]])){
       Z.mean<-summ[["mkl"]][["mbc"]][["Z.mean"]]
@@ -151,7 +151,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                     deparse(substitute(x)))
 
   }else if(what=="pmode"){
-    summ<-summary(x,point.est=c("pmode"))
+    summ<-summary(x,point.est=c("pmode"), bic.eff.obs=NULL)
     Z.pos <- summ[["pmode"]][["Z"]]
     summ<-summ[["pmode"]]
     Z.mean<-summ[["Z.mean"]]
@@ -163,7 +163,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                     deparse(substitute(x)))
 
   }else if(what=="cloud"){
-    summ<-summary(x,point.est=c("pmean","mkl"))
+    summ<-summary(x,point.est=c("pmean","mkl"), bic.eff.obs=NULL)
     Z.pos <- summ[["mkl"]][["Z"]]
     if(d!=2) stop("Cloud plots are only available for 2D latent space models.")
     
@@ -195,7 +195,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       density.par[["mfrow"]]<-rep(min(ceiling(sqrt(wanted)),4),2)
     }
     
-    summ<-summary(x,point.est=c("pmean","mkl"))
+    summ<-summary(x,point.est=c("pmean","mkl"), bic.eff.obs=NULL)
     Z.pos <- summ[["mkl"]][["Z"]]
     if(d!=2) stop("Density plots are only available for 2D latent space models.")
 
