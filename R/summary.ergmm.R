@@ -150,7 +150,7 @@ summary.ergmm <- function (object, point.est=c(
     summ[["pmode"]]<-object[["pmode"]]
   }
 
-  if(!is.null(object[["mkl"]])){
+  if(!is.null(object[["mkl"]]) && !is.null(bic.eff.obs)){
     summ[["bic"]]<-bic.ergmm(object, eff.obs = bic.eff.obs, ...)
   }
 
@@ -278,8 +278,10 @@ bic.ergmm<-function(object, eff.obs=c("ties", "dyads", "actors"), ...){
                               )
             )
 
-  if(model[["sender"]] || model[["receiver"]] || model[["sociality"]] || model[["G"]]==0)
-    warning("Theory for BIC has not been developed for random actor (sender, receiver, and sociality) effects. Similarly, it may not be appropriate to use BIC to compare clustered models with the unclustered model. Their use in latentnet is entirely heuristic.")
+  if(!.latentnetEnv$BIC.warned){
+    message("NOTE: It is not certain whether it is appropriate to use latentnet's BIC to select latent space dimension, whether or not to include actor-specific random effects, and to compare clustered models with the unclustered model.")
+    .latentnetEnv$BIC.warned <- TRUE
+  }
   
   bic[["overall"]]<-sum(unlist(bic))
   

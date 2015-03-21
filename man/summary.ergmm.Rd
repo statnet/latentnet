@@ -39,9 +39,12 @@ bic.ergmm(object, eff.obs=c("ties", "dyads", "actors"), ...)
 	ties) in the network.}
 
       \item{\code{"actors"}}{the number of actors in the network. The
-	default prior to 2.6.1.}
+	default prior to 2.7.0.}
 
       \item{a number}{to specify a specific sample size.}
+
+      \item{\code{NULL}}{Don't compute the BIC at all. Mostly for
+	internal use.}
     }
   }
       
@@ -62,11 +65,14 @@ bic.ergmm(object, eff.obs=c("ties", "dyads", "actors"), ...)
   same formualtion as Handcock et al., so it is likely correct, but
   has not been peer-reviewed.
 
-  Also, it is not necessarily appropriate to use this BIC to select the
+  This BIC can be (reasonably) safely used to select the number of
+  clusters or which fixed effects to include in the model. It is not
+  clear whether it is appropriate to use this BIC to select the
   dimension of latent space and whether or not to include random actor
-  effects.
+  effects. These considerations are independent of the bug described
+  below.
 
-  Prior to version 2.6.1, there was a bug in BIC calculation that used
+  Prior to version 2.7.0, there was a bug in BIC calculation that used
   \eqn{p + n(d+r+s)} as the sample size (where \eqn{p} is the number of
   fixed effects, \eqn{n} the number of actors, \eqn{d}, the latent space
   dimension, and \eqn{r} and \eqn{s} indicators of presence of sender
