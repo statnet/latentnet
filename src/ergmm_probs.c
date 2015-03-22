@@ -79,7 +79,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, in
 			    0,
 			    res[2],
 			    dispersion!=0?1:0,
-			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
+			    *latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
   };
   
   // Precompute the normalizing constant.
