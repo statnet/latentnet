@@ -1,4 +1,4 @@
-2.7-0
+2.7.0
 	A bug in the calculation of BIC has been fixed: the effective
 	number of parameters in the likelihood was not correctly
 	calculated. If the BIC is only used in selecting the number of
@@ -25,7 +25,9 @@
 	function to be exported for your package, please let the
 	maintainer know.
 
-2.6-0
+	Minor memory bugs have been fixed.
+
+2.6.0
 	Normal model with identity link can now estimate the dispersion
 	(variance) parameter. (Before, it had to be specified.)
 
@@ -41,11 +43,11 @@
 	Sampson's monks dataset included with latentnet now has some
 	additional attributes.
 
-2.5-1
+2.5.1
 	A bug in importing of ergm terms for undirected networks has been
 	fixed.
 
-2.5-0
+2.5.0
 	The deprecated term `latent` has been removed. Use `euclidean`
 	instead.
 
@@ -59,12 +61,12 @@
 
 	Intercepts are handled a bit more intelligently.
 
-2.4-5
+2.4.5
 	A workaround for the overridden as.mcmc() generic has been added.
 
 	All examples lines are now shorter than 100 characters.
 
-2.4-4
+2.4.4
 	The implementation of Procrustes analysis has been reworked in two
 	ways: 1) latentnet no longer depends on the shapes library; and 2)
 	the C implementation of procrustes no longer uses the (deprecated)
@@ -82,11 +84,11 @@
 	More examples and tests have been made conditional on environment
 	variable ENABLE_statnet_TESTS being set.
 
-2.4-3
+2.4.3
 	In order to make upgrading from the preview release automatic,
 	this version number has been skipped.
 
-2.4-2
+2.4.2
 	Latentnet is now compliant with R 2.15.0.
 
 	Latentnet no longer relies on a certain behavior of .C() that was
@@ -112,7 +114,7 @@
 	Documentation has been cleaned up and updated. Examples and tests
 	have been shortened, speeding up R CMD check.
 
-2.4-1
+2.4.1
 	Latentnet now prints a warning when computing BICs for random
 	effects models, since we do not have a theoretical justification
 	for that.
@@ -120,7 +122,7 @@
 	A bug reported by Jorge González in the multithreaded code has
 	been fixed.
 
-2.4-0
+2.4.0
 	Removed the dependence on package 'mclust'. (The functionality
 	used has been reimplemented internally.) This means that
 	commercial use of the latent position clustering functionality
@@ -137,7 +139,7 @@
 
 	Made the require()s for the suggested packages more informative.
 
-2.3-0
+2.3.0
 	Added an ability to fit bilinear latent space models of
 	Hoff (2005).
 
@@ -145,19 +147,19 @@
 
 	Documentation fixes.
 
-2.2-3
+2.2.3
 	Fixed a bug in handling of missing data, uncovered by Xiaoyue
 	"Maggie" Niu, and added a test for it.
 
 	Documentation fixes.
 
-2.2-2
+2.2.2
 	More documentation fixes.
 
-2.2-1
+2.2.1
 	Documentation fixes.
 
-2.2-0
+2.2.0
 	Ability to fit random effects (actor heterogeneity) models.
 
 	Removed ergmm.par class --- it has been rendered obsolete by
