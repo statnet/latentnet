@@ -179,7 +179,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
 		  *dir,iY,dY,
 		  *family-1,
 		  iconsts,dconsts,
-		  latent_eff ? *latent_eff-1 : 1000,
+		  *latent_eff ? *latent_eff-1 : 1000,
 
 		  X,
 

@@ -94,7 +94,7 @@ void post_pred_wrapper(int *S,
 			    0, // clusters
 			    res[2], // sociality
           res[3], // dispersion
-			    latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
+			    *latent_eff ? ERGMM_MCMC_latent_eff[*latent_eff-1] : NULL
   };
   
   for(unsigned int s=0; s<*S; s++){
