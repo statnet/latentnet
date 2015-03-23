@@ -73,11 +73,11 @@ bic.ergmm(object, eff.obs=c("ties", "dyads", "actors"), ...)
   below.
 
   Prior to version 2.7.0, there was a bug in BIC calculation that used
-  \eqn{p + n(d+r+s)} as the sample size (where \eqn{p} is the number of
-  fixed effects, \eqn{n} the number of actors, \eqn{d}, the latent space
-  dimension, and \eqn{r} and \eqn{s} indicators of presence of sender
-  and receiver (or sociality) effects). This value should have been just
-  \eqn{p}.
+  \eqn{p + n(d+r+s)} as the number of parameters in the likelihood
+  (where \eqn{p} is the number of fixed effects, \eqn{n} the number of
+  actors, \eqn{d}, the latent space dimension, and \eqn{r} and \eqn{s}
+  indicators of presence of sender and receiver (or sociality)
+  effects). This value should have been just \eqn{p}.
 
   The following applications could have produced different results:
   \itemize{
