@@ -59,7 +59,7 @@ dlpY.deta.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) (Y-eta)/
 dlpY.ddispersion.normal.identity<-function(Y,eta,dispersion=NULL,fam.par=NULL) sum(na.omit(c(Y-eta))^2/dispersion^2/2-1/dispersion/2)
 rsm.normal.identity<-function(eta,dispersion=NULL,fam.par=NULL){
   n<-dim(eta)[1]
-  matrix(rnorm(n*n,eta,sqrt(dispersion)),n,n)
+  matrix(rnorm(n*n,eta,sqrt(fam.par[["prior.var"]])),n,n)
 }
 EY.normal.identity<-function(eta,dispersion=NULL,fam.par=NULL) eta
 
