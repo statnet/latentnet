@@ -100,7 +100,7 @@ sim.1.ergmm<-function(model,par,prior=list()){
 
   eta<-ergmm.eta(model,mypar)
 
-  sm<-rsm.fs[[model[["familyID"]]]](eta,model[["fam.par"]])
+  sm<-rsm.fs[[model[["familyID"]]]](eta,dispersion=mypar[["dispersion"]],fam.par=model[["fam.par"]])
   if(!has.loops(model[["Yg"]]))
     diag(sm)<-0
   net<-with(model,as.network.matrix(sm,matrix.type="adjacency",

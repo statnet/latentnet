@@ -25,6 +25,9 @@ points(Z,pch=5)
 cat("Mean squared difference:",sum((Z.mkl-Z)^2),"\n")
 
 
+# Simulate from the fit.
+y.sim <- simulate(y.fit, nsim=1)
+
 cat("Bilinear:\n")
 
 dm<-tcrossprod(Z)
