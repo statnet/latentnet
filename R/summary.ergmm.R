@@ -119,13 +119,13 @@ summary.ergmm <- function (object, point.est=c(
       pmean[["cov"]]<-beta.cov
       pmean[["cor"]]<-cov2cor(beta.cov)
       
-      beta.q0<-apply(sample[["beta"]],2,function(x) min(mean(x<=0),mean(x>=0)))
+      beta.q0<-apply(sample[["beta"]],2,function(x) min(mean(x<=0),mean(x>=0))*2)
       
       coef.table<-data.frame(pmean[["beta"]],
                            t(apply(sample[["beta"]],2,function(x)quantile(x,quantiles))),
                            beta.q0,
                            row.names=model[["coef.names"]])
-      colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"Quantile of 0")
+      colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"2*min(Pr(>0),Pr(<0))")
       pmean[["coef.table"]]<-coef.table
       object[["pmean"]]<-pmean
     }
