@@ -1,3 +1,11 @@
+2.7.1
+	The "Quantile of 0" printed out for the posterior mean summary is
+	now "2*min(Pr(>0),Pr(<0))". Also, previously, this quantity was
+	not doubled.
+
+	A bug in simulation for normal families have been fixed;
+	dispersion is now handled correctly.
+
 2.7.0
 	A bug in the calculation of BIC has been fixed: the effective
 	number of parameters in the likelihood was not correctly

@@ -1,3 +1,6 @@
+library(statnet.common)
+opttest({  # only run if ENABLE_MPI_TESTS flag is set, to avoid on windows where MPI is hard to get working. 
+
 library(latentnet)
 
 # Also test parallel code.
@@ -13,3 +16,5 @@ plot(simulate(onlymcmc))
 plot(with(onlymcmc,simulate(model,par=sample[[1]],prior=prior)))
 
 heatmap(predict(onlymcmc),Rowv=NA,Colv=NA)
+
+}, "parallel_MPI", testvar="ENABLE_MPI_TESTS")
