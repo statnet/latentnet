@@ -11,5 +11,5 @@
 
 .onAttach <- function(lib, pkg){
   sm <- statnetStartupMessage("latentnet",c("statnet"),FALSE)
-  if(!is.null(sm)) packageStartupMessage(sm,"NOTE: BIC calculation prior latentnet 2.7.0 had a bug in the calculation of the effective number of parameters. See help(summary.ergmm) for details.")
+  if(!is.null(sm)) packageStartupMessage(sm,"NOTE: BIC calculation prior to latentnet 2.7.0 had a bug in the calculation of the effective number of parameters. See help(summary.ergmm) for details.")
 }
