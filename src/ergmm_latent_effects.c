@@ -9,7 +9,8 @@
 
 double (*ERGMM_MCMC_latent_eff[N_LATENT_EFF])(double *u, double *v, unsigned int dim)={
   ERGMM_MCMC_latent_eff_negative_Euclidean_distance,
-  ERGMM_MCMC_latent_eff_dot_product
+  ERGMM_MCMC_latent_eff_dot_product,
+  ERGMM_MCMC_latent_eff_negative_Euclidean_distance2
 };
 
 /* 
@@ -36,3 +37,15 @@ double ERGMM_MCMC_latent_eff_dot_product(double *u, double *v, unsigned int dim)
   return(prod);
 }
 
+/* 
+   2 Negative Euclidean distance squared
+*/ 
+double ERGMM_MCMC_latent_eff_negative_Euclidean_distance2(double *u, double *v, unsigned int dim){
+  unsigned int k;
+  double dist,dist2=0;
+  for(k=0;k<dim;k++){
+    dist=u[k]-v[k];
+    dist2+=dist*dist;
+  }
+  return(-dist2);
+}

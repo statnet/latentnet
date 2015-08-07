@@ -22,6 +22,26 @@ dlpY.dZ.negative.Euclidean<-function(Z,dlpY.deta){
   dlpY.dZ
 }
 
+
+## negative squared Euclidean distance
+latent.effect.negative.Euclidean2<-function(Z){
+  -as.matrix(dist(Z))^2
+}
+
+dlpY.dZ.negative.Euclidean2<-function(Z,dlpY.deta){
+  n<-dim(Z)[1]
+  d<-dim(Z)[2]
+  dlpY.dZ<-matrix(0,n,d)
+  for(k in 1:d){
+    Z.norm.k<-sapply(1:n,function(j)
+                     sapply(1:n,function(i)
+                            Z[i,k]-Z[j,k]))*2
+    dlpY.dZ[,k]<-dlpY.dZ[,k]+
+      -sapply(1:n,function(i) crossprod(Z.norm.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
+  }
+  dlpY.dZ
+}
+
 ## dot product (bilinear)
 latent.effect.bilinear<-function(Z){
   tcrossprod(Z)
@@ -44,17 +64,22 @@ dlpY.dZ.bilinear<-function(Z,dlpY.deta){
 ## Dispatcher and information functions
 
 latent.effect.IDs<-list(negative.Euclidean=1,
-                        bilinear=2)
+                        bilinear=2,
+                        negative.Euclidean2=3)
 
 latent.effect.names<-c("negative.Euclidean",
-                       "bilinear")
+                       "bilinear",
+                       "negative.Euclidean2")
 
 latent.effect.invariances <- list(negative.Euclidean = c("translation", "rotation", "reflection"),
-                                  bilinear = c("rotation", "reflection"))
+                                  bilinear = c("rotation", "reflection"),
+                                  negative.Euclidean = c("translation", "rotation", "reflection"))
 
 
 latent.effect.fs<-c(latent.effect.negative.Euclidean,
-                    latent.effect.bilinear)
+                    latent.effect.bilinear,
+                    latent.effect.negative.Euclidean2)
 
 dlpY.dZ.fs<-c(dlpY.dZ.negative.Euclidean,
-              dlpY.dZ.bilinear)
+              dlpY.dZ.bilinear,
+              dlpY.dZ.negative.Euclidean2)
