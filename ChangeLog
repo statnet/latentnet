@@ -1,3 +1,25 @@
+2.7.2
+	A bug in model initialization, reported by Ryan Haunfelder, has
+	been fixed. It appears to have been introduced in version 2.5.1.
+	Only undirected networks are affected, if the model uses any of
+	the following terms:
+	* latentcov()
+	* socialitycov()
+	* loopfactor()
+	* loopcov()
+	* intercept specified implicitly or via 1 in the formula (though
+	  not one specified via edges term)
+	The covariate (X) values associated with the affected term was
+	doubled. This means that (for a weak prior), the coefficients and
+	the standard errors for the affected terms were both halved, with
+	other terms, including latent ones, unaffected. Significance and
+	fit metrics were not affected, and neither were predictions.
+
+	Behavior of latentcov() for an undirected network given an
+	asymmetric covariate matrix has changed: where before, the matrix
+	were symmetrized by adding it to its transpose, now, the upper
+	triangle overwrites the lower.
+
 2.7.1
 	The "Quantile of 0" printed out for the posterior mean summary is
 	now "2*min(Pr(>0),Pr(<0))". Also, previously, this quantity was
