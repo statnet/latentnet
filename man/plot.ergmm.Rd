@@ -102,9 +102,7 @@
     configuration to this one before plotting.}
   \item{use.rgl}{Whether the package rgl should be used to plot fits for
     latent space dimension 3 or higher in 3D. Defaults to
-    \code{FALSE}. If set to \code{TRUE} and a 3-dimensional plot is
-    produced, edges are not plotted and
-    argument \code{pie} has no effect.}
+    \code{FALSE}. If set to \code{TRUE}, argument \code{pie} has no effect.}
   \item{vertex.3d.cex}{Controls the size of the plotting symbol when
     \code{use.rgl=TRUE}.}
   \item{edge.plot3d}{If \code{TRUE} (the default) edges or arcs in a 3D
