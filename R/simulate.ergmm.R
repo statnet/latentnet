@@ -1,13 +1,7 @@
 simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
   extraneous.argcheck(...)
-  
-  ## If the random seed has been specified, save the old seed, to
-  ## pick up where it left off. If not, don't.
-  if(!is.null(seed)){
-    old.seed<-.Random.seed
-    .Random.seed<-seed
-  }else runif(1) # This is needed to initialize .Random.seed if it isn't already.
-  start.seed<-.Random.seed
+
+  set.seed(seed)
   
   l<-list()
   for(i in 1:nsim){
@@ -29,14 +23,8 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
 
 simulate.ergmm.model<-function(object,nsim=1,seed=NULL,par,prior=list(),...){
   extraneous.argcheck(...)
-  
-  ## If the random seed has been specified, save the old seed, to
-  ## pick up where it left off. If not, don't.
-  if(!is.null(seed)){
-    old.seed<-.Random.seed
-    .Random.seed<-seed
-  }else runif(1) # This is needed to initialize .Random.seed if it isn't already.
-  start.seed<-.Random.seed
+
+  set.seed(seed)
 
   l<-list()
   for(i in 1:nsim){
