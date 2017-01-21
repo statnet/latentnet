@@ -14,7 +14,7 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
   if(nsim > 1){
     l <- list(formula = object[["model"]][["formula"]], networks = l,
                      stats = NULL, coef=NULL)
-    attr(l,"class")<-"network.series"
+    attr(l,"class")<-"network.list"
   }else{
     l <- l[[1]]
   }
@@ -35,7 +35,7 @@ simulate.ergmm.model<-function(object,nsim=1,seed=NULL,par,prior=list(),...){
 
   if(nsim==1) return(l[[1]])
   else{
-    attr(l,"class")<-"network.series"
+    attr(l,"class")<-"network.list"
     return(l)
   }
 }
