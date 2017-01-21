@@ -25,7 +25,8 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
   if(!is.null(seed)){
     old.seed<-try(.Random.seed)
     if(inherits(old.seed,"try-error")) old.seed<-NULL
-    .Random.seed<-seed
+    if(length(seed)==1) set.seed(seed)
+    else .Random.seed<<-as.integer(seed)
   }else runif(1) # This is needed to initialize .Random.seed if it isn't already.
   start.seed<-.Random.seed
   
@@ -126,7 +127,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
     }
   
   v[["starting.seed"]]<-start.seed
-  if(!is.null(seed) && !is.null(old.seed)) .Random.seed<-old.seed
+  if(!is.null(seed) && !is.null(old.seed)) .Random.seed<<-old.seed
   
   v
 }
