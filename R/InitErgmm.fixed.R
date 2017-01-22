@@ -52,9 +52,8 @@
   Yg<-model[["Yg"]]
   f <- ~Yg
   
-  # this is a stupid hack to pick out one term from the formula; is there a better way?
-  f[[3]] <- as.list(attr(terms(model$formula), 'variables'))[[term.index+2]]
-  #f[[3]] <- as.call(c(list(term.name), ...))
+  f[[3]] <- statnet.common::term.list.formula(model$formula[[3]])[[term.index]]
+
   if(!is.dyad.independent(f)) warning("Term `", term.name, "` induces dyadic dependence. Likelihood will be effectively replaced by pseudolikelihood.", call.=FALSE)
   if(has.loops(Yg)) warning("Imported ergm term `", term.name, "` will set its dyadic covariate for self-loops, X[i,i,k], to 0. Use `loopfactor` and `loopcov` to model self-loops.", call.=FALSE)
   
