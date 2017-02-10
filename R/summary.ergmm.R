@@ -37,7 +37,7 @@ summary.ergmm <- function (object, point.est=c(
         if(se){
           beta.hess<-mle[["hessian"]][1:p,1:p]
           
-          beta.cov <- try(robust.inverse(-beta.hess), silent=TRUE)
+          beta.cov <- try(MASS::ginv(-beta.hess), silent=TRUE)
           if(inherits(beta.cov,"try-error")){
             warning("Coefficient Hessian appears to be singular. Using a less accurate estimate.")
             beta.cov <- diag(1/diag(-beta.hess))
