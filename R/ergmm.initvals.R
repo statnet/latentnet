@@ -53,7 +53,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   }
   
   if(need.to.fit[["Z.pK"]]){
-    pm[["Z.pK"]]<-tabulate(pm[["Z.K"]])/n
+    pm[["Z.pK"]]<-tabulate(pm[["Z.K"]],G)/n
   }
   
   if(need.to.fit[["Z.var"]]){

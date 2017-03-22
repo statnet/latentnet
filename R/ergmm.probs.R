@@ -404,7 +404,7 @@ find.mpe<-function(model,start,given=list(),prior=list(),control,fit.vars=NULL,o
 
   mpe<-.merge.lists(mpe,given)
   mpe[["Z.K"]]<-.merge.lists(start,given)[["Z.K"]]
-  mpe[["Z.pK"]]<-if(!is.null(mpe[["Z.K"]])) tabulate(mpe[["Z.K"]])/n
+  mpe[["Z.pK"]]<-if(!is.null(mpe[["Z.K"]])) tabulate(mpe[["Z.K"]],G)/n
   
   if(mlp)
     mpe[["mlp"]]<-ergmm.lp(model,mpe,prior=prior,given=given,opt=opt)
