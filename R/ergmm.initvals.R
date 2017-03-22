@@ -212,6 +212,12 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
                 silent=TRUE)
 
     Z.K<-apply(Z.pZK,1,which.max)
+
+    ## Handle empty clusters (whose mean and variance show up as NaN).
+    theta <- within(theta, {
+      Z.mean[is.nan(Z.mean)] <- 0
+      Z.var[is.nan(Z.var)] <- 0
+    })
     
     if(inherits(EMloop,"try-error") || with(theta,max(Z.var)/min(Z.var))>.Machine$double.eps^-0.5){
       llk<-Inf
