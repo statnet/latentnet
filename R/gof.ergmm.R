@@ -173,6 +173,9 @@ gof.ergmm <- function (object, ..., nsim=100,
     }
   }
 
+  # Free up some space in the resulting object
+  rm(SimNetworkSeriesObj)
+	
   # calculate p-values
 
  if ('model' %in% all.gof.vars) {
