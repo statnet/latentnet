@@ -9,7 +9,8 @@ Authors@R: c(
 	   person("Jeremy", "Tantrum", role=c("ctb")),
 	   person("Peter D.", "Hoff", role=c("ctb")),
 	   person("Li","Wang",role=c("ctb"),email="lxwang@gmail.com"),
-           person("Kirk","Li",role=c("ctb"),email="kirkli@uw.edu")
+           person("Kirk","Li",role=c("ctb"),email="kirkli@uw.edu"),
+	   person("Jake","Fisher",role=c("ctb"),email="jcf26@duke.edu")
 	   )
 Description: Fit and simulate latent position and cluster models for statistical networks. 
 Depends: R (>= 2.8.0), statnet.common, network, ergm (>= 3.2.0)
