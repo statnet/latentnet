@@ -330,7 +330,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
                  object.scale=object.scale,
                  pad=pad,
                  suppress.axes=suppress.axes,
-                 vertex.sides=16*sqrt(vertex.cex),
+                 vertex.sides=vertex.sides,
                  jitter=FALSE,
                  usecurve=curve1D,
                  edge.curve=distances,
