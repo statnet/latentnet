@@ -1,3 +1,8 @@
+InitErgmm.latent <- function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+                             mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
+  stop("Term ",sQuote("latent()")," has been deprecated in favor of ",sQuote("euclidean()"),".")
+}
+
 InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)
