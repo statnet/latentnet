@@ -162,7 +162,7 @@ void ERGMM_MCMC_wrapper(int *sample_size,
   for(k=0;k<*p;k++){
     for(i=0;i<*n;i++){
       for(j=0;j<*n;j++){
-	X[k][i][j] = vX[ k*(*n)*(*n) + i*(*n) + j ];
+	X[k][i][j] = vX[ k*(*n)*(*n) + j*(*n) + i ];
       }
     }
   }
