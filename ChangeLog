@@ -1,3 +1,17 @@
+2.8.0
+	A bug in the MCMC sampling code, exposed by Philip Leifield's
+	work and localized by Mark Handcock and Peter Hoff, has been
+	fixed. The bug appears to have been introduced in latentnet 2.0 or
+	earlier.
+
+	This bug affects models for directed networks which have a fixed
+	effect that is asymmetrical. In particular, uses of nodeocov(),
+	nodeicov(), edgecov(), and latentcov() with an asymmetrical
+	covariate matrix are affected. The bug has the effect of
+	transposing the covariate matrix: nodeocov() effectively becomes
+	nodeicov() and vice versa, and edgecov()'s matrix is
+	transposed. See help("ergmm-terms") for more information.
+
 2.7.2
 	A bug in model initialization, reported by Ryan Haunfelder, has
 	been fixed. It appears to have been introduced in version 2.5.1.

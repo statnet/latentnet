@@ -326,6 +326,17 @@
   \code{...} are the arguments for the \code{ergm} term, will initialize
   \code{TERMNAME} with prior mean of 0 and prior variance of 9.
 
+  Prior to version 2.8.0, there was a bug in the handling of fixed
+  effects for directed networks in the MCMC code: the covariate matrices
+  were inadvertantly transposed in the C code, and so a covariate
+  \code{x[i,j]} instead affected dyad \eqn{(j,i)} and vice versa.
+  
+  In particular, \code{\link[ergm:ergm-terms]{nodeocov()}} effectively became
+  \code{\link[ergm:ergm-terms]{nodeicov()}} and vice versa, and
+  \code{\link[ergm:ergm-terms]{edgecov()}}'s covariate matrix is transposed.
+
+  Undirected and biparte undirected network models are unaffected.
+  
   Some caveats:
   \itemize{
     
@@ -340,7 +351,7 @@
       situations, but if you absolutely must model self-loops and
       non-self-edges in one term, use the deprecated terms below.}
     
-    \item{\code{latentnet} only fits models with dyadic
+    \item{\code{latentnet} only fits models with conditional dyadic
       independence. Terms that induce dyadic dependence (e.g.,
       \code{triangles}) can be used, but then the likelihood of the
       model will, effectively, be replaced with pseudolikelihood. (Note
