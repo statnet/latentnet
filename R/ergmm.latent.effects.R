@@ -1,6 +1,7 @@
 ### effect-specific functions
 
 ## negative Euclidean distance
+#' @importFrom stats dist
 latent.effect.negative.Euclidean<-function(Z){
   -as.matrix(dist(Z))
 }

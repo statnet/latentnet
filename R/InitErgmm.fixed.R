@@ -76,6 +76,7 @@ InitErgmm.Intercept<-InitErgmm.intercept<-InitErgmm.1<-function(model, mean=0, v
                    "(Intercept)")
 }
 
+#' @export
 InitErgmm.loops<-function (model, mean=0, var=9){
   if(!has.loops(model[["Yg"]]))
     stop("Self-loop term is  meaningless in a network without self-loops", call.=FALSE)
@@ -88,6 +89,7 @@ InitErgmm.loops<-function (model, mean=0, var=9){
   .ergmm.add.fixed(model, diag(1,network.size(model[["Yg"]]),network.size(model[["Yg"]])), mean, var, "loops")
 }
 
+#' @export
 InitErgmm.loopcov <- function (model, attrname, mean=0, var=9){
   if(!has.loops(model[["Yg"]]))
     stop("Self-loop covariates are meaningless in a network without self-loops", call.=FALSE)
@@ -105,6 +107,7 @@ InitErgmm.loopcov <- function (model, attrname, mean=0, var=9){
   .ergmm.add.fixed(model, xm, mean, var, cn)
 }
 
+#' @export
 InitErgmm.loopfactor <- function (model, attrname, base=1, mean=0, var=9){
   if(!has.loops(model[["Yg"]]))
     stop("Self-loop covariates are meaningless in a network without self-loops", call.=FALSE)
@@ -141,6 +144,7 @@ InitErgmm.loopfactor <- function (model, attrname, base=1, mean=0, var=9){
   model
 }
 
+#' @export
 InitErgmm.latentcov<-function (model, x, attrname=NULL,
                                mean=0, var=9) 
 {
@@ -165,6 +169,7 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
   .ergmm.add.fixed(model, xm, mean, var, cn)
 }
 
+#' @export
 InitErgmm.sendercov<-function (model, attrname, force.factor=FALSE, mean=0, var=9) 
 {
   if(!has.loops(model[["Yg"]])) warning("Term `sendercov` is deprecated for networks without self-loops. Use `nodeocov`, `nodecov`, `nodeofactor`, or `nodefactor` from package `ergm` instead.")
@@ -198,6 +203,8 @@ InitErgmm.sendercov<-function (model, attrname, force.factor=FALSE, mean=0, var=
   }
   model
 }
+
+#' @export
 InitErgmm.receivercov<-function (model, attrname, force.factor=FALSE, mean=0, var=9) 
 {
   if(!has.loops(model[["Yg"]])) warning("Term `receivercov` is deprecated for networks without self-loops. Use `nodeicov`, `nodecov`, `nodeifactor`, or `nodefactor` from package `ergm` instead.")
@@ -232,6 +239,7 @@ InitErgmm.receivercov<-function (model, attrname, force.factor=FALSE, mean=0, va
   model
 }
 
+#' @export
 InitErgmm.socialitycov<-function (model, attrname, force.factor=FALSE, mean=0, var=9) 
 {
   if(!has.loops(model[["Yg"]])) warning("Term `receivercov` is deprecated for networks without self-loops. Use `nodeicov`, `nodecov`, `nodeifactor`, or `nodefactor` from package `ergm` instead.")

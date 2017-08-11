@@ -2,6 +2,148 @@ plot3d.ergmm<-function(x,...){
   plot.ergmm(x,rgl=TRUE,...)
 }
 
+
+
+#' Plotting Method for class ERGMM
+#' 
+#' \code{\link{plot.ergmm}} is the plotting method for
+#' \code{\link[=ergmm.object]{ergmm}} objects.  For latent models, this plots
+#' the minimum Kullback-Leibler positions by default.  The maximum likelihood,
+#' posterior mean, posterior mode, or a particular iteration's or
+#' configuration's positions can be used instead, or pie charts of the
+#' posterior probabilities of cluster membership can be shown. See
+#' \code{\link{ergmm}} for more information on how to fit these models.
+#' 
+#' At this time, no plotting non-latent-space model fits is not supported.
+#' 
+#' Plots the results of an ergmm fit.
+#' 
+#' More information can be found by looking at the documentation of
+#' \code{\link{ergmm}}.
+#' 
+#' For bipartite networks, the events are marked with a bullet (small black
+#' circle) inside the plotting symbol.
+#' 
+#' @aliases plot.ergmm plot3d.ergmm
+#' @param x an R object of class \code{\link[=ergmm.object]{ergmm}}.  See
+#' documentation for \code{\link{ergmm}}.
+#' @param what Character vector, integer, or a list that specifies the point
+#' estimates to be used. Can be one of the follwoing:
+#'    \describe{
+#'      \item{\code{"mkl"}}{This is the defult. Plots the Minimum Kulblack-Leibler divergence values.}
+#'      \item{\code{"start"},\code{"burnin.start"}}{Plots the starting configuration.}
+#'      \item{\code{"sampling.start"}}{Plots the starting configuration of the sampling phase (the last burnin configuration).}
+#'      \item{\code{"mle"}}{Plots the maximum likelihood estimates. Random effects are treated as fixed.}
+#'      \item{\code{"pmean"}}{Plots the posterior means.}
+#'      \item{\code{"pmode"}}{Plots the conditional posterior mode.}
+#'      \item{\code{"cloud"}}{Plots the ``cloud'' of latent space position draws,
+#'    with their cluster colors.}
+#'      \item{\code{"density"}}{Plots density and contours of the posterior latent positions, and, in cluster models, each cluster.}
+#'      \item{\code{list}}{Plots the
+#'    configuration contained in the list.}
+#'      \item{integer}{Plots the configuration of \code{what}th MCMC draw stored in \code{x}.}
+#'    }
+#' @param pie For latent clustering models, each node is drawn as a pie chart
+#' representing the probabilities of cluster membership.
+#' @param rand.eff A character vector selecting "sender", "receiver",
+#' "sociality", or "total" random effects. Each vertex is scaled such that its
+#' area is proportional to the odds ratio due to its selected random effect.
+#' @param rand.eff.cap If not \code{NULL} and \code{rand.eff} is given, limits
+#' the scaling of the plotting symbol due to random effect to the given value.
+#' @param plot.means Whether cluster means are plotted for latent cluster
+#' models. The "+" character is used. Defaults to \code{TRUE}.
+#' @param plot.vars Whether circles with radius equal to the square root of
+#' posterior latent or intracluster variance estimates are plotted. Defaults to
+#' \code{TRUE}.
+#' @param suppress.axes Whether axes should \emph{not} be drawn. Defaults to
+#' \code{FALSE}. (Axes are drawn.)
+#' @param jitter1D For 1D latent space fits, it often helps to jitter the
+#' positions for visualization. This option controls the amount of jitter.
+#' @param curve1D Controls whether the edges in 1D latent space fits are
+#' plotted as curves. Defaults to \code{TRUE}.
+#' @param suppress.center Suppresses the plotting of "+" at the origin.
+#' Defaults to \code{FALSE}.
+#' @param cluster.col A vector of colors used to distinguish clusters in a
+#' latent cluster model.
+#' @param main,vertex.cex,vertex.col,xlim,ylim,vertex.sides, Arguments passed
+#' to \code{\link[network]{plot.network}}, whose defaults differ from those of
+#' \code{\link[network]{plot.network}}.
+#' @param object.scale,pad,edge.col,xlab,ylab Arguments passed to
+#' \code{\link[network]{plot.network}}, whose defaults differ from those of
+#' \code{\link[network]{plot.network}}.
+#' @param zlim,zlab Limits and labels for the third latent space dimension or
+#' principal component, if \code{use.rgl=TRUE}.
+#' @param labels Whether vertex labels should be displayed. Defaults to
+#' \code{FALSE}.
+#' @param print.formula Whether the formula based on which the \code{x} was
+#' fitted should be printed under the main title. Defaults to \code{TRUE}.
+#' @param Z.ref If given, rotates the the latent positions to the nearest
+#' configuration to this one before plotting.
+#' @param Z.K.ref If given, relabels the clusters to the nearest configuration
+#' to this one before plotting.
+#' @param use.rgl Whether the package rgl should be used to plot fits for
+#' latent space dimension 3 or higher in 3D. Defaults to \code{FALSE}. If set
+#' to \code{TRUE}, argument \code{pie} has no effect.
+#' @param vertex.3d.cex Controls the size of the plotting symbol when
+#' \code{use.rgl=TRUE}.
+#' @param edge.plot3d If \code{TRUE} (the default) edges or arcs in a 3D plot
+#' will be drawn. Otherwise, only vertices and clusters.
+#' @param zoom.on If given a list of vertex indices, sets the plotting region
+#' to the smallest that can fit those vertices.
+#' @param density.par A list of optional parameters for density plots:
+#'    \describe{
+#'      \item{\code{totaldens}}{Whether the overal density of latent space positions should be plotted. Defaults to \code{TRUE}.}
+#'      \item{\code{subdens}}{Whether the densities of latent space positions broken down by cluster should be plotted. Defaults to \code{TRUE}.}
+#'      \item{\code{mfrow}}{When plotting multiple clusters' densities, passed to \code{\link{par}}}
+#'    }
+#' @param \dots Other optional arguments passed to the
+#' \code{\link[network]{plot.network}} function.
+#' @return If applicable, invisibly returns the vertex positions plotted.
+#' @seealso \code{\link{ergmm}},\code{\link{ergmm.object}}, \code{network},
+#' \code{\link[network]{plot.network}}, \code{\link{plot}}
+#' @keywords graphs hplot
+#' @examples
+#' 
+#' \donttest{
+#' #
+#' # Using Sampson's Monk data, let's fit a 
+#' # simple latent position model
+#' #
+#' data(sampson)
+#' #
+#' # Using Sampson's Monk data, let's fit a
+#' # latent clustering random effects model
+#' # Store the burn-in.
+#' samp.fit <- ergmm(samplike ~ euclidean(d=2, G=3)+rreceiver,
+#'                   control=ergmm.control(store.burnin=TRUE))
+#' #
+#' # See if we have convergence in the MCMC
+#' mcmc.diagnostics(samp.fit)
+#' # We can also plot the burn-in:
+#' for(i in samp.fit$control$pilot.runs) mcmc.diagnostics(samp.fit,burnin=i)
+#' #
+#' # Plot the resulting fit.
+#' #
+#' plot(samp.fit,labels=TRUE,rand.eff="receiver")
+#' plot(samp.fit,pie=TRUE,rand.eff="receiver")
+#' plot(samp.fit,what="pmean",rand.eff="receiver")
+#' plot(samp.fit,what="cloud",rand.eff="receiver")
+#' plot(samp.fit,what="density",rand.eff="receiver")
+#' plot(samp.fit,what=5,rand.eff="receiver")
+#' 
+#' \dontrun{
+#' # Fit a 3D latent space model to Sampson's Monks
+#' samp.fit3 <- ergmm(samplike ~ euclidean(d=3))
+#' 
+#' # Plot the first two principal components of the
+#' # latent space positions
+#' plot(samp.fit,use.rgl=FALSE)
+#' # Plot the resulting fit in 3D
+#' plot(samp.fit,use.rgl=TRUE)
+#' }
+#' }
+#' @importFrom graphics plot 
+#' @export plot.ergmm
 plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
                        what="mkl",
                        main = NULL, xlab=NULL, ylab=NULL, zlab=NULL, xlim=NULL,ylim=NULL, zlim=NULL,
@@ -182,6 +324,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       main <- paste("MKL Latent Positions of", 
                     deparse(substitute(x)))
     plot(matrix(c(x[["sample"]][["Z"]]),ncol=2),pch=".")
+    #' @importFrom graphics points
     points(Z.pos,col=cluster.col[Z.K])
     points(Z.mean,col=cluster.col)
     
@@ -203,15 +346,20 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       stop("The 'density' option requires the 'KernSmooth' package.")
     }
 
+    #' @importFrom graphics par
     old.par<-par(mfrow=density.par[["mfrow"]],mar=c(2.5,2.5,1,1))
 
     Z.all<-matrix(c(aperm(x[["sample"]][["Z"]],c(2,1,3))),ncol=2)
 
     if(density.par[["totaldens"]]){
       plot(Z.all,type='n',xlab=xlab,ylab=ylab,...)
+      #' @importFrom graphics title
       title(main=paste("Posterior density of",deparse(substitute(x))), cex.main=0.7, ...)
       Z.bkde <- KernSmooth::bkde2D(Z.all,0.2,c(201,201))
+      #' @importFrom grDevices grey
+      #' @importFrom graphics image
       image(Z.bkde[["x1"]],Z.bkde[["x2"]],Z.bkde[["fhat"]],col=grey(seq(1,0,length=255)),add=TRUE)
+      #' @importFrom graphics box
       box()
     }
     
@@ -220,11 +368,14 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
       for(i in 1:G){
         plot(Z.all,main=paste("Class",i),type="n",...)
         Z.bkde <- KernSmooth::bkde2D(Z.all[Z.K.all==i,],0.2,c(101,101))
+        #' @importFrom grDevices col2rgb
         col<-c(col2rgb(cluster.col[i])/255)
+        #' @importFrom grDevices rgb
         image(Z.bkde[["x1"]],Z.bkde[["x2"]],Z.bkde[["fhat"]],add=TRUE,
               col=rgb(seq(1,col[1],length=255),
                 seq(1,col[2],length=255),
                 seq(1,col[3],length=255)))
+        #' @importFrom graphics contour
         contour(Z.bkde[["x1"]],Z.bkde[["x2"]],Z.bkde[["fhat"]],add=TRUE, nlevels=4,
                 drawlabels=FALSE,
                 col="white")
@@ -271,6 +422,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     }
   }else if(d>3 && use.rgl){
     ## Plot the first three principal components.
+    #' @importFrom stats prcomp
     prc<-prcomp(Z.pos)
     Z.pos<-predict(prc,Z.pos)[,1:3]
     if(G) Z.mean<-predict(prc,Z.mean)[,1:3]
@@ -350,6 +502,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     if(edge.plot3d){
       el<-as.matrix(Yg,matrix.type="edgelist")
       if(is.directed(Yg) && requireNamespace("heplots",quietly=TRUE)){
+        #' @importFrom stats median
         medlen <- median(apply(el, 1, function(e){
           Z1 <- Z.pos[e[1],]
           Z2 <- Z.pos[e[2],]
@@ -381,6 +534,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   if(!use.rgl){
     ## For 1D plots, only plot horizontal axis ticks.
     if(x[["model"]][["d"]]==1 && curve1D==TRUE) {
+      #' @importFrom graphics axis
       axis(1)
     }
     
@@ -427,6 +581,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
 
   ## Plot the cluster standard deviations.
   if(plot.vars){
+    #' @importFrom graphics symbols
     if(!use.rgl)
       symbols(Z.mean,circles=sqrt(Z.var),fg=cluster.col,inches=FALSE,add=TRUE,asp=1)
     else
@@ -438,6 +593,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
   invisible(Z.pos)
 }
 
+#' @importFrom stats rnorm sd
 coords.1D<-function(Z,curve1D,jitter1D){
   if(curve1D){
     Z.pos<-cbind(Z,rep(0,length(Z)))
@@ -489,6 +645,7 @@ ergmm.plotting.vertex.radius<-function(vertex.cex,xylim,object.scale){
 }
 
 THra3d<-function(x,y=NULL,z=NULL,size=1,color="white",alpha=1,...){
+  #' @importFrom grDevices xyz.coords
   xyz<-xyz.coords(x=x,y=y,z=z)
   n<-length(xyz[["x"]])
   size<-rep(size,length.out=n)
@@ -501,6 +658,7 @@ THra3d<-function(x,y=NULL,z=NULL,size=1,color="white",alpha=1,...){
 }
 
 THron3d<-function(x,y=NULL,z=NULL,size=1,...){
+  #' @importFrom grDevices xyz.coords
   xyz<-xyz.coords(x=x,y=y,z=z)
   xyz<-with(xyz,c(x,y,z))/size
   centroid<-c(1/2,1/(2*sqrt(2)),sqrt(3)/4)

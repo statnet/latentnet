@@ -1,6 +1,7 @@
 # Create a place for package-wide global variables.
 .latentnetEnv <- new.env()
 
+#' @importFrom tools file_path_as_absolute
 .onLoad <- function(lib, pkg){
   ## Remember where we loaded this instance of latentnet, so that
   ## the snowFT slave functions could do the same.

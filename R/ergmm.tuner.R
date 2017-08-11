@@ -57,6 +57,7 @@ get.sample.deltas<-function(model,sample,control){
     beta.rate<-beta.rate+mean(sample[["beta.rate"]][use.draws])/control[["threads"]]
 
     beta.ext<-get.beta.ext(model,sample)
+    #' @importFrom stats ar
     beta.ext.ar.eff<-1/(1-apply(beta.ext,2,function(b) ar(b,order.max=1,aic=FALSE)$ar))
     acf.adjust<-acf.adjust*beta.ext.ar.eff/exp(mean(log(beta.ext.ar.eff)))
 

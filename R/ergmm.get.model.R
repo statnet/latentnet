@@ -123,7 +123,8 @@ get.beta.eff<-function(model){
 ##               }
 ##                      ))
 ## }
-  
+
+#' @importFrom utils find
 .ergmm.available.terms <- function() sub(grep(x=c(sapply(suppressWarnings(find("^InitErgmm.*$",simple.words=FALSE,mode="function")), ls)),pattern="^InitErgmm.*$",perl=TRUE,value=TRUE),pattern="^InitErgmm\\.",replacement="",perl=TRUE)
 
 .ergmm.add.intercept <- function(model){

@@ -1,6 +1,42 @@
 ## A routine to merge replications of ergmm calls with same inputs
 ## but different random seeds and/or starting values.
 
+
+
+#' Merge two or more replications of ERGMM fits
+#' 
+#' A \code{\link[=merge]{merge}} method for
+#' \code{\link[=ergmm.object]{ergmm}} objects, constructing an
+#' \code{\link[=ergmm.object]{ergmm}} object containing the combined MCMC
+#' output (and derived estimates) of several
+#' \code{\link[=ergmm.object]{ergmm}} objects produced with the same
+#' input parameters but different starting values, random seeds, etc..
+#' 
+#' 
+#' @param x The first \code{\link[=ergmm.object]{ergmm}} object to be merged.
+#' @param y The second \code{\link[=ergmm.object]{ergmm}} object to be merged.
+#' @param \dots Additional \code{\link[=ergmm.object]{ergmm}} objects to be
+#' merged.
+#' @param verbose If \code{TRUE}, marks the progress of merging.
+#' @return An object of class \code{\link[=ergmm.object]{ergmm}}.
+#' @seealso \code{\link{ergmm.object}}, \code{\link{ergmm}}
+#' @keywords graphs models
+#' @examples
+#' 
+#' \donttest{
+#' data(sampson)
+#' # Run two short MCMC-based fits.
+#' samp.fit1 <- ergmm(samplike ~ euclidean(d=2, G=3),
+#'   control=ergmm.control(burnin=1000,interval=10,sample.size=2000))
+#' samp.fit2 <- ergmm(samplike ~ euclidean(d=2, G=3),
+#'   control=ergmm.control(burnin=1000,interval=10,sample.size=2000))
+#' 
+#' # Combine them, and summarize the result.
+#' samp.fit <-  merge(samp.fit1,samp.fit2)
+#' summary(samp.fit)
+#' }
+#' 
+#' @export
 merge.ergmm<-function(x,y,...,verbose=FALSE){
   # Pairwise is may not be the most efficient way to do it, but it is the simplest.
   if(verbose) cat(".")

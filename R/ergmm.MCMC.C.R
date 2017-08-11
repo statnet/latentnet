@@ -11,6 +11,7 @@
 ### to the actual run.
 
 
+#' @useDynLib latentnet
 ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=NULL){
   Ym.noNA<- Ym <-model[["Ym"]]
   Ym.noNA[is.na(Ym.noNA)]<-0
@@ -236,6 +237,7 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
   if(any(l.sizes!=param.sets & l.sizes!=1)) stop("Length of each input list must be either 1 or a single other number.")
 
   if(!requireNamespace("snowFT",quietly=TRUE)) stop("Package 'snowFT' is required for multithreaded MCMC.")
+  #' @importFrom stats runif
   mcmc.out.l<-snowFT::performParallel(threads,rep(1:param.sets,reps),
                               ergmm.MCMC.snowFT.slave,
                               lib=.latentnetEnv$path.to.me,

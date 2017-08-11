@@ -38,6 +38,7 @@ thin.ergmm<-function(x,by,...){
   x
 }
 
+#' @importFrom stats xtabs
 xtabs.ergmm<-function(x,ref,min.plurality=0){
   ref->Reference
   apply(attr(x[["sample"]],"Q"),1,which.max)->Fitted
@@ -60,6 +61,7 @@ clust.homogeneity<-function(x,ref,soft=TRUE,marg=FALSE){
     p.K<-apply(xtabs.ergmm(x,ref),1,function(y)sum((y/sum(y))^2))    
   }
 
+  #' @importFrom stats weighted.mean
   if(marg) weighted.mean(p.K,tabulate(ref)*(tabulate(ref)-1))
   else p.K
 }

@@ -1,3 +1,28 @@
+#' Predicted Dyad Values for an ERGMM.
+#' 
+#' Returns a matrix of expected dyad values based on an ERGMM fit.
+#' 
+#' 
+#' @param object An obejct of class \code{\link[=ergmm.object]{ergmm}}.
+#' @param type One of "mkl", "start", "mle", "pmean", "mkl", "pmode", "post",
+#' an index of the iteration to use, or a list, for the configuration of
+#' parameters based on which the prediction is made. An exception is "post",
+#' which computes the expected dyad values integrated over the posterior.
+#' @param \dots Additional arguments. Currently unused.
+#' @return A sociomatrix of predicted values. Note that predictions are made
+#' for unobserved values (whether structural zeros or unobserved dyads).
+#' @seealso \code{\link[=ergmm.object]{ergmm}}
+#' @keywords graphs models distribution
+#' @examples
+#' 
+#' \donttest{
+#' data(sampson)
+#' monks.fit<-ergmm(samplike~euclidean(d=2,G=3),tofit="mcmc")
+#' heatmap(predict(monks.fit),Rowv=NA,Colv=NA)
+#' }
+#'
+#' @importFrom stats predict
+#' @export
 predict.ergmm<-function(object,...,type="post"){
   if(class(type)=="list"){
     type<-type

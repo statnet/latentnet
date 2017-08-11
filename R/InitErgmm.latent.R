@@ -1,8 +1,10 @@
+#' @export
 InitErgmm.latent <- function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                              mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   stop("Term ",sQuote("latent()")," has been deprecated in favor of ",sQuote("euclidean()"),".")
 }
 
+#' @export
 InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)
@@ -37,6 +39,7 @@ InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1
 }
 
 
+#' @export
 InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)
@@ -71,6 +74,7 @@ InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1,
   model
 }
 
+#' @export
 InitErgmm.euclidean2<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)

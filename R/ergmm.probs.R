@@ -380,6 +380,7 @@ find.mpe<-function(model,start,given=list(),prior=list(),control,fit.vars=NULL,o
   G<-model[["G"]]
   d<-model[["d"]]
   
+  #' @importFrom stats optim
   vmpe <- ##try(
               optim(par=start.vals,fn=optim.fs[["f"]],gr=optim.fs[["grad.f"]],
                     method="L-BFGS-B",
@@ -600,6 +601,7 @@ ergmm.lpBeta.grad<-function(theta,prior,given=list()){
   deriv
 }
 
+#' @importFrom stats dchisq
 dsclinvchisq<-function(x,df,scale=1,log=FALSE){
   if(log) dchisq(df*scale/x,df,log=TRUE)+log(df)+log(scale)-2*log(x)
   else dchisq(df*scale/x,df,log=FALSE)*df*scale/x/x

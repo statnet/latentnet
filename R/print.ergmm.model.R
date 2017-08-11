@@ -1,3 +1,4 @@
+#' @export
 print.ergmm.model<-function(x,...){
   cat("Exponential Random Graph Mixed Model definition\n")
   cat("Formula: ")

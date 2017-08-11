@@ -34,6 +34,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
     D[is.infinite(D)]<-2*n
     if(control[["verbose"]]) cat("Finished.\n")
     if(control[["verbose"]]) cat("Computing MDS locations... ")
+    #' @importFrom stats cmdscale
     pm[["Z"]] <- cmdscale(D,model[["d"]])
     if(control[["verbose"]]) cat("Finished.\n")
   }
@@ -41,6 +42,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   if(control[["verbose"]]) cat("Computing other initial values... ")
   
   if("Z" %in% names(pm)) {
+    #' @importFrom stats mahalanobis cov
     i.keep<-mahalanobis(pm[["Z"]],0,cov(pm[["Z"]]))<20
     if(need.to.fit[["Z"]]) pm[["Z"]][!i.keep,]<-0
   }
@@ -57,6 +59,7 @@ ergmm.initvals <- function(model,user.start,prior,control){
   }
   
   if(need.to.fit[["Z.var"]]){
+    #' @importFrom stats var
     if(!is.null(pm[["Z.K"]])) pm[["Z.var"]]<-sapply(1:G,function(g) var(c(subset(pm[["Z"]][i.keep,],pm[["Z.K"]][i.keep]==g))))
     else pm[["Z.var"]]<-var(c(pm[["Z"]][i.keep,]))
   }
@@ -69,10 +72,12 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if(need.to.fit[["beta"]]){
     if(model[["intercept"]])
+      #' @importFrom stats dist
       pm[["beta"]]<-logit(mean(Ym01,na.rm=TRUE))+if(!is.null(pm[["Z"]]))mean(as.matrix(dist(pm[["Z"]]))) else 0
     pm[["beta"]]<-c(pm[["beta"]],if(model[["intercept"]]) prior[["beta.mean"]][-1] else prior[["beta.mean"]])
   }
 
+  #' @importFrom stats na.omit
   bayes.prop<-function(x) (sum(x,na.rm=TRUE)+1)/(length(na.omit(x))+2)
   
   if(need.to.fit[["sociality"]]){
@@ -149,6 +154,7 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
   for(attempt in 1:EM.maxstarts){
     if(is.null(resume) || attempt>2){
       if(G>1){
+        #' @importFrom stats kmeans
         cl<-kmeans(Z,G,nstart=EM.maxstarts)
         theta<-list(Z.mean = cl[["centers"]],
                     Z.var = cl[["withinss"]]/cl[["size"]],
@@ -167,7 +173,8 @@ mbc.VII.EM<-function(G,Z,EM.maxit=200,EM.tol=.Machine$double.eps^0.5,EM.maxstart
                     Z.pK = 1)
       }
     }else theta<-resume
-    
+
+    #' @importFrom mvtnorm dmvnorm
     E.step<-function(theta){
       Z.pZK<-with(theta,cbind(sapply(seq_len(G),function(g) Z.pK[g]*dmvnorm(Z,Z.mean[g,],Z.var[g]*diag(1,nrow=d)))))
       sweep(Z.pZK,1,apply(Z.pZK,1,sum),"/")
