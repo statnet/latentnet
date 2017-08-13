@@ -52,7 +52,7 @@
 simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
   extraneous.argcheck(...)
 
-  set.seed(seed)
+  old.seed <- .save_set_seed(seed)
   
   l<-list()
   for(i in 1:nsim){
@@ -60,7 +60,7 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
     l[[i]]<-sim.1.ergmm(object[["model"]],object[["sample"]][[iter]],object[["prior"]])
   }
   
-  if(!is.null(seed)) .Random.seed<-old.seed
+  .restore_set_seed(old.seed)
 
   if(nsim > 1){
     l <- list(formula = object[["model"]][["formula"]], networks = l,
@@ -77,14 +77,14 @@ simulate.ergmm<-function(object, nsim=1, seed=NULL,...){
 simulate.ergmm.model<-function(object,nsim=1,seed=NULL,par,prior=list(),...){
   extraneous.argcheck(...)
 
-  set.seed(seed)
+  old.seed <- .save_set_seed(seed)
 
   l<-list()
   for(i in 1:nsim){
     l[[i]]<-sim.1.ergmm(object,par,prior)
   }
   
-  if(!is.null(seed)) .Random.seed<-old.seed
+  .restore_set_seed(old.seed)
 
   if(nsim==1) return(l[[1]])
   else{
