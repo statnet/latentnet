@@ -11,7 +11,7 @@
 
    > tools::package_native_routine_registration_skeleton(".", "./src/init.c")
 
-   in R started in the package's root directory.
+   in R started in the package's root directory, then adding #ifdef DEBUG / #endif around the P_alloc declarations.
 */
 
 #include <stdlib.h> // for NULL
@@ -24,7 +24,9 @@ extern void klswitch_pK_wrapper(void *, void *, void *, void *, void *, void *, 
 extern void klswitch_step2_wrapper(void *, void *, void *, void *, void *, void *);
 extern void klswitch_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void MBC_MCMC_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+#ifdef DEBUG
 extern void P_free_all();
+#endif // DEBUG
 extern void post_pred_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void procr_transform_wrapper(void *, void *, void *, void *, void *, void *, void *, void *);
 
@@ -35,7 +37,9 @@ static const R_CMethodDef CEntries[] = {
     {"klswitch_step2_wrapper",  (DL_FUNC) &klswitch_step2_wrapper,   6},
     {"klswitch_wrapper",        (DL_FUNC) &klswitch_wrapper,        13},
     {"MBC_MCMC_wrapper",        (DL_FUNC) &MBC_MCMC_wrapper,        20},
+#ifdef DEBUG
     {"P_free_all",              (DL_FUNC) &P_free_all,               0},
+#endif // DEBUG
     {"post_pred_wrapper",       (DL_FUNC) &post_pred_wrapper,       20},
     {"procr_transform_wrapper", (DL_FUNC) &procr_transform_wrapper,  8},
     {NULL, NULL, 0}
