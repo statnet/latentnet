@@ -12,6 +12,15 @@
 	nodeicov() and vice versa, and edgecov()'s matrix is
 	transposed. See help("ergmm-terms") for more information.
 
+	Term latent() has been added back, producing a sensible error
+	message.
+
+	The package now uses Roxygen to manage namespaces and
+	documentation.
+
+	Some miscellaneous bugs were also fixed; in particular, by
+	Jake Fisher and Jordan T. Bates.
+
 2.7.2
 	A bug in model initialization, reported by Ryan Haunfelder, has
 	been fixed. It appears to have been introduced in version 2.5.1.
