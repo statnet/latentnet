@@ -143,7 +143,7 @@ plot3d.ergmm<-function(x,...){
 #' }
 #' }
 #' @importFrom graphics plot 
-#' @export plot.ergmm
+#' @export
 plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex.cex)),
                        what="mkl",
                        main = NULL, xlab=NULL, ylab=NULL, zlab=NULL, xlim=NULL,ylim=NULL, zlim=NULL,
