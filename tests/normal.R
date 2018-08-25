@@ -7,8 +7,9 @@
 #
 #  Copyright 2003-2018 Statnet Commons
 #######################################################################
-library(latentnet)
+library(statnet.common)
 opttest({
+library(latentnet)
 n<-20
 
 y.var<-1/16

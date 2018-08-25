@@ -8,6 +8,7 @@
 #  Copyright 2003-2018 Statnet Commons
 #######################################################################
 library(latentnet)
+library(statnet.common)
 
 data(sampson)
 
