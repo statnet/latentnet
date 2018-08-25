@@ -14,8 +14,8 @@ Authors@R: c(
 	   person("Jordan T.", "Bates", role=c("ctb"),email="jtbates@gmail.com")	   
 	   )
 Description: Fit and simulate latent position and cluster models for statistical networks. 
-Depends: R (>= 2.8.0), statnet.common (>= 3.1.0), network, ergm (>= 3.9.0)
-Imports: sna, mvtnorm, abind, coda (>= 0.17.1), tools, MASS
+Depends: R (>= 2.8.0), network, ergm (>= 3.9.0)
+Imports: sna, mvtnorm, abind, coda (>= 0.17.1), tools, MASS, statnet.common (>= 3.1.0)
 Suggests: KernSmooth, snowFT, rgl, heplots, rlecuyer, ergm.userterms
 BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE
