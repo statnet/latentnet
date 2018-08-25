@@ -4,7 +4,6 @@
 \alias{simulate.ergmm}
 \alias{simulate}
 \alias{simulate.ergmm.model}
-\alias{simulate.ergmm.model}
 \title{Draw from the distribution of an Exponential Random Graph Mixed Model}
 \usage{
 \method{simulate}{ergmm}(object, nsim = 1, seed = NULL, ...)

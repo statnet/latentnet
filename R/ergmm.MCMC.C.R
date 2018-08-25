@@ -103,7 +103,8 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
 
   RESERVED<-2
 
-#  cat("Entering C routine... ")
+  #' @importFrom statnet.common NVL
+  #  cat("Entering C routine... ")
   Cret <- .C("ERGMM_MCMC_wrapper",
              # 1:
              sample.size=as.integer(sample.size),

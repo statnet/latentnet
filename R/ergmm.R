@@ -142,7 +142,7 @@
 #' #
 #' plot(samp.fit2, pie=TRUE)
 #' }
-#' @import network ergm statnet.common
+#' @import network ergm
 #' @export ergmm
 ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
                   control=control.ergmm(),

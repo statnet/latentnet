@@ -39,12 +39,12 @@
 #' @param \dots Additional arguments, to be passed to lower-level functions in
 #' the future.
 #' @return \code{\link{gof}} and \code{\link{gof.ergmm}} return an object of
-#' class \code{gofobject}.  This is a list of the tables of statistics and
+#' class \code{gof}.  This is a list of the tables of statistics and
 #' \eqn{p}-values.  This is typically plotted using
-#' \code{\link[ergm]{plot.gofobject}}.
+#' \code{\link[ergm]{plot.gof}}.
 #' @seealso \code{\link{ergmm}}, \code{\link[=ergmm.object]{ergmm (object)}},
 #' \code{\link[ergm]{ergm}}, \code{network}, \code{\link{simulate.ergmm}},
-#' \code{\link[ergm]{plot.gofobject}}
+#' \code{\link[ergm]{plot.gof}}
 #' @keywords models
 #' @examples
 #' 
@@ -85,9 +85,9 @@ gof.ergmm <- function (object, ..., nsim=100,
 
   formula <- object[["model"]][["formula"]]
 
-  trms <- ergm.getterms(formula)
-  if(length(trms)>2){
-    nw <- eval(trms[[2]], sys.parent())
+  if(length(formula)>2){
+    #' @importFrom statnet.common eval_lhs.formula
+    nw <- eval_lhs.formula(formula)
   }else{
     stop("A network object on the RHS of the formula argument must be given")
   }
@@ -406,6 +406,6 @@ gof.ergmm <- function (object, ..., nsim=100,
   "obs.dspart", "pobs.dspart", "sim.dspart", "psim.dspart", "pval.dspart", "bds.dspart",
   "GOF"
                         )
-  class(returnlist) <- "gofobject"
+  class(returnlist) <- "gof"
   returnlist
   }

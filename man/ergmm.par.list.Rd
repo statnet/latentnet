@@ -11,11 +11,6 @@
 \alias{length.ergmm.par.list}
 \alias{unstack.ergmm.par.list}
 \alias{del.iteration}
-\alias{as.ergmm.par.list}
-\alias{[.ergmm.par.list}
-\alias{length.ergmm.par.list}
-\alias{[[.ergmm.par.list}
-\alias{unstack.ergmm.par.list}
 \title{A List of ERGMM Parameter Configuration}
 \usage{
 as.ergmm.par.list(x, ...)

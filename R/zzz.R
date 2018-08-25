@@ -19,6 +19,7 @@
   .latentnetEnv$BIC.warned <- FALSE
 }
 
+#' @importFrom statnet.common statnetStartupMessage
 .onAttach <- function(lib, pkg){
   sm <- statnetStartupMessage("latentnet",c("statnet"),FALSE)
   if(!is.null(sm)) packageStartupMessage(sm,

@@ -60,8 +60,9 @@
 .import.ergm.term <-function(model, term.index, term.name, ..., mean=0, var=9){
   Yg<-model[["Yg"]]
   f <- ~Yg
-  
-  f[[3]] <- statnet.common::term.list.formula(model$formula[[3]])[[term.index]]
+
+  #' @importFrom statnet.common list_rhs.formula
+  f[[3]] <- list_rhs.formula(model$formula)[[term.index]]
 
   if(!is.dyad.independent(f)) warning("Term `", term.name, "` induces dyadic dependence. Likelihood will be effectively replaced by pseudolikelihood.", call.=FALSE)
   if(has.loops(Yg)) warning("Imported ergm term `", term.name, "` will set its dyadic covariate for self-loops, X[i,i,k], to 0. Use `loopfactor` and `loopcov` to model self-loops.", call.=FALSE)
