@@ -5,7 +5,7 @@
 #  open source, and has the attribution requirements (GPL Section 7) at
 #  http://statnet.org/attribution
 #
-#  Copyright 2003-2017 Statnet Commons
+#  Copyright 2003-2018 Statnet Commons
 #######################################################################
 bayesmbc.MCMC.C<-function(G, start, prior, sample.size=NULL, interval=NULL){
   ## Note that passing NULL as a parameter will cause the corresponding parameter in
