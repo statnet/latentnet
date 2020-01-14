@@ -13,7 +13,9 @@
 #define N_LATENT_EFF 3
 
 /* Declare "lookup tables" for latent effects. */
-double (*ERGMM_MCMC_latent_eff[N_LATENT_EFF])(double *u, double *v, unsigned int dim);
+typedef double (*ERGMM_MCMC_latent_eff_t)(double *u, double *v, unsigned int dim);
+
+extern ERGMM_MCMC_latent_eff_t ERGMM_MCMC_latent_eff[];
 
 /* Latent effect # */
 /* 0 */ 

@@ -16,7 +16,7 @@
 
 /* Define "lookup tables" for latent space effects. */
 
-double (*ERGMM_MCMC_latent_eff[N_LATENT_EFF])(double *u, double *v, unsigned int dim)={
+ERGMM_MCMC_latent_eff_t ERGMM_MCMC_latent_eff[N_LATENT_EFF]={
   ERGMM_MCMC_latent_eff_negative_Euclidean_distance,
   ERGMM_MCMC_latent_eff_dot_product,
   ERGMM_MCMC_latent_eff_negative_Euclidean_distance2

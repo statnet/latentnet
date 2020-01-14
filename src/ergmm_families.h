@@ -18,11 +18,15 @@
 extern const unsigned int ERGMM_MCMC_is_discrete[];
 extern const unsigned int ERGMM_MCMC_to_cont[];
 
-double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
-					 unsigned int, unsigned int);
-void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *);  
-double (*ERGMM_MCMC_E_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
-					unsigned int, unsigned int);
+typedef double (*ERGMM_MCMC_lp_edge_t)(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
+                                       unsigned int, unsigned int);
+typedef void (*ERGMM_MCMC_set_lp_Yconst_t)(ERGMM_MCMC_Model *);
+typedef double (*ERGMM_MCMC_E_edge_t)(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
+                                      unsigned int, unsigned int);
+
+extern ERGMM_MCMC_lp_edge_t ERGMM_MCMC_lp_edge[];
+extern ERGMM_MCMC_set_lp_Yconst_t ERGMM_MCMC_set_lp_Yconst[];
+extern ERGMM_MCMC_E_edge_t ERGMM_MCMC_E_edge[];
 
 /* Family # */
 /* 0 */

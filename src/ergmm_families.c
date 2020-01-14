@@ -27,8 +27,7 @@
 const unsigned int ERGMM_MCMC_is_discrete[N_FAMILIES]={TRUE,TRUE,TRUE,FALSE,FALSE,FALSE,FALSE};
 const unsigned int ERGMM_MCMC_to_cont[N_FAMILIES]={3,4,5,3,4,5,6};
 
-double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
-					 unsigned int, unsigned int)={
+ERGMM_MCMC_lp_edge_t ERGMM_MCMC_lp_edge[N_FAMILIES]={
   ERGMM_MCMC_lp_edge_Bernoulli_logit,
   ERGMM_MCMC_lp_edge_binomial_logit,
   ERGMM_MCMC_lp_edge_Poisson_log,
@@ -38,7 +37,7 @@ double (*ERGMM_MCMC_lp_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
   ERGMM_MCMC_lp_edge_normal_identity
 };
   
-void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *)={
+ERGMM_MCMC_set_lp_Yconst_t ERGMM_MCMC_set_lp_Yconst[N_FAMILIES]={
   ERGMM_MCMC_set_lp_Yconst_Bernoulli_logit,
   ERGMM_MCMC_set_lp_Yconst_binomial_logit,
   ERGMM_MCMC_set_lp_Yconst_Poisson_log,
@@ -48,8 +47,7 @@ void (*ERGMM_MCMC_set_lp_Yconst[N_FAMILIES])(ERGMM_MCMC_Model *)={
   ERGMM_MCMC_set_lp_Yconst_normal_identity
 };
   
-double (*ERGMM_MCMC_E_edge[N_FAMILIES])(ERGMM_MCMC_Model *, ERGMM_MCMC_Par *,
-					unsigned int, unsigned int)={
+ERGMM_MCMC_E_edge_t ERGMM_MCMC_E_edge[N_FAMILIES]={
   ERGMM_MCMC_E_edge_Bernoulli_logit,
   ERGMM_MCMC_E_edge_binomial_logit,
   ERGMM_MCMC_E_edge_Poisson_log,
