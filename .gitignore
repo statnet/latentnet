@@ -39,3 +39,6 @@ vignettes/*.pdf
 # C object and shared object files
 src/*.o
 src/*.so
+
+# GDB history files
+.gdb_history
