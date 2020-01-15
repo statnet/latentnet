@@ -5,8 +5,7 @@
 \alias{as.mcmc.ergmm}
 \title{Convert an ERGMM Object to an MCMC list object for Diagnostics.}
 \usage{
-\method{as.mcmc}{list.ergmm}(x, burnin = FALSE, which.vars = NULL,
-  vertex.i = c(1), ...)
+\method{as.mcmc}{list.ergmm}(x, burnin = FALSE, which.vars = NULL, vertex.i = c(1), ...)
 }
 \arguments{
 \item{x}{An object of class \code{\link[=ergmm.object]{ergmm}}.}

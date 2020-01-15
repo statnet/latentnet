@@ -50,7 +50,7 @@ ergmm.MCMC.C<-function(model, start, prior, control, sample.size=NULL, interval=
   if(sample.size!=round(sample.size)) stop("Non-integer MCMC sample size.")
   if(interval!=round(interval)) stop("Non-integer MCMC interval.")
   
-  for(i in 1:p)
+  for(i in seq_len(p))
     if(!all(dim(model[["X"]][[i]])==c(n,n))) stop("Incorrect size for covariate matrices.")
 
   if(!is.null(start[["Z"]])){
@@ -248,7 +248,7 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
 
   if(!requireNamespace("snowFT",quietly=TRUE)) stop("Package 'snowFT' is required for multithreaded MCMC.")
   #' @importFrom stats runif
-  mcmc.out.l<-snowFT::performParallel(threads,rep(1:param.sets,reps),
+  mcmc.out.l<-snowFT::performParallel(threads,rep(seq_len(param.sets),reps),
                               ergmm.MCMC.snowFT.slave,
                               lib=.latentnetEnv$path.to.me,
                               model.l=model.l,
@@ -258,12 +258,12 @@ ergmm.MCMC.snowFT<-function(threads, reps, model.l, start.l, prior.l, control.l,
                               sample.size.l=sample.size.l,
                               interval.l=interval.l,
                               seed=floor(runif(6,0,.Machine[["integer.max"]])))
-  mcmc.mle<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
+  mcmc.mle<-mcmc.out.l[[which.max(sapply(seq_along(mcmc.out.l),
                                          function(i) mcmc.out.l[[i]][["mcmc.mle"]][["lpY"]]))]][["mcmc.mle"]]
-  mcmc.pmode<-mcmc.out.l[[which.max(sapply(1:length(mcmc.out.l),
+  mcmc.pmode<-mcmc.out.l[[which.max(sapply(seq_along(mcmc.out.l),
                                          function(i) lpsum(mcmc.out.l[[i]][["mcmc.pmode"]])))]][["mcmc.pmode"]]
   result.list<-list(sample=list(),mcmc.mle=mcmc.mle,mcmc.pmode=mcmc.pmode)
-  for(i in 1:length(mcmc.out.l)) result.list[["sample"]][[i]]<-mcmc.out.l[[i]][["sample"]]
+  for(i in seq_along(mcmc.out.l)) result.list[["sample"]][[i]]<-mcmc.out.l[[i]][["sample"]]
   class(result.list$sample) <- "ergmm.mcmc.list.list"
   result.list
 }

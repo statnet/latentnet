@@ -63,7 +63,7 @@ clust.homogeneity<-function(x,ref,soft=TRUE,marg=FALSE){
     p.K<-sapply(sort(unique(ref)),function(g.ref){
       Z.K.g.ref<-x[["sample"]][["Z.K"]][,ref==g.ref,drop=FALSE]
       n.g.ref<-dim(Z.K.g.ref)[2]
-      mean(sapply(2:n.g.ref,function(i) mean(sapply(1:(i-1),function(j) mean(Z.K.g.ref[,i]==Z.K.g.ref[,j])))))
+      mean(sapply(seq_len(n.g.ref)[-1],function(i) mean(sapply(seq_len(i-1),function(j) mean(Z.K.g.ref[,i]==Z.K.g.ref[,j])))))
     }
            )
   }else{

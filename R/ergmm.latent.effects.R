@@ -22,12 +22,12 @@ dlpY.dZ.negative.Euclidean<-function(Z,dlpY.deta){
   Z.invdist[Z.invdist==0]<-Inf
   Z.invdist<-1/Z.invdist
   dlpY.dZ<-matrix(0,n,d)
-  for(k in 1:d){
-    Z.normdiff.k<-sapply(1:n,function(j)
-                         sapply(1:n,function(i)
+  for(k in seq_len(d)){
+    Z.normdiff.k<-sapply(seq_len(n),function(j)
+                         sapply(seq_len(n),function(i)
                                 Z[i,k]-Z[j,k]))*Z.invdist
     dlpY.dZ[,k]<-dlpY.dZ[,k]+
-      -sapply(1:n,function(i) crossprod(Z.normdiff.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
+      -sapply(seq_len(n),function(i) crossprod(Z.normdiff.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
   }
   dlpY.dZ
 }
@@ -42,12 +42,12 @@ dlpY.dZ.negative.Euclidean2<-function(Z,dlpY.deta){
   n<-dim(Z)[1]
   d<-dim(Z)[2]
   dlpY.dZ<-matrix(0,n,d)
-  for(k in 1:d){
-    Z.norm.k<-sapply(1:n,function(j)
-                     sapply(1:n,function(i)
+  for(k in seq_len(d)){
+    Z.norm.k<-sapply(seq_len(n),function(j)
+                     sapply(seq_len(n),function(i)
                             Z[i,k]-Z[j,k]))*2
     dlpY.dZ[,k]<-dlpY.dZ[,k]+
-      -sapply(1:n,function(i) crossprod(Z.norm.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
+      -sapply(seq_len(n),function(i) crossprod(Z.norm.k[i,],dlpY.deta[i,]+dlpY.deta[,i]))
   }
   dlpY.dZ
 }
@@ -61,12 +61,12 @@ dlpY.dZ.bilinear<-function(Z,dlpY.deta){
   n<-dim(Z)[1]
   d<-dim(Z)[2]
   dlpY.dZ<-matrix(0,n,d)
-  for(k in 1:d){
-    Z.other<-sapply(1:n,function(j)
-                         sapply(1:n,function(i)
+  for(k in seq_len(d)){
+    Z.other<-sapply(seq_len(n),function(j)
+                         sapply(seq_len(n),function(i)
                                 Z[j,k]))
     dlpY.dZ[,k]<-dlpY.dZ[,k]+
-      sapply(1:n,function(i) crossprod(Z.other[i,],dlpY.deta[i,]+dlpY.deta[,i]))
+      sapply(seq_len(n),function(i) crossprod(Z.other[i,],dlpY.deta[i,]+dlpY.deta[,i]))
   }
   dlpY.dZ
 }

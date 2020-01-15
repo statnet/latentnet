@@ -193,7 +193,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
 
       if(control[["threads"]]>1) burnin.state<-list(burnin.state)
       if(burnin.control[["verbose"]]) cat("Burning in... ")
-      for(pilot.run in 1:burnin.runs){
+      for(pilot.run in seq_len(burnin.runs)){
         if(burnin.control[["verbose"]]>1) cat(pilot.run,"")
         ## Set up a loop such that if a pilot run is catastrophically
         ## bad (only accepts or rejects a very tiny fraction of
@@ -216,7 +216,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
                                              prior.l=list(prior),
                                              control.l=list(burnin.control),
                                              sample.size.l=list(burnin.size))[["sample"]]
-            burnin.state<-sapply(1:burnin.control[["threads"]],
+            burnin.state<-sapply(seq_len(burnin.control[["threads"]]),
                                  function(thread) burnin.sample[[thread]][[burnin.size]],
                                  simplify=FALSE)
             burnin.sample<-.stack.ergmm.par.list.list(burnin.sample)

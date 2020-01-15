@@ -20,10 +20,10 @@ ergmm.permutation <- function(n)
       if (i==(n-1))
         temp2 <- rbind(temp2,cbind(n,temp))
       else
-        temp2 <- rbind(temp2,cbind(temp[,1:i],n,temp[,(i+1):(n-1)]))
+        temp2 <- rbind(temp2,cbind(temp[,seq_len(i)],n,temp[,(i+1):(n-1)]))
     }
   }
-  colnames(temp2)<-1:n
+  colnames(temp2)<-seq_len(n)
   return(temp2)
 }
 

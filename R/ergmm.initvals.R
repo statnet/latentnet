@@ -69,12 +69,12 @@ ergmm.initvals <- function(model,user.start,prior,control){
   
   if(need.to.fit[["Z.var"]]){
     #' @importFrom stats var
-    if(!is.null(pm[["Z.K"]])) pm[["Z.var"]]<-sapply(1:G,function(g) var(c(subset(pm[["Z"]][i.keep,],pm[["Z.K"]][i.keep]==g))))
+    if(!is.null(pm[["Z.K"]])) pm[["Z.var"]]<-sapply(seq_len(G),function(g) var(c(subset(pm[["Z"]][i.keep,],pm[["Z.K"]][i.keep]==g))))
     else pm[["Z.var"]]<-var(c(pm[["Z"]][i.keep,]))
   }
 
   if(need.to.fit[["Z.mean"]]){
-    pm[["Z.mean"]]<-do.call(rbind,lapply(1:G,function(g) apply(subset(pm[["Z"]][i.keep,,drop=FALSE],pm[["Z.K"]][i.keep]==g),2,mean)))
+    pm[["Z.mean"]]<-do.call(rbind,lapply(seq_len(G),function(g) apply(subset(pm[["Z"]][i.keep,,drop=FALSE],pm[["Z.K"]][i.keep]==g),2,mean)))
   }
 
   logit<-function(p) log(p/(1-p))

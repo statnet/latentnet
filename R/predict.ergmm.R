@@ -105,7 +105,7 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
 post.predict.R<-function(model,sample,control,MKL=FALSE){
   EY.f<-EY.fs[[model[["familyID"]]]]
   EY<-matrix(0,network.size(model[["Yg"]]),network.size(model[["Yg"]]))
-  for(i in 1:control[["sample.size"]]){
+  for(i in seq_len(control[["sample.size"]])){
     state<-sample[[i]]
     eta<-ergmm.eta(model,state)
     EY<-EY+EY.f(eta,model[["fam.par"]])
@@ -117,7 +117,7 @@ post.predict.R<-function(model,sample,control,MKL=FALSE){
     min.dev<-Inf
     model[["Ym"]]<-EY
     model[["Ym"]][!observed.dyads(model[["Yg"]])]<-NA
-    for(i in 1:control[["sample.size"]]){
+    for(i in seq_len(control[["sample.size"]])){
       state<-sample[[i]]
       dev<--ergmm.lpY(model,state,up.to.const=TRUE)
       if(dev<min.dev){

@@ -478,7 +478,9 @@ void ERGMM_MCMC_loop(ERGMM_MCMC_Model *model, ERGMM_MCMC_Priors *prior,
       ERGMM_MCMC_store_iteration(pos, model, cur->state, setting, outlists);
 
       // Acceptance rates.
-      outlists->coef_rate[pos] = (double) ((double)n_accept_b)/((double)setting->interval);
+      if(outlists->coef_rate){
+        outlists->coef_rate[pos] = (double) ((double)n_accept_b)/((double)setting->interval);
+      }
       if(outlists->Z_rate_move){
 	outlists->Z_rate_move[pos] = (double) ((double)n_accept_z)/((double)setting->interval*model->verts); 
       }

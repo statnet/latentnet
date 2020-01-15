@@ -132,21 +132,21 @@ gof.ergmm <- function (object, ..., nsim=100,
   if ('model' %in% all.gof.vars) {
    obs.model <- summary(formula)
    sim.model <- array(0,dim=c(nsim,length(obs.model)))
-   dimnames(sim.model) <- list(paste(c(1:nsim)),names(obs.model))
+   dimnames(sim.model) <- list(paste(seq_len(nsim)),names(obs.model))
   }
 
   if ('distance' %in% all.gof.vars) {
    obs.dist <- ergm.geodistdist(nw)
    obs.dist[obs.dist==Inf] <- n
    sim.dist <-array(0,dim=c(nsim,n))
-   dimnames(sim.dist)  <- list(paste(c(1:nsim)),paste(1:n))
+   dimnames(sim.dist)  <- list(paste(seq_len(nsim)),paste(1:n))
   }
 
   if ('odegree' %in% all.gof.vars) {
     mesp <- paste("c(",paste(0:(n-1),collapse=","),")",sep="")
     obs.odeg <- summary(as.formula(paste('nw ~ odegree(',mesp,')',sep="")),drop=FALSE)
    sim.odeg <- array(0,dim=c(nsim,n))
-   dimnames(sim.odeg)   <- list(paste(c(1:nsim)),paste(0:(n-1)))
+   dimnames(sim.odeg)   <- list(paste(seq_len(nsim)),paste(0:(n-1)))
    names(obs.odeg) <- dimnames(sim.odeg)[[2]]
   }
 
@@ -154,7 +154,7 @@ gof.ergmm <- function (object, ..., nsim=100,
     mesp <- paste("c(",paste(0:(n-1),collapse=","),")",sep="")
     obs.ideg <- summary(as.formula(paste('nw ~ idegree(',mesp,')',sep="")),drop=FALSE)
    sim.ideg <- array(0,dim=c(nsim,n))
-   dimnames(sim.ideg)   <- list(paste(c(1:nsim)),paste(0:(n-1)))
+   dimnames(sim.ideg)   <- list(paste(seq_len(nsim)),paste(0:(n-1)))
    names(obs.ideg) <- dimnames(sim.ideg)[[2]]
   }
 
@@ -162,7 +162,7 @@ gof.ergmm <- function (object, ..., nsim=100,
      mesp <- paste("c(",paste(0:(n-1),collapse=","),")",sep="")
      obs.deg <- summary(as.formula(paste('nw ~ degree(',mesp,')',sep="")),drop=FALSE)
    sim.deg <- array(0,dim=c(nsim,n))
-   dimnames(sim.deg)   <- list(paste(c(1:nsim)),paste(0:(n-1)))
+   dimnames(sim.deg)   <- list(paste(seq_len(nsim)),paste(0:(n-1)))
    names(obs.deg) <- dimnames(sim.deg)[[2]]
   }
  
@@ -170,14 +170,14 @@ gof.ergmm <- function (object, ..., nsim=100,
     mesp <- paste("c(",paste(0:(network.size(nw)-2),collapse=","),")",sep="")
     obs.espart <- summary(as.formula(paste('nw ~ esp(',mesp,')',sep="")), drop=FALSE)
    sim.espart <- array(0,dim=c(nsim,n-1))
-   dimnames(sim.espart) <- list(paste(c(1:nsim)),paste(0:(n-2)))
+   dimnames(sim.espart) <- list(paste(seq_len(nsim)),paste(0:(n-2)))
   }
  
   if ('dspartners' %in% all.gof.vars) {
     mesp <- paste("c(",paste(0:(network.size(nw)-2),collapse=","),")",sep="")
     obs.dspart <- summary(as.formula(paste('nw ~ dsp(',mesp,')',sep="")), drop=FALSE)
    sim.dspart <- array(0,dim=c(nsim,n-1))
-   dimnames(sim.dspart) <- list(paste(c(1:nsim)),paste(0:(n-2)))
+   dimnames(sim.dspart) <- list(paste(seq_len(nsim)),paste(0:(n-2)))
   }
 
   if ('triadcensus' %in% all.gof.vars) {
@@ -194,7 +194,7 @@ gof.ergmm <- function (object, ..., nsim=100,
    }
    obs.triadcensus <- summary(as.formula(paste('nw',triadcensus.formula,sep="")), drop=FALSE)
    sim.triadcensus <- array(0,dim=c(nsim,length(triadcensus)))
-   dimnames(sim.triadcensus) <- list(paste(c(1:nsim)), namestriadcensus)
+   dimnames(sim.triadcensus) <- list(paste(seq_len(nsim)), namestriadcensus)
    names(obs.triadcensus) <- namestriadcensus
   }
  
@@ -204,7 +204,7 @@ gof.ergmm <- function (object, ..., nsim=100,
 
   if(verbose){cat("\nCollating simulations\n")}
 
-  for (i in 1:nsim)
+  for (i in seq_len(nsim))
   { 
     if(verbose){
      cat("\nCalculating statistics for simulation",i,"\n")

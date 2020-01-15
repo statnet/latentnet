@@ -8,8 +8,7 @@
 \usage{
 \method{simulate}{ergmm}(object, nsim = 1, seed = NULL, ...)
 
-\method{simulate}{ergmm.model}(object, nsim = 1, seed = NULL, par,
-  prior = list(), ...)
+\method{simulate}{ergmm.model}(object, nsim = 1, seed = NULL, par, prior = list(), ...)
 }
 \arguments{
 \item{object}{either an object of class \code{\link[=ergmm.object]{ergmm}}

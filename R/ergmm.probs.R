@@ -56,7 +56,7 @@ ergmm.eta<-function(model,theta){
     eta<-eta+latent.effect.fs[[model[["latentID"]]]](theta[["Z"]])
 
   if(!is.null(theta[["beta"]]))
-    for(k in 1:length(theta[["beta"]]))
+    for(k in seq_along(theta[["beta"]]))
       eta<-eta+theta[["beta"]][k]*model[["X"]][[k]]
 
   if(!is.null(theta[["sociality"]])){
@@ -101,17 +101,17 @@ ergmm.lpY.grad<-function(model,theta,given=list()){
 
   grad<-list()
   
-  if(not.given("beta",theta,given)) grad[["beta"]] <- sapply(1:length(theta[["beta"]]),function(k) sum((dlpY.deta*model[["X"]][[k]])[obs]))
+  if(not.given("beta",theta,given)) grad[["beta"]] <- sapply(seq_along(theta[["beta"]]),function(k) sum((dlpY.deta*model[["X"]][[k]])[obs]))
 
   if(not.given("Z",theta,given)){
     grad[["Z"]]<-dlpY.dZ.fs[[model[["latentID"]]]](theta[["Z"]],dlpY.deta)
   }
 
   if(not.given("sociality",theta,given))
-    grad[["sociality"]] <- sapply(1:n,function(i) sum(dlpY.deta[i,][obs[i,]])+sum(dlpY.deta[,i][obs[,i]]))
+    grad[["sociality"]] <- sapply(seq_len(n),function(i) sum(dlpY.deta[i,][obs[i,]])+sum(dlpY.deta[,i][obs[,i]]))
   else{
-    if(not.given("sender",theta,given)) grad[["sender"]] <- sapply(1:n,function(i) sum(dlpY.deta[i,][obs[i,]]))
-    if(not.given("receiver",theta,given)) grad[["receiver"]] <-  sapply(1:n,function(i) sum(dlpY.deta[,i][obs[,i]]))
+    if(not.given("sender",theta,given)) grad[["sender"]] <- sapply(seq_len(n),function(i) sum(dlpY.deta[i,][obs[i,]]))
+    if(not.given("receiver",theta,given)) grad[["receiver"]] <-  sapply(seq_len(n),function(i) sum(dlpY.deta[,i][obs[,i]]))
   }
   
   if(not.given("dispersion",theta,given)){
@@ -137,7 +137,7 @@ ergmm.lpY.C<-function(model,theta){
   ## dimensions are correct, and those optional parameters that are required by the presence
   ## of other optional parameters are present.
   
-  for(i in 1:model[["p"]])
+  for(i in seq_len(model[["p"]]))
     if(!all(dim(model[["X"]][[i]])==c(n,n))) stop("Incorrect size for covariate matrices.")
 
   if(!is.null(theta[["Z"]])){
@@ -271,37 +271,37 @@ unpack.optim<-function(v,fit.vars,model){
   pos<-0
   ret<-list()
   if(fit.vars[["beta"]] && p>0){
-    ret[["beta"]]<-v[pos+1:p]
+    ret[["beta"]]<-v[pos+seq_len(p)]
     pos<-pos+p
   }
 
   if(fit.vars[["Z"]] && d>0){
-    ret[["Z"]]<-matrix(v[pos+1:(n*d)],nrow=n,ncol=d)
+    ret[["Z"]]<-matrix(v[pos+seq_len(n*d)],nrow=n,ncol=d)
     pos<-pos+n*d
   }
 
   if(fit.vars[["sender"]]){
-    ret[["sender"]]<-v[pos+1:n]
+    ret[["sender"]]<-v[pos+seq_len(n)]
     pos<-pos+n
   }
 
   if(fit.vars[["receiver"]]){
-    ret[["receiver"]]<-v[pos+1:n]
+    ret[["receiver"]]<-v[pos+seq_len(n)]
     pos<-pos+n
   }
 
   if(fit.vars[["sociality"]]){
-    ret[["sociality"]]<-v[pos+1:n]
+    ret[["sociality"]]<-v[pos+seq_len(n)]
     pos<-pos+n
   }
 
   if(fit.vars[["Z.var"]] && d>0){
-    ret[["Z.var"]]<-v[pos+1:max(1,G)]
+    ret[["Z.var"]]<-v[pos+seq_len(max(1,G))]
     pos<-pos+max(1,G)
   }
   
   if(fit.vars[["Z.mean"]] && d>0 && G>0){
-    ret[["Z.mean"]]<-matrix(v[pos+1:(G*d)],nrow=G,ncol=d)
+    ret[["Z.mean"]]<-matrix(v[pos+seq_len(G*d)],nrow=G,ncol=d)
     pos<-pos+G*d
   }
   
@@ -518,7 +518,7 @@ ergmm.lp.grad.approx<-function(which.vars,model,theta,prior,delta,given=list(),o
   v<-pack.optim(theta,which.vars)
   dlpdv<-numeric(length(v))
   
-  for(i in 1:length(v)){
+  for(i in seq_along(v)){
     v.m<-v.p<-v
     v.m[i]<-v.m[i]-delta
     theta.m<-.merge.lists(theta,unpack.optim(v.m,which.vars,model))
@@ -566,11 +566,11 @@ ergmm.lpZ.grad<-function(theta,given=list()){
     
     Z.dev<-(theta[["Z"]]-theta[["Z.mean"]][theta[["Z.K"]],])/matrix(theta[["Z.var"]][theta[["Z.K"]]],nrow=n,ncol=d,byrow=FALSE)
     deriv[["Z"]]<--Z.dev
-    if(not.given("Z.var",theta,given)) deriv[["Z.var"]]<-sapply(1:max(G,1),
+    if(not.given("Z.var",theta,given)) deriv[["Z.var"]]<-sapply(seq_len(max(G,1)),
                                                            function(g)
                                                            (sum(Z.dev[theta[["Z.K"]]==g,,drop=FALSE]^2)-d*sum(theta[["Z.K"]]==g)/theta[["Z.var"]][g])/2)
     
-    if(not.given("Z.mean",theta,given) && G) deriv[["Z.mean"]]<-do.call(rbind,lapply(1:G,function(g) apply(Z.dev[theta[["Z.K"]]==g,,drop=FALSE],2,sum)))
+    if(not.given("Z.mean",theta,given) && G) deriv[["Z.mean"]]<-do.call(rbind,lapply(seq_len(G),function(g) apply(Z.dev[theta[["Z.K"]]==g,,drop=FALSE],2,sum)))
   }
   deriv
 }

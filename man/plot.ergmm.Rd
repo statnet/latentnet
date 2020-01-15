@@ -5,20 +5,44 @@
 \alias{plot3d.ergmm}
 \title{Plotting Method for class ERGMM}
 \usage{
-\method{plot}{ergmm}(x, ..., vertex.cex = 1, vertex.sides = 16 *
-  ceiling(sqrt(vertex.cex)), what = "mkl", main = NULL, xlab = NULL,
-  ylab = NULL, zlab = NULL, xlim = NULL, ylim = NULL,
+\method{plot}{ergmm}(
+  x,
+  ...,
+  vertex.cex = 1,
+  vertex.sides = 16 * ceiling(sqrt(vertex.cex)),
+  what = "mkl",
+  main = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  zlab = NULL,
+  xlim = NULL,
+  ylim = NULL,
   zlim = NULL,
   object.scale = formals(plot.network.default)[["object.scale"]],
-  pad = formals(plot.network.default)[["pad"]], cluster.col = c("red",
-  "green", "blue", "cyan", "magenta", "orange", "yellow", "purple"),
-  vertex.col = NULL, print.formula = TRUE, edge.col = 8,
-  Z.ref = NULL, Z.K.ref = NULL, zoom.on = NULL, pie = FALSE,
-  labels = FALSE, rand.eff = NULL, rand.eff.cap = NULL,
-  plot.means = TRUE, plot.vars = TRUE, suppress.axes = FALSE,
-  jitter1D = 1, curve1D = TRUE, use.rgl = FALSE,
-  vertex.3d.cex = 1/20, edge.plot3d = TRUE, suppress.center = FALSE,
-  density.par = list())
+  pad = formals(plot.network.default)[["pad"]],
+  cluster.col = c("red", "green", "blue", "cyan", "magenta", "orange", "yellow",
+    "purple"),
+  vertex.col = NULL,
+  print.formula = TRUE,
+  edge.col = 8,
+  Z.ref = NULL,
+  Z.K.ref = NULL,
+  zoom.on = NULL,
+  pie = FALSE,
+  labels = FALSE,
+  rand.eff = NULL,
+  rand.eff.cap = NULL,
+  plot.means = TRUE,
+  plot.vars = TRUE,
+  suppress.axes = FALSE,
+  jitter1D = 1,
+  curve1D = TRUE,
+  use.rgl = FALSE,
+  vertex.3d.cex = 1/20,
+  edge.plot3d = TRUE,
+  suppress.center = FALSE,
+  density.par = list()
+)
 }
 \arguments{
 \item{x}{an R object of class \code{\link[=ergmm.object]{ergmm}}.  See

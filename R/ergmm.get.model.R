@@ -77,7 +77,7 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
   
   if(model[["d"]]>0) model[["latentID"]] <- latent.effect.IDs[[model[["latent"]]]]
 
-  if(prior[["adjust.beta.var"]]) model[["prior"]][["beta.var"]]<-model[["prior"]][["beta.var"]]/sapply(1:model[["p"]],function(i) mean((model[["X"]][[i]][observed.dyads(model[["Yg"]])])^2))
+  if(model[["p"]] && prior[["adjust.beta.var"]]) model[["prior"]][["beta.var"]]<-model[["prior"]][["beta.var"]]/sapply(seq_len(model[["p"]]),function(i) mean((model[["X"]][[i]][observed.dyads(model[["Yg"]])])^2))
   
   for(name in names(prior)){
     model[["prior"]][[name]]<-prior[[name]]
@@ -96,11 +96,12 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
 
 get.beta.eff<-function(model){
   n<-network.size(model[["Yg"]])
-  out<-list(sender = if(model[["sender"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],1,mean))),
-            receiver = if(model[["receiver"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],2,mean))),
-            sociality = if(model[["sociality"]]) t(sapply(1:model[["p"]],function(k) apply(model[["X"]][[k]],1,mean)+apply(model[["X"]][[k]],2,mean))))
+  out<-list(sender = if(model[["sender"]]) t(sapply(seq_len(model[["p"]]),function(k) apply(model[["X"]][[k]],1,mean))),
+            receiver = if(model[["receiver"]]) t(sapply(seq_len(model[["p"]]),function(k) apply(model[["X"]][[k]],2,mean))),
+            sociality = if(model[["sociality"]]) t(sapply(seq_len(model[["p"]]),function(k) apply(model[["X"]][[k]],1,mean)+apply(model[["X"]][[k]],2,mean))))
   for(re in names(out))
     if(is.null(out[[re]])) out[[re]]<-NULL
+    else if(model[["p"]]==0) out[[re]]<-matrix(1, 1, n) # Just a row vector of 1s.
     else if(model[["p"]]>1)
       for(k1 in 2:model[["p"]])
         for(k2 in 1:(k1-1)){

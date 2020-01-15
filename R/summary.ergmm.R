@@ -148,7 +148,7 @@ summary.ergmm <- function (object, point.est=c(
       if(d>0) mle[["Z"]]<-scale(mle[["Z"]],scale=FALSE)
       if(p>0){
         if(se){
-          beta.hess<-mle[["hessian"]][1:p,1:p]
+          beta.hess<-mle[["hessian"]][seq_len(p),seq_len(p)]
           
           beta.cov <- try(MASS::ginv(-beta.hess), silent=TRUE)
           if(inherits(beta.cov,"try-error")){
@@ -227,27 +227,29 @@ summary.ergmm <- function (object, point.est=c(
         pmean[["Z.pZK"]]<-t(apply(sample[["Z.K"]],2,tabulate,G))/sample.size
         pmean[["Z.K"]]<-apply(pmean[["Z.pZK"]],1,which.max)
       }
-    
-      beta.cov<-cov(sample[["beta"]])
-      colnames(beta.cov) <- rownames(beta.cov) <- model[["coef.names"]]
-      
-      pmean[["cov"]]<-beta.cov
-      pmean[["cor"]]<-cov2cor(beta.cov)
-      
-      beta.q0<-apply(sample[["beta"]],2,function(x) min(mean(x<=0),mean(x>=0))*2)
-      
-      coef.table<-data.frame(pmean[["beta"]],
-                           t(apply(sample[["beta"]],2,function(x)quantile(x,quantiles))),
-                           beta.q0,
-                           row.names=model[["coef.names"]])
-      colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"2*min(Pr(>0),Pr(<0))")
-      pmean[["coef.table"]]<-coef.table
+
+      if(p>0){
+        beta.cov<-cov(sample[["beta"]])
+        colnames(beta.cov) <- rownames(beta.cov) <- model[["coef.names"]]
+
+        pmean[["cov"]]<-beta.cov
+        pmean[["cor"]]<-cov2cor(beta.cov)
+
+        beta.q0<-apply(sample[["beta"]],2,function(x) min(mean(x<=0),mean(x>=0))*2)
+
+        coef.table<-data.frame(pmean[["beta"]],
+                               t(apply(sample[["beta"]],2,function(x)quantile(x,quantiles))),
+                               beta.q0,
+                               row.names=model[["coef.names"]])
+        colnames(coef.table)<-c("Estimate",paste(quantiles*100,"%",sep=""),"2*min(Pr(>0),Pr(<0))")
+        pmean[["coef.table"]]<-coef.table
+      }
       object[["pmean"]]<-pmean
     }
     summ[["pmean"]]<-object[["pmean"]]
   }
   ## Compute the MKL point estimates.
-  if("mkl" %in% point.est){
+  if("mkl" %in% point.est && p>0){
     if(is.null(object[["mkl"]])){
       stop("MKL was not produced for this fit.")
     }
@@ -296,10 +298,12 @@ print.summary.ergmm<-function(x,...){
        control[["interval"]]," iterations apart, after burnin of ",control[["burnin"]], " iterations.\n",sep="")
        
   if(!is.null(x[["pmean"]])){
-    cat("Covariate coefficients posterior means:\n")
-    #' @importFrom stats printCoefmat
-    printCoefmat(as.matrix(x[["pmean"]][["coef.table"]]),P.values=TRUE,has.Pvalue=TRUE)
-    cat("\n")
+    if(model$p>0){
+      cat("Covariate coefficients posterior means:\n")
+      #' @importFrom stats printCoefmat
+      printCoefmat(as.matrix(x[["pmean"]][["coef.table"]]),P.values=TRUE,has.Pvalue=TRUE)
+      cat("\n")
+    }
     if(!is.null(x[["pmean"]][["dispersion"]]))
       cat("Dispersion parameter: ",x[["pmean"]][["dispersion"]],".\n", sep="")
     if(!is.null(x[["pmean"]][["sender.var"]]))
@@ -311,9 +315,11 @@ print.summary.ergmm<-function(x,...){
   }
 
   if(!is.null(x[["mle"]])){
-    cat("Covariate coefficients MLE:\n")
-    printCoefmat(as.matrix(x[["mle"]][["coef.table"]]),P.values=length(names(x[["mle"]][["coef.table"]]))>1)
-    cat("\n")
+    if(model$p>0){
+      cat("Covariate coefficients MLE:\n")
+      printCoefmat(as.matrix(x[["mle"]][["coef.table"]]),P.values=length(names(x[["mle"]][["coef.table"]]))>1)
+      cat("\n")
+    }
     if(!is.null(x[["mle"]][["dispersion"]]))
       cat("Dispersion parameter: ",x[["mle"]][["dispersion"]],".\n", sep="")
   }

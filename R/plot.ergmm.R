@@ -374,7 +374,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     
     if(G>1 && density.par[["subdens"]]){
       Z.K.all <- c(t(x[["sample"]][["Z.K"]]))
-      for(i in 1:G){
+      for(i in seq_len(G)){
         plot(Z.all,main=paste("Class",i),type="n",...)
         Z.bkde <- KernSmooth::bkde2D(Z.all[Z.K.all==i,],0.2,c(101,101))
         #' @importFrom grDevices col2rgb
@@ -559,7 +559,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     if(pie){
       piesize<-rep(ergmm.plotting.vertex.radius(vertex.cex,xylim,object.scale),length=n)
       pie.order<-order(piesize,decreasing=TRUE)
-      for(i in 1:n){
+      for(i in seq_len(n)){
         ergmm.drawpie(Z.pos[pie.order[i],],piesize[pie.order[i]],Z.pZK[pie.order[i],],n=50,cols=cluster.col)
       }
     }
@@ -567,7 +567,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
     ## Mark the events with "bullets" (small circles).
     if(is.bipartite(Yg)){
       bip<-Yg %n% "bipartite"
-      points(Z.pos[-(1:bip),],pch=20,cex=vertex.cex[-(1:bip)],col=1)
+      points(Z.pos[-seq_len(bip),],pch=20,cex=vertex.cex[-seq_len(bip)],col=1)
     }
   }
   
@@ -661,7 +661,7 @@ THra3d<-function(x,y=NULL,z=NULL,size=1,color="white",alpha=1,...){
   color<-rep(color,length.out=n)
   alpha<-rep(alpha,length.out=n)
 
-  for(i in 1:n){
+  for(i in seq_len(n)){
     with(xyz,THron3d(x[i],y[i],z[i],size=size[i],color=color[i],alpha=alpha[i]))
   }
 }

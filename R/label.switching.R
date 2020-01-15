@@ -56,7 +56,7 @@ klswitch.C <- function(Q.start,sample,Z=NULL,maxit=100,verbose=0)
 labelswitch.K <- function(Z.K,perm)
 {
   Z.K.new <- Z.K
-  for(i in 1:length(perm))
+  for(i in seq_along(perm))
     Z.K.new[Z.K == perm[i]] <- i
   return(Z.K.new)
 }
@@ -95,20 +95,20 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
   pK<-array(Cret[["pK"]],dim=c(S,n,G))
 
   pK.l<-list()
-  for(thread in 1:threads){
+  for(thread in seq_len(threads)){
     pK.l[[thread]]<-pK[(1+(thread-1)*S/threads):(thread*S/threads),,]
   }
 
   Q<-Q.start
   
   if(verbose>0) cat("KLswitch: Iterating between label-switching to Q and recalculating Q.\n")
-  for(it in 1:maxit){
+  for(it in seq_len(maxit)){
     changed<-FALSE
 
     best.perms.l<-{
       if(threads==1)
         list(klswitch.step2.snowFT.slave(1,lib=.latentnetEnv$path.to.me,Q=Q,pK.l=pK.l))
-      else snowFT::performParallel(threads,1:threads,
+      else snowFT::performParallel(threads,seq_len(threads),
                            klswitch.step2.snowFT.slave,
                            lib=.latentnetEnv$path.to.me,
                            Q=Q,
@@ -120,7 +120,7 @@ klswitch.snowFT<-function(threads,Q.start,sample,Z=NULL,maxit=100,verbose=0){
     Z.mean<-sample[["Z.mean"]]
     Z.var<-sample[["Z.var"]]
     
-    for(thread in 1:threads){
+    for(thread in seq_len(threads)){
       from.s<-1+(thread-1)*S/threads
       to.s<-thread*S/threads
       pK<-pK.l[[thread]]
@@ -181,6 +181,6 @@ klswitch.step2.snowFT.slave<-function(i,lib,Q,pK.l){
 switch.Q.K<-function(K,G,smooth=1/G){
   n<-length(K)
   Q<-matrix(smooth,n,G)
-  for(i in 1:n) Q[i,K[i]]<-1+smooth
+  for(i in seq_len(n)) Q[i,K[i]]<-1+smooth
   t(apply(Q,1,function(x) x/sum(x)))
 }

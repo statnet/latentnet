@@ -7,10 +7,15 @@
 \alias{bic.ergmm}
 \title{ERGMM Fit Summaries}
 \usage{
-\method{summary}{ergmm}(object, point.est = c(if
-  (!is.null(object[["mle"]])) "mle", if (!is.null(object[["sample"]]))
-  c("pmean", "mkl")), quantiles = c(0.025, 0.975), se = "mle" \%in\%
-  point.est, bic.eff.obs = c("ties", "dyads", "actors"), ...)
+\method{summary}{ergmm}(
+  object,
+  point.est = c(if (!is.null(object[["mle"]])) "mle", if (!is.null(object[["sample"]]))
+    c("pmean", "mkl")),
+  quantiles = c(0.025, 0.975),
+  se = "mle" \%in\% point.est,
+  bic.eff.obs = c("ties", "dyads", "actors"),
+  ...
+)
 }
 \arguments{
 \item{object}{An \code{\link[=ergmm.object]{ergmm}} object to be summarized.}

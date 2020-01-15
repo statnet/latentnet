@@ -4,8 +4,7 @@
 \alias{ergmm.drawpie}
 \title{Draw a pie chart at a specified location.}
 \usage{
-ergmm.drawpie(center, radius, probs, n = 50, cols = 1:length(probs),
-  ...)
+ergmm.drawpie(center, radius, probs, n = 50, cols = seq_along(probs), ...)
 }
 \arguments{
 \item{center}{A numeric vector of length 2, specifying the horizontal and

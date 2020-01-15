@@ -6,8 +6,13 @@
 \title{Conduct Goodness-of-Fit Diagnostics on a Exponential Family Random Graph
 Mixed Model Fit}
 \usage{
-\method{gof}{ergmm}(object, ..., nsim = 100, GOF = ~idegree + odegree +
-  distance, verbose = FALSE)
+\method{gof}{ergmm}(
+  object,
+  ...,
+  nsim = 100,
+  GOF = ~idegree + odegree + distance,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{object}{an \code{\link[=ergmm.object]{ergmm}} object (returned by

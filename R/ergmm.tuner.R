@@ -38,9 +38,9 @@ get.init.deltas<-function(model, control){
   ## If a scalar is given, construct a diagonal matrix that's in the ballpark.
   if(length(control[["group.deltas"]])==1){
     group.deltas.scale<-control[["group.deltas"]]
-    control[["group.deltas"]]<-1/sapply(1:model[["p"]],function(i) sqrt(mean((model[["X"]][[i]][observed.dyads(model[["Yg"]])])^2)))
+    control[["group.deltas"]]<-1/vapply(seq_len(model[["p"]]),function(i) sqrt(mean((model[["X"]][[i]][observed.dyads(model[["Yg"]])])^2)), numeric(1))
     if(model[["d"]]) control[["group.deltas"]]<-c(control[["group.deltas"]], 0.05)
-    control[["group.deltas"]]<-c(control[["group.deltas"]],rep(1/model[["p"]],nterms-length(control[["group.deltas"]])))
+    control[["group.deltas"]]<-c(control[["group.deltas"]],rep(1/max(model[["p"]],1),nterms-length(control[["group.deltas"]])))
     control[["group.deltas"]]<-diag(group.deltas.scale*control[["group.deltas"]]*2/(1+nterms),nrow=nterms)
   }
 
@@ -59,7 +59,7 @@ get.sample.deltas<-function(model,sample,control){
 
   acf.adjust<-rep(1,length(control[["group.acf.adjust"]]))
   
-  for(thread in 1:control[["threads"]]){
+  for(thread in seq_len(control[["threads"]])){
     sample<-samples[[thread]]
     use.draws<-ceiling(length(sample)*control[["pilot.discard.first"]]):(length(sample))
     Z.rate<-if(!is.null(sample[["Z.rate"]]))Z.rate+mean(sample[["Z.rate"]][use.draws])/control[["threads"]] else 0.5
@@ -99,7 +99,7 @@ get.beta.ext<-function(model,sample){
                if(model[["sociality"]]) tcrossprod(sample[["sociality"]],model[["beta.eff.sociality"]]/n), # sociality eff.
                if(model[["dispersion"]]) log(sample[["dispersion"]]) # dispersion scale.
         )
-  sweep(betas,2,apply(betas,2,mean))
+  scale(betas, center=TRUE, scale=FALSE)
 }
 
 backoff.check<-function(model,sample,control){
@@ -120,12 +120,12 @@ backoff.check<-function(model,sample,control){
     }
   }
   
-  if(mean(sample[["beta.rate"]]) < bt) {
+  if(model[["p"]] && mean(sample[["beta.rate"]]) < bt) {
     control[["group.deltas"]]<-control[["group.deltas"]]*control[["backoff.factor"]]
     control[["pilot.factor"]]<-control[["pilot.factor"]]*control[["backoff.factor"]]
     backoff<--1
   }
-  if(mean(sample[["beta.rate"]]) > 1-bt) {
+  if(model[["p"]] && mean(sample[["beta.rate"]]) > 1-bt) {
     control[["group.deltas"]]<-control[["group.deltas"]]/control[["backoff.factor"]]
     control[["pilot.factor"]]<-control[["pilot.factor"]]/control[["backoff.factor"]]
     backoff<-+1

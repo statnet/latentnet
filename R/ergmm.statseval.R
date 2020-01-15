@@ -70,7 +70,7 @@ find.mkl<-function(model,sample,control){
 
   mkl<-sample[[attr(EY,"s.MKL")]]
   model[["Ym"]]<-EY
-  for(i in 1:control[["mle.maxit"]]){
+  for(i in seq_len(control[["mle.maxit"]])){
     if(control[["verbose"]]>1) cat(i,"")
     mkl.old<-mkl
     mkl<-find.mle(model,start=mkl,control=control,mllk=FALSE)
@@ -135,7 +135,7 @@ add.mcmc.mle.mle.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
 
 find.mle.loop<-function(model,start,control){
   mle<-start
-  for(i in 1:control[["mle.maxit"]]){
+  for(i in seq_len(control[["mle.maxit"]])){
     mle.old<-mle
     mle<-find.mle(model,mle,control=control)
     if(all.equal(mle.old,mle)[1]==TRUE) break
@@ -171,7 +171,7 @@ add.mcmc.pmode.pmode.ergmm<-function(x,Z.ref=best.avail.Z.ref.ergmm(x)){
 
 find.pmode.loop<-function(model,start,prior,control){
   pmode<-start
-  for(i in 1:control[["mle.maxit"]]){
+  for(i in seq_len(control[["mle.maxit"]])){
     if(control[["verbose"]]>1) cat(i,"")
     pmode.old<-pmode
     pmode<-find.mpe(model,pmode,prior=prior,given=list(Z.K=pmode[["Z.K"]]),control=control)

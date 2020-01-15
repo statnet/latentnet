@@ -30,6 +30,7 @@ The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>} where
 terms>}, see \link{terms.ergmm}. For the list of the possible dyad
 distribution families, see \link{families.ergmm}.
 
+
 The arguments in the \code{\link{ergmm}} function specific to latent
 variable models are \code{ergmm.control}. See the help page for
 \code{\link{ergmm}} for the details.

@@ -6,11 +6,20 @@
 \alias{latentcluster}
 \title{Fit a Latent Space Random Graph Model}
 \usage{
-ergmm(formula, response = NULL, family = "Bernoulli", fam.par = NULL,
-  control = control.ergmm(), user.start = list(),
-  prior = ergmm.prior(), tofit = c("mcmc", "mkl", "mkl.mbc",
-  "procrustes", "klswitch"), Z.ref = NULL, Z.K.ref = NULL,
-  seed = NULL, verbose = FALSE)
+ergmm(
+  formula,
+  response = NULL,
+  family = "Bernoulli",
+  fam.par = NULL,
+  control = control.ergmm(),
+  user.start = list(),
+  prior = ergmm.prior(),
+  tofit = c("mcmc", "mkl", "mkl.mbc", "procrustes", "klswitch"),
+  Z.ref = NULL,
+  Z.K.ref = NULL,
+  seed = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{formula}{An formula object, of the form \code{g ~ <term 1> + <term 2>

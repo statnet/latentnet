@@ -155,14 +155,13 @@ length.ergmm.par.list<-function(x){
   mcmcsample<-list()
 
   for(name in names(x[[1]]))
-    mcmcsample[[name]]<-abind::abind(sapply(1:length(x),
+    mcmcsample[[name]]<-abind::abind(sapply(seq_along(x),
                                             function(i) x[[i]][[name]],
                                             simplify=FALSE),along=1)
 
-  attr(mcmcsample,"breaks")<-cumsum(c(sapply(1:(length(x)
-                                                 ),
-                                              function(i) length(x[[i]]),
-                                              simplify=FALSE)))
+  attr(mcmcsample,"breaks")<-cumsum(c(sapply(seq_along(x),
+                                             function(i) length(x[[i]]),
+                                             simplify=FALSE)))
   class(mcmcsample)<-"ergmm.par.list"
   mcmcsample
 }
@@ -180,7 +179,7 @@ unstack.ergmm.par.list<-function(x,...){
   else{  
     breaks<-c(0,attr(x,"breaks"))
     
-    for(i in 1:length(breaks[-1])){
+    for(i in seq_along(breaks[-1])){
       mcmcList[[i]]<-x[(breaks[i]+1):breaks[i+1]]
     }
   }
@@ -190,18 +189,18 @@ unstack.ergmm.par.list<-function(x,...){
 as.mcmc.list.ergmm.par.list<-function(x,which.vars,start=1,thin=1,...){
   x<-unstack(x)
   m.l<-list()
-  for(thread in 1:length(x)){
+  for(thread in seq_along(x)){
     S<-length(x[[thread]])
     m<-matrix(numeric(0),S,0)
     for(name in names(which.vars)){
-      if(is.null(x[[thread]][[name]])) next
+      if(length(x[[thread]][[name]])==0) next
       if(length(dim(x[[thread]][[name]]))<=1){
         m2<-cbind(x[[thread]][[name]])
         colnames(m2)<-name
         m<-cbind(m,m2)
       }else if(length(dim(x[[thread]][[name]]))==2){
         m2<-x[[thread]][[name]][,c(which.vars[[name]]),drop=FALSE]
-        colnames(m2)<-paste(name,sapply(which.vars[[name]],function(x) paste(x,sep='.')),sep='.')
+        colnames(m2)<-paste(name,vapply(which.vars[[name]],function(x) paste(x,sep='.'), character(1)),sep='.')
         m<-cbind(m,m2)
       }else if(length(dim(x[[thread]][[name]]))==3){
         for(i in 1:dim(which.vars[[name]])[1]){

@@ -44,12 +44,12 @@ ergmm.drawcircle <- function(center,radius,length=50,...)
 #' for(i in 1:10) ergmm.drawpie(c(sum(1:i)*2,0), radius=i, probs=1:(i+1))
 #' 
 #' @export
-ergmm.drawpie <- function(center,radius,probs,n=50,cols=1:length(probs),...)
+ergmm.drawpie <- function(center,radius,probs,n=50,cols=seq_along(probs),...)
 {
   x <- c(0,cumsum(probs)/sum(probs))
   dx <- diff(x)
   np <- length(probs)
-  for (i in 1:np)
+  for (i in seq_len(np))
   {
     t2p <- 2 * pi * seq(x[i], x[i + 1], length = n)
     xc <- center[1] + c(cos(t2p), 0) * radius

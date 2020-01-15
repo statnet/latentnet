@@ -5,9 +5,14 @@
 \alias{mcmc.diagnostics}
 \title{Conduct MCMC diagnostics on an ERGMM fit}
 \usage{
-\method{mcmc.diagnostics}{ergmm}(object, which.diags = c("cor", "acf",
-  "trace", "raftery"), burnin = FALSE, which.vars = NULL,
-  vertex.i = c(1), ...)
+\method{mcmc.diagnostics}{ergmm}(
+  object,
+  which.diags = c("cor", "acf", "trace", "raftery"),
+  burnin = FALSE,
+  which.vars = NULL,
+  vertex.i = c(1),
+  ...
+)
 }
 \arguments{
 \item{object}{An object of class \code{\link[=ergmm.object]{ergmm}}.}
