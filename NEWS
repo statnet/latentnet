@@ -1,3 +1,8 @@
+2.10.0
+	Changes for compatibility with GCC 10.
+
+        latentnet can now fit models with no fixed effects.
+
 2.9.0
 	Changes for compatibility with statnet.common 3.1 and ergm 3.9.4.
 
