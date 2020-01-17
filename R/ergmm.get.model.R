@@ -107,7 +107,7 @@ get.beta.eff<-function(model){
         for(k2 in 1:(k1-1)){
           utu<-crossprod(out[[re]][k2,],out[[re]][k2,])
           if(isTRUE(all.equal(c(utu),0))) break;
-          out[[re]][k1,]<-out[[re]][k1,]-crossprod(out[[re]][k2,],out[[re]][k1,])/utu*out[[re]][k2,]
+          out[[re]][k1,]<-out[[re]][k1,]-c(crossprod(out[[re]][k2,],out[[re]][k1,]))/c(utu)*out[[re]][k2,]
         }
   ## Rows of 0s will break the tuner, and don't actually help, so, we drop them.
   for(re in names(out)){
