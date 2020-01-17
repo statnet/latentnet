@@ -63,8 +63,8 @@ post.predict.C<-function(model,sample,control,MKL=FALSE){
   ## Figure out the design matrix.
   observed<-observed.dyads(model[["Yg"]])
 
-  if((observed==(diag(n)==0) && is.directed(model[["Yg"]])) ||
-     (observed==lower.tri(diag(n)) && !is.directed(model[["Yg"]])))
+  if((all(observed==(diag(n)==0)) && is.directed(model[["Yg"]])) ||
+     (all(observed==lower.tri(diag(n))) && !is.directed(model[["Yg"]])))
     observed<-NULL
 
   ret<-.C("post_pred_wrapper",
