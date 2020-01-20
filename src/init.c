@@ -18,7 +18,7 @@
 #include <R_ext/Rdynload.h>
 
 /* .C calls */
-extern void ERGMM_lp_Y_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void ERGMM_lp_Y_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void ERGMM_MCMC_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void klswitch_pK_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void klswitch_step2_wrapper(void *, void *, void *, void *, void *, void *);
@@ -31,7 +31,7 @@ extern void post_pred_wrapper(void *, void *, void *, void *, void *, void *, vo
 extern void procr_transform_wrapper(void *, void *, void *, void *, void *, void *, void *, void *);
 
 static const R_CMethodDef CEntries[] = {
-    {"ERGMM_lp_Y_wrapper",      (DL_FUNC) &ERGMM_lp_Y_wrapper,      20},
+    {"ERGMM_lp_Y_wrapper",      (DL_FUNC) &ERGMM_lp_Y_wrapper,      19},
     {"ERGMM_MCMC_wrapper",      (DL_FUNC) &ERGMM_MCMC_wrapper,      65},
     {"klswitch_pK_wrapper",     (DL_FUNC) &klswitch_pK_wrapper,     12},
     {"klswitch_step2_wrapper",  (DL_FUNC) &klswitch_step2_wrapper,   6},

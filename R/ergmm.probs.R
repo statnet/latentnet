@@ -171,7 +171,7 @@ ergmm.lpY.C<-function(model,theta){
             
             beta=as.double(theta[["beta"]]),
 
-            sender=if(is.null(theta[["sociality"]])) as.double(theta[["sender"]]) else as.double(theta[["sociality"]]), receiver=as.double(theta[["receiver"]]), lock.RE=as.integer(!is.null(theta[["sociality"]])),
+            sender=if(is.null(theta[["sociality"]])) as.double(theta[["sender"]]) else as.double(theta[["sociality"]]), receiver=as.double(theta[["receiver"]]),
             dispersion=NVL(theta[["dispersion"]],0),
             
             observed=as.integer(NVL(observed,-1)),

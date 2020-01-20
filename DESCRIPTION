@@ -1,6 +1,6 @@
 Package: latentnet
-Version: 2.10.0-1566
-Date: 2020-01-17
+Version: 2.10.0-1572
+Date: 2020-01-20
 Title: Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
 	   person("Pavel N.", "Krivitsky", role=c("aut","cre"), email="pavel@statnet.org", comment=c(ORCID="0000-0002-9101-3362")),
