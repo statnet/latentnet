@@ -164,7 +164,7 @@ ergmm.lpY.C<-function(model,theta){
             viY=as.integer(Y),
             vdY=as.double(Y),
             
-            iconsts=as.integer(model[["iconsts"]]), dconsts=as.integer(model[["dconsts"]]),
+            iconsts=as.integer(model[["iconsts"]]), dconsts=as.double(model[["dconsts"]]),
             
             vX=as.double(unlist(model[["X"]])),
             Z=as.double(theta[["Z"]]),
