@@ -97,7 +97,7 @@ void ERGMM_MCMC_prop_end(ERGMM_MCMC_Model *model, ERGMM_MCMC_MCMCState *cur,
       old->receiver[cur->prop_RE]=new->receiver[cur->prop_RE];
   }
   
-  if(cur->prop_coef==PROP_ALL)
+  if(cur->prop_coef==PROP_ALL && model->coef!=0)
     copy_dvector(new->coef,old->coef,model->coef);
 
   if(cur->prop_dispersion==PROP_ALL)
