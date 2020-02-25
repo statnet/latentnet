@@ -35,7 +35,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, in
 			double *vX, double *vZ,
 			double *coef,
 			double *sender, double *receiver,
-			double dispersion,
+			double *dispersion,
 			int *vobserved_ties,
 			double *llk){
 
@@ -103,7 +103,7 @@ void ERGMM_lp_Y_wrapper(int *n, int *p, int *d, int *latent_eff, int *family, in
 			   0, // sender_var
 			   receiver,
 			   0, // receiver_var
-			   dispersion,
+			   *dispersion,
 			   NULL, // Z_K
 			   0, // llk
 			   NULL, // lpedge

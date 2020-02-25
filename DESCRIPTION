@@ -1,5 +1,5 @@
 Package: latentnet
-Version: 2.10.1
+Version: 2.10.2
 Date: 2020-01-17
 Title: Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
