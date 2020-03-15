@@ -108,7 +108,7 @@ void post_pred_wrapper(int *S,
   
   for(unsigned int s=0; s<*S; s++){
     ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z
-			  Runpack_dvectors(coef_mcmc+s,*p,coef,*S), // coef
+			  *p ? Runpack_dvectors(coef_mcmc+s,*p,coef,*S) : NULL, // coef
 			  NULL, // Z_mean
 			  NULL, // Z_var
 			  NULL, // Z_pK			  
@@ -139,7 +139,7 @@ void post_pred_wrapper(int *S,
     double m_llk=-HUGE_VAL;
     for(unsigned int s=0; s<*S; s++){
       ERGMM_MCMC_Par par = {*d ? Runpack_dmatrixs(Z_mcmc+s,*n,*d,Z,*S) : NULL, // Z
-			    Runpack_dvectors(coef_mcmc+s,*p,coef,*S), // coef
+			    *p ? Runpack_dvectors(coef_mcmc+s,*p,coef,*S) : NULL, // coef
 			    NULL, // Z_mean
 			    NULL, // Z_var
 			    NULL, // Z_pK			  
