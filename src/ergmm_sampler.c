@@ -513,7 +513,7 @@ void ERGMM_MCMC_store_iteration(unsigned int pos, ERGMM_MCMC_Model *model, ERGMM
     outlists->lpdispersion[pos] = par->lpdispersion;
 
   // Covariate coefficients.
-  Rpack_dvectors(par->coef,model->coef,outlists->coef+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
+  if(model->coef) Rpack_dvectors(par->coef,model->coef,outlists->coef+pos,setting->sample_size+ERGMM_OUTLISTS_RESERVE);
 
 
   if(model->latent){
