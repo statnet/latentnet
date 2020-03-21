@@ -4,7 +4,8 @@
 \name{tribes}
 \alias{tribes}
 \title{Read Highland Tribes}
-\format{An undirected \code{\link[network]{network}} object with no loops, having the following attributes:
+\format{
+An undirected \code{\link[network]{network}} object with no loops, having the following attributes:
  \describe{
    \item{\code{\%v\% "vertex.names"}}{Character attribute with names of tribes.}
    \item{\code{\%e\% "pos"}}{Logical attribute indicating an
@@ -18,7 +19,8 @@
  }
  Because of limitations of \code{\link[network]{network}} objects, the object
  itself is a complete graph, and is thus meaningless if used directly
- or plotted.}
+ or plotted.
+}
 \source{
 \url{http://vlado.fmf.uni-lj.si/pub/networks/data/UciNet/UciData.htm#gama},
 with corrections from Read (1954).
