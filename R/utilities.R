@@ -31,7 +31,7 @@ extraneous.argcheck<-function(...){
   ## functions to take ..., which is wonderful for missing spelling
   ## errors.
   
-  if(length(list(...)))stop("Extraneous arguments passed: ",
+  if(...length())stop("Extraneous arguments passed: ",
                             paste(list(...)))
 }
 
