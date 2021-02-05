@@ -1,6 +1,5 @@
 # `latentnet`: Latent Position and Cluster Models for Statistical Networks
 
-[![Build Status](https://travis-ci.org/statnet/latentnet.svg?branch=master)](https://travis-ci.org/statnet/latentnet)
 [![rstudio mirror downloads](https://cranlogs.r-pkg.org/badges/latentnet?color=2ED968)](https://cranlogs.r-pkg.org/)
 [![cran version](https://www.r-pkg.org/badges/version/latentnet)](https://cran.r-project.org/package=latentnet)
 [![R build status](https://github.com/statnet/latentnet/workflows/R-CMD-check/badge.svg)](https://github.com/statnet/latentnet/actions)
