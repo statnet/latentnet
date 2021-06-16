@@ -5,7 +5,7 @@
 [![Coverage status](https://codecov.io/gh/statnet/latentnet/branch/master/graph/badge.svg)](https://codecov.io/github/statnet/latentnet?branch=master)
 [![R build status](https://github.com/statnet/latentnet/workflows/R-CMD-check/badge.svg)](https://github.com/statnet/latentnet/actions)
 
-Fit and simulate latent position and cluster models for statistical networks. See Krivitsky and Handcock (2008) <10.18637/jss.v024.i05> and Krivitsky, Handcock, Raftery, and Hoff (2009) <10.1016/j.socnet.2009.04.001>.
+Fit and simulate latent position and cluster models for statistical networks. See Krivitsky and Handcock (2008) <doi:10.18637/jss.v024.i05> and Krivitsky, Handcock, Raftery, and Hoff (2009) <doi:10.1016/j.socnet.2009.04.001>.
 
 ## Public and Private repositories
 
