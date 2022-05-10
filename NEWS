@@ -1,3 +1,8 @@
+2.10.6
+	Miscellaneous fixes and updates for compatibility to ergm 4.2.
+
+        Miscellaneous documentation improvements.
+
 2.10.5
 	Fix for a C-level bug exposed by link-time optimization.
 
