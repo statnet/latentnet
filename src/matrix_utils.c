@@ -552,7 +552,11 @@ int dgesvd_full_wrapper(double **A, int n, int m, double **U, double *S, double 
   }
 
   // Note that n and m are swapped in Fortran.
+#ifdef FC_LEN_T
+  F77_NAME(dgesvd)(&job, &job, &n, &m, vA, &n, S, vU, &n, vtV, &m, work, &lwork, &info FCONE FCONE);
+#else
   F77_NAME(dgesvd)(&job, &job, &n, &m, vA, &n, S, vU, &n, vtV, &m, work, &lwork, &info);
+#endif
   
   /* Store U. Fortran is column-major. */
   for(unsigned int i=0;i<n;i++){
