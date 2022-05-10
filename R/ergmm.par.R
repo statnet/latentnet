@@ -128,7 +128,7 @@ length.ergmm.par.list<-function(x){
   ## Delete its class, to keep it from recursing.
   tmp<-class(x)
   class(x)<-NULL
-  if(class(i)=="character"){ ## If the index is a character, return all the draws for the corresponding variable.
+  if(inherits(i,"character")){ ## If the index is a character, return all the draws for the corresponding variable.
     xi<-x[i][[1]]
     class(x)<-tmp
     return(xi)

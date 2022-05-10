@@ -147,7 +147,7 @@ ergmm.fit.deps<-list(pmode=character(0),
                      procrustes=c("mcmc"))
 
 ergmm.tofit.resolve<-function(tofit){
-  if(class(tofit)=="list"){
+  if(inherits(tofit,"list")){
     tofit.c<-c()
     for(fit in names(tofit))
       if(tofit[[fit]])

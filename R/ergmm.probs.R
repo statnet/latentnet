@@ -445,7 +445,7 @@ ergmm.lp<-function(model,theta,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lp
   for(l in list(...)){
     for(name in names(l))
       out[[name]]<-l[[name]]
-    if(class(l)!="list")
+    if(!inherits(l,"list"))
       class(out)<-class(l)
   }
 

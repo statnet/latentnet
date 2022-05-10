@@ -33,7 +33,7 @@
 #' @importFrom stats predict
 #' @export
 predict.ergmm<-function(object,...,type="post"){
-  if(class(type)=="list"){
+  if(inherits(type,"list")){
     type<-type
   }else if(type=="start"){
     type<-object[["start"]]

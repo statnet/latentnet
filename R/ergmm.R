@@ -169,7 +169,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
   
   start.seed<-.Random.seed
   
-  if(class(formula)=="ergmm.model"){
+  if(inherits(formula,"ergmm.model")){
     if(length(prior)){
       model<-formula
       prior<-prior

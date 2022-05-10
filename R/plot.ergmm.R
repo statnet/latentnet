@@ -225,7 +225,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
 
   ## Find the requested plotting coordinates.
   ## Some "requests" require a substantially different code path, unfortunately.
-  if(class(what)=="list"){
+  if(inherits(what,"list")){
     summ<-what
     Z.pos <- summ[["Z"]]
     Z.mean<-summ[["Z.mean"]]
