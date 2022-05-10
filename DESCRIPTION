@@ -1,6 +1,6 @@
 Package: latentnet
-Version: 2.10.0-1625
-Date: 2022-05-10
+Version: 2.10.0-1631
+Date: 2022-05-11
 Title: Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
 	   person("Pavel N.", "Krivitsky", role=c("aut","cre"), email="pavel@statnet.org", comment=c(ORCID="0000-0002-9101-3362")),
@@ -27,6 +27,6 @@ Suggests:
     covr
 BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE
-URL: http://www.statnet.org
+URL: https://statnet.org
 Encoding: UTF-8
 RoxygenNote: 7.1.2
