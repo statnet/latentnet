@@ -108,7 +108,7 @@
 #' 
 #' Pavel N. Krivitsky and Mark S. Handcock (2008).  \emph{Fitting Position
 #' Latent Cluster Models for Social Networks with \code{latentnet}}. Journal of
-#' Statistical Software, 24(5).
+#' Statistical Software, 24(5). \doi{10.18637/jss.v024.i05}
 #' @keywords graphs
 #' @examples
 #' 
