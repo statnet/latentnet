@@ -1,5 +1,5 @@
 Package: latentnet
-Version: 2.10.0-1617
+Version: 2.10.0-1619
 Date: 2022-05-10
 Title: Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
@@ -14,7 +14,7 @@ Authors@R: c(
 	   person("Jordan T.", "Bates", role=c("ctb"),email="jtbates@gmail.com")	   
 	   )
 Description: Fit and simulate latent position and cluster models for statistical networks. See Krivitsky and Handcock (2008) <doi:10.18637/jss.v024.i05> and Krivitsky, Handcock, Raftery, and Hoff (2009) <doi:10.1016/j.socnet.2009.04.001>.
-Depends: R (>= 2.8.0), network, ergm (>= 3.9.0)
+Depends: R (>= 3.6.0), network, ergm (>= 4.2.0)
 Imports: sna, mvtnorm, abind, coda (>= 0.17.1), tools, MASS, statnet.common (>= 4.1.0)
 Suggests: 
     KernSmooth,
@@ -28,4 +28,4 @@ BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE
 URL: http://www.statnet.org
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2

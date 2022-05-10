@@ -532,7 +532,7 @@ NULL
 #'  \code{\link{ergmm}} can use model terms implemented for the
 #'  \code{\link[=ergm-package]{ergm}} package and via the
 #'  \code{\link[ergm.userterms:ergm.userterms-package]{ergm.userterms}} API. See
-#'  \code{\link{ergm-terms}} for a list of available terms. If you wish to
+#'  \code{\link[ergm]{ergmTerm}} for a list of available terms. If you wish to
 #'  specify the prior mean and variance, you can add them to the
 #'  call. E.g.,\cr \code{TERMNAME(..., mean=0, var=9)},\cr where
 #'  \code{...} are the arguments for the \code{ergm} term, will initialize
@@ -574,7 +574,7 @@ NULL
 #'      intercept term.
 #'	
 #'      This term differs from the \code{ergm}'s
-#'      \code{\link[=ergm-terms]{edges}} term if \code{g} has self-loops.}
+#'      \code{\link{edges-ergmTerm}} term if \code{g} has self-loops.}
 #'
 #'    \item{\code{loopcov(attrname, mean=0, var=9)}}{\emph{Covariate
 #'	effect on self-loops.}  \code{attrname} is a character string
@@ -620,7 +620,7 @@ NULL
 #'	latent model.}
 #'
 #'      \emph{Deprecated for networks without self-loops. Use
-#'	\code{\link{edgecov}} instead.}
+#'	\code{\link{edgecov-ergmTerm}} instead.}
 #'      
 #'      \code{x} is either a matrix of
 #'      covariates on each pair of vertices, a network, or an edge attribute on \code{g}; 
@@ -635,8 +635,8 @@ NULL
 #'    \item{\code{sendercov(attrname, force.factor=FALSE, mean=0,	var=9)}}{\emph{Sender covariate effect.}
 #'
 #'      \emph{Deprecated for networks without self-loops. Use
-#'	\code{\link{nodeocov}}, \code{\link{nodeofactor}},
-#'	\code{\link{nodecov}} or \code{\link{nodefactor}} instead.}
+#'	\code{\link{nodeocov-ergmTerm}}, \code{\link{nodeofactor-ergmTerm}},
+#'	\code{\link{nodecov-ergmTerm}} or \code{\link{nodefactor-ergmTerm}} instead.}
 #'
 #'      \code{attrname} is a character string giving the name of an
 #'      attribute in the network's vertex attribute list.
@@ -653,8 +653,8 @@ NULL
 #'    \item{\code{receivercov(attrname, force.factor=FALSE, mean=0, var=9)}}{\emph{Receiver covariate effect.}
 #'
 #'      \emph{Deprecated for networks without self-loops. Use
-#'	\code{\link{nodeicov}}, \code{\link{nodeifactor}},
-#'	\code{\link{nodecov}} or \code{\link{nodefactor}} instead.}
+#'	\code{\link{nodeicov-ergmTerm}}, \code{\link{nodeifactor-ergmTerm}},
+#'	\code{\link{nodecov-ergmTerm}} or \code{\link{nodefactor-ergmTerm}} instead.}
 #'
 #'      \code{attrname} is a character string giving the name of an
 #'      attribute in the network's vertex attribute list.
@@ -671,7 +671,7 @@ NULL
 #'    \item{\code{socialitycov(attrname, force.factor=FALSE, mean=0, var=9)}}{\emph{Sociality covariate effect.}
 #'
 #'      \emph{Deprecated for networks without self-loops. Use
-#'	\code{\link{nodecov}} instead.}
+#'	\code{\link{nodecov-ergmTerm}} instead.}
 #'      
 #'      \code{attrname} is a character string giving the name of an
 #'      attribute in the network's vertex attribute list.
@@ -706,7 +706,7 @@ NULL
 #'
 #'
 #'
-#' @seealso \code{\link{ergmm}} \code{\link[ergm]{terms-ergm}}
+#' @seealso \code{\link{ergmm}} \code{\link[ergm]{ergmTerm}}
 #' @keywords graphs models regression nonlinear nonparametric cluster
 NULL
 
