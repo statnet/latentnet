@@ -1,12 +1,12 @@
-#  File R/ergmm.defaults.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/ergmm.defaults.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 ## These functions define defaults passed to ergmm(...).
 ## They are meant to be used in a manner similar to glm.control(...)
 ## for glm.
@@ -147,7 +147,7 @@ ergmm.fit.deps<-list(pmode=character(0),
                      procrustes=c("mcmc"))
 
 ergmm.tofit.resolve<-function(tofit){
-  if(class(tofit)=="list"){
+  if(inherits(tofit,"list")){
     tofit.c<-c()
     for(fit in names(tofit))
       if(tofit[[fit]])

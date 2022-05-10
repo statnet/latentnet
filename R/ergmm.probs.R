@@ -1,12 +1,12 @@
-#  File R/ergmm.probs.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/ergmm.probs.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 not.given<-function(name,theta,given){
   is.null(given[[name]]) && !is.null(theta[[name]])
 }
@@ -445,7 +445,7 @@ ergmm.lp<-function(model,theta,prior,given=list(),opt=c("lpY","lpZ","lpBeta","lp
   for(l in list(...)){
     for(name in names(l))
       out[[name]]<-l[[name]]
-    if(class(l)!="list")
+    if(!inherits(l,"list"))
       class(out)<-class(l)
   }
 

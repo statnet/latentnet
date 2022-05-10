@@ -1,12 +1,12 @@
-#  File R/ergmm.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/ergmm.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 
 ## If the random seed has been specified, save the old seed, to
 ## pick up where it left off. If not, don't.
@@ -108,7 +108,7 @@
 #' 
 #' Pavel N. Krivitsky and Mark S. Handcock (2008).  \emph{Fitting Position
 #' Latent Cluster Models for Social Networks with \code{latentnet}}. Journal of
-#' Statistical Software, 24(5).
+#' Statistical Software, 24(5). \doi{10.18637/jss.v024.i05}
 #' @keywords graphs
 #' @examples
 #' 
@@ -169,7 +169,7 @@ ergmm <- function(formula,response=NULL,family="Bernoulli",fam.par=NULL,
   
   start.seed<-.Random.seed
   
-  if(class(formula)=="ergmm.model"){
+  if(inherits(formula,"ergmm.model")){
     if(length(prior)){
       model<-formula
       prior<-prior

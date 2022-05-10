@@ -1,12 +1,12 @@
-#  File R/bayesmbc.MCMC.C.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/bayesmbc.MCMC.C.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 bayesmbc.MCMC.C<-function(G, start, prior, sample.size=NULL, interval=NULL){
   ## Note that passing NULL as a parameter will cause the corresponding parameter in
   ## the C function be set to NULL when NULL is coerced to double.

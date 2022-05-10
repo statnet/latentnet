@@ -1,12 +1,12 @@
-#  File R/ergmm.par.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/ergmm.par.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 # Utilities for dealing with MCMC output produced by *.MCMC.C functions.
 
 ERGMM.PAR_VAR_NAMES<-c("beta","Z","sender","receiver","sociality",
@@ -128,7 +128,7 @@ length.ergmm.par.list<-function(x){
   ## Delete its class, to keep it from recursing.
   tmp<-class(x)
   class(x)<-NULL
-  if(class(i)=="character"){ ## If the index is a character, return all the draws for the corresponding variable.
+  if(inherits(i,"character")){ ## If the index is a character, return all the draws for the corresponding variable.
     xi<-x[i][[1]]
     class(x)<-tmp
     return(xi)

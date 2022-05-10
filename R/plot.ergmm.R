@@ -1,12 +1,12 @@
-#  File R/plot.ergmm.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/plot.ergmm.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 plot3d.ergmm<-function(x,...){
   plot.ergmm(x,rgl=TRUE,...)
 }
@@ -225,7 +225,7 @@ plot.ergmm <- function(x, ..., vertex.cex=1, vertex.sides=16*ceiling(sqrt(vertex
 
   ## Find the requested plotting coordinates.
   ## Some "requests" require a substantially different code path, unfortunately.
-  if(class(what)=="list"){
+  if(inherits(what,"list")){
     summ<-what
     Z.pos <- summ[["Z"]]
     Z.mean<-summ[["Z.mean"]]

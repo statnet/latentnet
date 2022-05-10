@@ -1,12 +1,12 @@
-#  File R/InitErgmm.latent.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/InitErgmm.latent.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 #' @export
 InitErgmm.latent <- function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                              mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){

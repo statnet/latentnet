@@ -1,12 +1,12 @@
-#  File R/utilities.R in package latentnet, part of the Statnet suite
-#  of packages for network analysis, https://statnet.org .
+#  File R/utilities.R in package latentnet, part of the
+#  Statnet suite of packages for network analysis, https://statnet.org .
 #
 #  This software is distributed under the GPL-3 license.  It is free,
 #  open source, and has the attribution requirements (GPL Section 7) at
-#  https://statnet.org/attribution
+#  https://statnet.org/attribution .
 #
-#  Copyright 2003-2020 Statnet Commons
-#######################################################################
+#  Copyright 2003-2022 Statnet Commons
+################################################################################
 #
 # Return TRUE iff object x is a ergmm fit object
 # or a latent model
@@ -31,7 +31,7 @@ extraneous.argcheck<-function(...){
   ## functions to take ..., which is wonderful for missing spelling
   ## errors.
   
-  if(length(list(...)))stop("Extraneous arguments passed: ",
+  if(...length())stop("Extraneous arguments passed: ",
                             paste(list(...)))
 }
 

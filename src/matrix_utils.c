@@ -1,11 +1,11 @@
-/*  File src/matrix_utils.c in package latentnet, part of the Statnet suite
- *  of packages for network analysis, https://statnet.org .
+/*  File src/matrix_utils.c in package latentnet, part of the
+ *  Statnet suite of packages for network analysis, https://statnet.org .
  *
  *  This software is distributed under the GPL-3 license.  It is free,
  *  open source, and has the attribution requirements (GPL Section 7) at
- *  https://statnet.org/attribution
+ *  https://statnet.org/attribution .
  *
- *  Copyright 2003-2020 Statnet Commons
+ *  Copyright 2003-2022 Statnet Commons
  */
 /****************************************/
 /* Matrix, vector, and memory utilities */
@@ -552,7 +552,11 @@ int dgesvd_full_wrapper(double **A, int n, int m, double **U, double *S, double 
   }
 
   // Note that n and m are swapped in Fortran.
+#ifdef FC_LEN_T
+  F77_NAME(dgesvd)(&job, &job, &n, &m, vA, &n, S, vU, &n, vtV, &m, work, &lwork, &info FCONE FCONE);
+#else
   F77_NAME(dgesvd)(&job, &job, &n, &m, vA, &n, S, vU, &n, vtV, &m, work, &lwork, &info);
+#endif
   
   /* Store U. Fortran is column-major. */
   for(unsigned int i=0;i<n;i++){
