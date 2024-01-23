@@ -54,9 +54,9 @@ seldrop<-function(x,i){
 #'  The structure of \code{ergmm.par.list} is derived from named lists, with each entry having an
 #'  additional dimension (always the first one), indexed by
 #'  configuration. That is, scalars become vectors, vectors become
-#'  matrixes with the original vectors in rows, and matrixes become
-#'  3-dimensional arrays, with the original matrixes indexed by their
-#'  first dimension. See \code{\link{terms.ergmm}} for comon elements of
+#'  matrixes with the original vectors in rows, and matrices become
+#'  3-dimensional arrays, with the original matrices indexed by their
+#'  first dimension. See term documentation for comon elements of
 #'  these configurations.
 #'  In some cases, such as when representing MCMC or optimization output,
 #'  the object may also have some of the following elements:

@@ -7,13 +7,38 @@
 #
 #  Copyright 2003-2022 Statnet Commons
 ################################################################################
-#' @export
+
+InitErgmTerm.latent <- nonlatent_error
 InitErgmm.latent <- function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                              mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   stop("Term ",sQuote("latent()")," has been deprecated in favor of ",sQuote("euclidean()"),".")
 }
 
-#' @export
+#' @templateVar name euclidean
+#' @title Euclidean distance latent space, with optional clustering
+#' @description Adds a term to the model equal to the negative
+#'   Eucledean distance \eqn{-||Z_i-Z_j||}{-dist(Z[i],Z[j])}, where
+#'   \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]} are the positions of their
+#'   respective actors in an unobserved social space. These positions
+#'   may optionally have a finite spherical Gaussian mixture
+#'   clustering structure. This term was previously called
+#'   \code{latent}.
+#'
+#' @usage
+#' # binary: euclidean(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+#' #             mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)
+#'
+#' # valued: euclidean(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+#' #             mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)
+#'
+#' @template ergmTerm-latentnet-latent-params
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept undirected
+#' @concept directed
+#' @concept latent
+InitErgmTerm.euclidean <- nonlatent_error
 InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)
@@ -47,8 +72,34 @@ InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1
   model
 }
 
-
-#' @export
+#' @templateVar name bilinear
+#' @title Bilinear (inner-product) latent space, with optional clustering
+#' @description Adds a term to the model equal to the inner product of
+#'   the latent positions: \eqn{Z_i \cdot Z_j}{sum(Z[i]*Z[j])}, where
+#'   \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]} are the positions of their
+#'   respective actors in an unobserved social space. These positions
+#'   may optionally have a finite spherical Gaussian mixture
+#'   clustering structure. \emph{Note: For a bilinear latent space
+#'   effect, two actors being closer in the clustering sense does not
+#'   necessarily mean that the expected value of a tie between them is
+#'   higher. Thus, a warning is printed when this model is combined
+#'   with clustering.}
+#'
+#' @usage
+#' # binary: bilinear(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+#' #             mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)
+#'
+#' # valued: bilinear(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+#' #             mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)
+#'
+#' @template ergmTerm-latentnet-latent-params
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept undirected
+#' @concept directed
+#' @concept latent
+InitErgmTerm.bilinear <- nonlatent_error
 InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)
@@ -83,7 +134,31 @@ InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1,
   model
 }
 
-#' @export
+#' @templateVar name euclidean2
+#' @title Squared euclidean distance latent space, with optional clustering
+#' @description Adds a term to the model equal to the negative
+#'   Eucledean distance \eqn{-||Z_i-Z_j||^2}{-dist(Z[i],Z[j])^2}, where
+#'   \eqn{Z_i}{Z[i]} and \eqn{Z_j}{Z[j]} are the positions of their
+#'   respective actors in an unobserved social space. These positions
+#'   may optionally have a finite spherical Gaussian mixture
+#'   clustering structure. This term was previously called
+#'   \code{latent}.
+#'
+#' @usage
+#' # binary: euclidean(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+#' #             mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)
+#'
+#' # valued: euclidean(d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
+#' #             mean.var.mul=1, mean.var=NULL, pK.mul=1, pK=NULL)
+#'
+#' @template ergmTerm-latentnet-latent-params
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept undirected
+#' @concept directed
+#' @concept latent
+InitErgmTerm.euclidean2 <- nonlatent_error
 InitErgmm.euclidean2<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1, var.df=NULL,
                            mean.var.mul=2, mean.var=NULL, pK.mul=1, pK=NULL){
   if(nargs()<2)

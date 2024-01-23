@@ -6,20 +6,20 @@
 \title{Read Highland Tribes}
 \format{
 An undirected \code{\link[network]{network}} object with no loops, having the following attributes:
- \describe{
-   \item{\code{\%v\% "vertex.names"}}{Character attribute with names of tribes.}
-   \item{\code{\%e\% "pos"}}{Logical attribute indicating an
-     alliance relationship.}
-   \item{\code{\%e\% "neg"}}{Logical attribute indicating a hostile
-     relationship ("rova").}
-   \item{\code{\%e\% "sign"}}{Numeric attribute coding -1 for enmity, 0
-     for no relationship, and 1 for alliance.}
-   \item{\code{\%e\% "sign.012"}}{Numeric attribute coding 0 for enmity, 1
-     for no relationship, and 2 for alliance.}
- }
- Because of limitations of \code{\link[network]{network}} objects, the object
- itself is a complete graph, and is thus meaningless if used directly
- or plotted.
+\describe{
+\item{\code{\%v\% "vertex.names"}}{Character attribute with names of tribes.}
+\item{\code{\%e\% "pos"}}{Logical attribute indicating an
+alliance relationship.}
+\item{\code{\%e\% "neg"}}{Logical attribute indicating a hostile
+relationship ("rova").}
+\item{\code{\%e\% "sign"}}{Numeric attribute coding -1 for enmity, 0
+for no relationship, and 1 for alliance.}
+\item{\code{\%e\% "sign.012"}}{Numeric attribute coding 0 for enmity, 1
+for no relationship, and 2 for alliance.}
+}
+Because of limitations of \code{\link[network]{network}} objects, the object
+itself is a complete graph, and is thus meaningless if used directly
+or plotted.
 }
 \source{
 \url{http://vlado.fmf.uni-lj.si/pub/networks/data/UciNet/UciData.htm#gama},

@@ -62,26 +62,26 @@ from the posterior distribution.
 \section{Family-link combinations}{
 
 
-  \tabular{rlllll}{
-   ID \tab \code{C} name          \tab \R name   \tab Type       \tab Family    \tab Link  \cr
-    1 \tab \code{Bernoulli_logit}       \tab \code{Bernoulli.logit} \tab Discrete   \tab Bernoulli \tab logit \cr
-    2 \tab \code{binomial_logit}        \tab \code{binomial.logit}  \tab Discrete   \tab binomial  \tab logit \cr
-    3 \tab \code{Poisson_log}           \tab \code{Poisson.log}     \tab Discrete   \tab Possion   \tab log   \cr
-    4 \tab \code{Bernoulli_cont_logit} \tab NA              \tab Continuous \tab Bernoulli \tab logit \cr
-    5 \tab \code{binomial_cont_logit}  \tab NA              \tab Continuous \tab binomial  \tab logit \cr
-    6 \tab \code{Poisson_cont_log}     \tab NA              \tab Continuous \tab Possion   \tab log \cr  
-    7 \tab \code{normal_identity}      \tab \code{normal.identity} \tab Continuous \tab normal   \tab identity  
-  }
-  \code{.link} can be omited when not ambiguous. Some families
-  require an appropriate \code{fam.par} argument to be supplied to
-  \code{\link{ergmm}}:
-  \describe{
-    \item{binomial families}{a mandatory \code{trials} parameter for the
-      number of trials (same for every dyad) whose success the response
-      counts represent}
-    \item{normal}{a mandatory \code{prior.var} and \code{prior.var.df} parameter for the prior scale and degrees of freedom of the variance of
-      the dyad values}
-  }
+\tabular{rlllll}{
+ID \tab \code{C} name          \tab \R name   \tab Type       \tab Family    \tab Link  \cr
+1 \tab \code{Bernoulli_logit}       \tab \code{Bernoulli.logit} \tab Discrete   \tab Bernoulli \tab logit \cr
+2 \tab \code{binomial_logit}        \tab \code{binomial.logit}  \tab Discrete   \tab binomial  \tab logit \cr
+3 \tab \code{Poisson_log}           \tab \code{Poisson.log}     \tab Discrete   \tab Possion   \tab log   \cr
+4 \tab \code{Bernoulli_cont_logit} \tab NA              \tab Continuous \tab Bernoulli \tab logit \cr
+5 \tab \code{binomial_cont_logit}  \tab NA              \tab Continuous \tab binomial  \tab logit \cr
+6 \tab \code{Poisson_cont_log}     \tab NA              \tab Continuous \tab Possion   \tab log \cr
+7 \tab \code{normal_identity}      \tab \code{normal.identity} \tab Continuous \tab normal   \tab identity
+}
+\code{.link} can be omited when not ambiguous. Some families
+require an appropriate \code{fam.par} argument to be supplied to
+\code{\link{ergmm}}:
+\describe{
+\item{binomial families}{a mandatory \code{trials} parameter for the
+number of trials (same for every dyad) whose success the response
+counts represent}
+\item{normal}{a mandatory \code{prior.var} and \code{prior.var.df} parameter for the prior scale and degrees of freedom of the variance of
+the dyad values}
+}
 }
 
 \keyword{graphs}

@@ -17,6 +17,7 @@
   .latentnetEnv$path.to.me <- file_path_as_absolute(lib)
   .latentnetEnv$nlog.double.eps <- -log(.Machine[["double.eps"]])
   .latentnetEnv$BIC.warned <- FALSE
+  .RegisterKeywords()
 }
 
 #' @importFrom statnet.common statnetStartupMessage
@@ -24,5 +25,10 @@
   sm <- statnetStartupMessage("latentnet",c("statnet"),FALSE)
   if(!is.null(sm)) packageStartupMessage(sm,
                                          "NOTE: BIC calculation prior to latentnet 2.7.0 had a bug in the calculation of the effective number of parameters. See help(summary.ergmm) for details.\n",
-                                         "NOTE: Prior to version 2.8.0, handling of fixed effects for directed networks had a bug. See help(\"ergmm-terms\") for details.")
+                                         "NOTE: Prior to version 2.8.0, handling of fixed effects for directed networks had a bug: the covariate matrix was transposed.")
+}
+
+.RegisterKeywords <- function() {
+  ergm_keyword(name="latent", short="latent", description="latent variable effect only used in \\pkg{latentnet}'s \\code{ergmm()}", popular=TRUE, package="latentnet")
+  ergm_keyword(name="loops", short="loop", description="term is designed for networks with self-loops", popular=FALSE, package="latentnet")
 }

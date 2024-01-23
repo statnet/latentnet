@@ -7,7 +7,7 @@
 ergmm.prior(..., adjust.beta.var = TRUE)
 }
 \arguments{
-\item{\dots}{Prior distribution parameters. See \link{terms.ergmm} for more
+\item{\dots}{Prior distribution parameters. See term documentation and \code{\link[=ergmm]{ergmm()}} for more
 information.}
 
 \item{adjust.beta.var}{A shortcut: whether the prior variance for each
@@ -26,7 +26,7 @@ overwrite those specified in the model formula, and to supply miscellaneous
 prior parameters.
 }
 \seealso{
-\code{\link{ergmm}}, \code{\link{terms.ergmm}}
+\code{\link[=ergmm]{ergmm()}}, \code{\link{ergmTerm}}
 }
 \keyword{graphs}
 \keyword{models}

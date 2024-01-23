@@ -122,14 +122,14 @@ ergmm.control <- control.ergmm
 #' prior parameters.
 #' 
 #' 
-#' @param \dots Prior distribution parameters. See \link{terms.ergmm} for more
+#' @param \dots Prior distribution parameters. See term documentation and [ergmm()] for more
 #' information.
 #' @param adjust.beta.var A shortcut: whether the prior variance for each
 #' covariate coefficient should be divided by the mean square of that
 #' covariate. This adjustment affects those variances specified in the formula
 #' or by default, but not those specified through the \code{prior=} argument.
 #' @return A list with the arguments as elements.
-#' @seealso \code{\link{ergmm}}, \code{\link{terms.ergmm}}
+#' @seealso [ergmm()], [`ergmTerm`]
 #' @keywords graphs models
 #' @export ergmm.prior
 ergmm.prior<-function(...,adjust.beta.var=TRUE){

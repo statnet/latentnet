@@ -53,20 +53,20 @@ documentation for \code{\link{ergmm}}.}
 
 \item{what}{Character vector, integer, or a list that specifies the point
 estimates to be used. Can be one of the follwoing:
-   \describe{
-     \item{\code{"mkl"}}{This is the defult. Plots the Minimum Kulblack-Leibler divergence values.}
-     \item{\code{"start"},\code{"burnin.start"}}{Plots the starting configuration.}
-     \item{\code{"sampling.start"}}{Plots the starting configuration of the sampling phase (the last burnin configuration).}
-     \item{\code{"mle"}}{Plots the maximum likelihood estimates. Random effects are treated as fixed.}
-     \item{\code{"pmean"}}{Plots the posterior means.}
-     \item{\code{"pmode"}}{Plots the conditional posterior mode.}
-     \item{\code{"cloud"}}{Plots the ``cloud'' of latent space position draws,
-   with their cluster colors.}
-     \item{\code{"density"}}{Plots density and contours of the posterior latent positions, and, in cluster models, each cluster.}
-     \item{\code{list}}{Plots the
-   configuration contained in the list.}
-     \item{integer}{Plots the configuration of \code{what}th MCMC draw stored in \code{x}.}
-   }}
+\describe{
+\item{\code{"mkl"}}{This is the defult. Plots the Minimum Kulblack-Leibler divergence values.}
+\item{\code{"start"},\code{"burnin.start"}}{Plots the starting configuration.}
+\item{\code{"sampling.start"}}{Plots the starting configuration of the sampling phase (the last burnin configuration).}
+\item{\code{"mle"}}{Plots the maximum likelihood estimates. Random effects are treated as fixed.}
+\item{\code{"pmean"}}{Plots the posterior means.}
+\item{\code{"pmode"}}{Plots the conditional posterior mode.}
+\item{\code{"cloud"}}{Plots the ``cloud'' of latent space position draws,
+with their cluster colors.}
+\item{\code{"density"}}{Plots density and contours of the posterior latent positions, and, in cluster models, each cluster.}
+\item{\code{list}}{Plots the
+configuration contained in the list.}
+\item{integer}{Plots the configuration of \code{what}th MCMC draw stored in \code{x}.}
+}}
 
 \item{main, vertex.cex, vertex.col, xlim, ylim, vertex.sides, }{Arguments passed
 to \code{\link[network]{plot.network}}, whose defaults differ from those of
@@ -138,9 +138,9 @@ Defaults to \code{FALSE}.}
 
 \item{density.par}{A list of optional parameters for density plots:
 \describe{
-  \item{\code{totaldens}}{Whether the overal density of latent space positions should be plotted. Defaults to \code{TRUE}.}
-  \item{\code{subdens}}{Whether the densities of latent space positions broken down by cluster should be plotted. Defaults to \code{TRUE}.}
-  \item{\code{mfrow}}{When plotting multiple clusters' densities, passed to \code{\link{par}}}
+\item{\code{totaldens}}{Whether the overal density of latent space positions should be plotted. Defaults to \code{TRUE}.}
+\item{\code{subdens}}{Whether the densities of latent space positions broken down by cluster should be plotted. Defaults to \code{TRUE}.}
+\item{\code{mfrow}}{When plotting multiple clusters' densities, passed to \code{\link{par}}}
 }}
 }
 \value{

@@ -35,12 +35,12 @@ was fit.}
 \item{eff.obs, bic.eff.obs}{What effective sample size to use for BIC
 calculation?
 \describe{
-     \item{\code{"ties"}}{the number of non-missing ties in the network. This is the approach recommended by Handcock et al. (2007) and the default. Not well-defined for valued networks.}
-     \item{\code{"dyads"}}{the number of non-missing dyads (potential ties) in the network.}
-     \item{\code{"actors"}}{the number of actors in the network. The default prior to 2.7.0.}
-     \item{a number}{to specify a specific sample size.}
-     \item{\code{NULL}}{Don't compute the BIC at all. Mostly for internal use.}
-   }}
+\item{\code{"ties"}}{the number of non-missing ties in the network. This is the approach recommended by Handcock et al. (2007) and the default. Not well-defined for valued networks.}
+\item{\code{"dyads"}}{the number of non-missing dyads (potential ties) in the network.}
+\item{\code{"actors"}}{the number of actors in the network. The default prior to 2.7.0.}
+\item{a number}{to specify a specific sample size.}
+\item{\code{NULL}}{Don't compute the BIC at all. Mostly for internal use.}
+}}
 }
 \value{
 For \code{summary}, an object of class

@@ -24,7 +24,7 @@ description. See the reference to the paper below:
 In the 1930s, five ethnographers, Allison Davis, Elizabeth Stubbs Davis,
 Burleigh B. Gardner, Mary R. Gardner and J. G. St. Clair Drake, collected
 data on stratification in Natchez, Mississippi (Warner, 1988, p. 93). They
-produced the book cited below [DGG] that reported a comparative study of
+produced the book cited below (DGG) that reported a comparative study of
 social class in black and in white society. One element of this work
 involved examining the correspondence between people's social class levels
 and their patterns of informal interaction. DGG was concerned with the issue
@@ -37,10 +37,7 @@ In particular, they collected systematic data on the social activities of 18
 women whom they observed over a nine-month period. During that period,
 various subsets of these women had met in a series of 14 informal social
 events. The participation of women in events was uncovered using
-``interviews, the records of participant observers, guest lists, and the
-newspapers'' (DGG, p. 149). Homans (1950, p. 82), who presumably had been in
-touch with the research team, reported that the data reflect joint
-activities like, ``a day's work behind the counter of a store, a meeting of
+\verb{interviews, the records of participant observers, guest lists, and the newspapers'' (DGG, p. 149). Homans (1950, p. 82), who presumably had been in touch with the research team, reported that the data reflect joint activities like, }a day's work behind the counter of a store, a meeting of
 a women's club, a church supper, a card party, a supper party, a meeting of
 the Parent-Teacher Association, etc.''
 
@@ -52,8 +49,7 @@ core and peripheral - of the members of these groups could also be
 determined in terms of the ways in which different women had been involved
 in group activities. At the same time, the DGG data set is complicated
 enough that some of the details of its patterning are less than obvious. As
-Homans (1950, p. 84) put it, ``The pattern is frayed at the edges.'' And,
-finally, this data set comes to us in a two-mode ``woman by event'' form.
+Homans (1950, p. 84) put it, \verb{The pattern is frayed at the edges.'' And, finally, this data set comes to us in a two-mode }woman by event'' form.
 Thus, it provides an opportunity to explore methods designed for direct
 application to two-mode data. But at the same time, it can easily be
 transformed into two one-mode matrices (woman by woman or event by event)

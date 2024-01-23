@@ -22,19 +22,20 @@ ergmm(
 )
 }
 \arguments{
-\item{formula}{An formula object, of the form \code{g ~ <term 1> + <term 2>
-...}, where \code{g} is a network object or a matrix that can be coerced to
-a network object, and \code{<term 1>}, \code{<term 2>}, etc., are each terms
-for the model. See \code{\link{terms.ergmm}} for the terms that can be
-fitted.  To create a network object in , use the \code{network} function,
-then add nodal attributes to it using \code{set.vertex.attribute} if
-necessary.
+\item{formula}{An formula object, of the form \code{g ~ <term 1> +
+  <term 2> ...}, where \code{g} is a network object or a matrix
+that can be coerced to a network object, and \code{<term 1>},
+\code{<term 2>}, etc., are each terms for the model. See
+\code{\link{ergmTerm}} for the terms that can be fitted, though note the
+section on fixed effects below.  To create a network object in ,
+use the \code{network} function, then add nodal attributes to it
+using \code{set.vertex.attribute} if necessary.
 
-Note that, as in \code{\link{lm}}, the model will include an
-\code{\link{intercept}} term. This behavior can be overridden by including a
-\code{-1} or \code{+0} term in the formula, and a
-\code{\link[=terms.ergmm]{1(mean=...,var=...)}} term can be used to set a
-prior different from default.}
+Note that, as in \code{\link[=lm]{lm()}}, the model will include an
+\code{\link[=Intercept-ergmTerm]{intercept}} term. This behavior can be overridden by
+including a \code{-1} or \code{+0} term in the formula, and a
+\code{\link[=Intercept-ergmTerm]{1(mean=...,var=...)}} term can be used
+to set a prior different from default.}
 
 \item{response}{An optional edge attribute that serves as the response
 variable. By default, presence (1) or absence (0) of an edge in \code{g} is
@@ -59,7 +60,7 @@ of a configuration. If this is done, the remaining paramters are fitted
 conditional on those supplied.}
 
 \item{prior}{The prior parameters for the model being fitted in the form of
-a named list. See \link{terms.ergmm} for the names to use.  If given, will
+a named list. See term help for the terms to use.  If given, will
 override those given in the formula terms, making it useful as a convenient
 way to store and reproduce a prior distribution. The list or prior
 parameters can also be extracted from an \link[=ergmm.object]{ERGMM fit
@@ -89,12 +90,52 @@ generation. Higher values lead to greater verbosity.}
 posterior.
 }
 \description{
-\code{\link{ergmm}} is used to fit latent space and latent space cluster
+\code{\link[=ergmm]{ergmm()}} is used to fit latent space and latent space cluster
 random network models, as described by Hoff, Raftery and Handcock (2002),
 Handcock, Raftery and Tantrum (2005), and Krivitsky, Handcock, Raftery, and
-Hoff (2009).  \code{\link{ergmm}} can return either a Bayesian model fit or
+Hoff (2009).  \code{\link[=ergmm]{ergmm()}} can return either a Bayesian model fit or
 the two-stage MLE.
 }
+\section{Specifying fixed effects}{
+
+Each coefficient for a fixed effect covariate has a normal prior whose
+mean and variance are set by the \code{mean} and \code{var} parameters
+of the term. For those formula terms that add more than one covariate,
+a vector can be given for mean and variance. If not, the vectors given
+will be repeated until the needed length is reached.
+
+\code{\link{ergmm}} can use model terms implemented for the
+\code{\link[=ergm-package]{ergm}} package and via the
+\href{https://github.com/statnet/ergm.userterms}{\code{ergm.userterms}
+API (in GitHub repository \code{statnet/ergm.userterms})}. See
+\code{\link[ergm]{ergmTerm}} for a list of available terms. If you
+wish to specify the prior mean and variance, you can add them to
+the call. E.g.,\cr \code{TERMNAME(..., mean=0, var=9)},\cr where
+\code{...} are the arguments for the \code{ergm} term, will
+initialize \code{TERMNAME} with prior mean of 0 and prior variance
+of 9.
+
+Some caveats:
+\itemize{
+\item \code{\link[=ergm-package]{ergm}} has a binary and a valued
+mode. Regardless of the \code{\link[=families.ergmm]{family}}
+used, the \emph{binary} variant of the
+\code{\link[=ergm-package]{ergm}} term will be used in the
+linear predictor of the model.
+\item \code{\link[=ergm-package]{ergm}} does not support modeling
+self-loops, so terms imported in this way will always have
+predictor \code{x[i,i]==0}. This should not affect most
+situations, but if you absolutely must model self-loops and
+non-self-edges in one term, use the deprecated terms below.
+\item \code{latentnet} only fits models with dyadic
+independence. Terms that induce dyadic dependence (e.g.,
+\code{triangles}) can be used, but then the likelihood of the
+model will, effectively, be replaced with
+pseudolikelihood. (Note that under dyadic independence, the two
+are equal.)
+}
+}
+
 \examples{
 
 \donttest{
@@ -147,7 +188,6 @@ Latent Cluster Models for Social Networks with \code{latentnet}}. Journal of
 Statistical Software, 24(5). \doi{10.18637/jss.v024.i05}
 }
 \seealso{
-network, set.vertex.attributes, set.network.attributes,
-summary.ergmm, terms.ergmm, families.ergmm
+\code{\link{network}}, \link{summary.ergmm}, \code{\link{ergmTerm}}, \code{\link{families.ergmm}}
 }
 \keyword{graphs}

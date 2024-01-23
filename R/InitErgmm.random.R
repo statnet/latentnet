@@ -7,7 +7,27 @@
 #
 #  Copyright 2003-2022 Statnet Commons
 ################################################################################
-#' @export
+
+#' @templateVar name rsender
+#' @templateVar reffect sender
+#' @title Random sender effect
+#' @description Adds a random sender effect to the model, with normal
+#'   prior centered around \eqn{0}{0} and a variance that is
+#'   estimated. Can only be used on directed networks.
+#'
+#' @usage
+#' # binary: rsender(var=1, var.df=3)
+#'
+#' # valued: rsender(var=1, var.df=3)
+#'
+#' @template ergmTerm-latentnet-random
+#' @template ergmTerm-general
+#' @template ergmTerm-directed
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept latent
+InitErgmTerm.rsender <- nonlatent_error
 InitErgmm.rsender<-function(model, var=1, var.df=3){
   if (!is.directed(model[["Yg"]]))
     stop("Sender effects are not allowed with an undirected network; use 'sociality'", call.=FALSE)
@@ -17,7 +37,26 @@ InitErgmm.rsender<-function(model, var=1, var.df=3){
   model
 }
 
-#' @export
+#' @templateVar name rreceiver
+#' @templateVar reffect receiver
+#' @title Random receiver effect
+#' @description Adds a random receiver effect to the model, with normal
+#'   prior centered around \eqn{0}{0} and a variance that is
+#'   estimated. Can only be used on directed networks.
+#'
+#' @usage
+#' # binary: rreceiver(var=1, var.df=3)
+#'
+#' # valued: rreceiver(var=1, var.df=3)
+#'
+#' @template ergmTerm-latentnet-random
+#' @template ergmTerm-general
+#' @template ergmTerm-directed
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept latent
+InitErgmTerm.rreceiver <- nonlatent_error
 InitErgmm.rreceiver<-function(model, var=1, var.df=3){
   if (!is.directed(model[["Yg"]]))
     stop("receiver effects are not allowed with an undirected network; use 'sociality'", call.=FALSE)
@@ -27,7 +66,26 @@ InitErgmm.rreceiver<-function(model, var=1, var.df=3){
   model
 }
 
-#' @export
+#' @templateVar name rsociality
+#' @templateVar reffect sociality
+#' @title Random sociality effect
+#' @description Adds a random sociality effect to the model, with normal
+#'   prior centered around \eqn{0}{0} and a variance that is
+#'   estimated. Can only be used on directed networks.
+#'
+#' @usage
+#' # binary: rsociality(var=1, var.df=3)
+#'
+#' # valued: rsociality(var=1, var.df=3)
+#'
+#' @template ergmTerm-latentnet-random
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept undirected
+#' @concept directed
+#' @concept latent
+InitErgmTerm.rsociality <- nonlatent_error
 InitErgmm.rsociality<-function(model, var=1, var.df=3){
   model[["sociality"]]<-TRUE
   model[["prior"]][["sociality.var"]]<-var

@@ -52,18 +52,16 @@ ergmm.get.model <- function(formula,response,family,fam.par,prior){
   
   termlist <- as.list(attr(terms,"variables"))[-(1:2)]
   
+  #' @importFrom statnet.common locate_prefixed_function
   for (i in seq_along(termlist)){
     term <- termlist[[i]]
-    if(as.character(if(length(term)>1) term[[1]] else term) %in% latentnet.terms){
-      if (is.call(term)){
-        init.call<-list()
-        init.call<-list(as.name(paste("InitErgmm.", term[[1]], sep = "")),
-                        model=model)
+    f <- locate_prefixed_function(as.character(if(length(term)>1) term[[1]] else term), "InitErgmm", NULL)
+
+    if(!is.null(f)){
+      init.call<-list(f, model=model)
+
+      if (is.call(term)) init.call <- c(init.call,as.list(term)[-1])
         
-        init.call<-c(init.call,as.list(term)[-1])
-      }else{
-        init.call <- list(as.name(paste("InitErgmm.", term, sep = "")),model=model)
-      }
       model <- eval(as.call(init.call), attr(terms,".Environment"))
     }else{
 

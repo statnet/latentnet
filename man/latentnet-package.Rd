@@ -2,13 +2,9 @@
 % Please edit documentation in R/latentnet-package.R
 \docType{package}
 \name{latentnet-package}
-\alias{latentnet-package}
 \alias{latentnet}
+\alias{latentnet-package}
 \title{latentnet: Latent Position and Cluster Models for Statistical Networks}
-\value{
-\code{\link{ergmm}} returns an object of class 'ergmm' that is a
-list.
-}
 \description{
 Fit and simulate latent position and cluster models for statistical networks. See Krivitsky and Handcock (2008) \doi{10.18637/jss.v024.i05} and Krivitsky, Handcock, Raftery, and Hoff (2009) \doi{10.1016/j.socnet.2009.04.001}.
 }
@@ -29,20 +25,17 @@ stochastic equivalence in symmetric relational data'', fit by package
 
 The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>} where
 \code{g} is a \code{network} object For the list of possible \code{<model
-terms>}, see \link{terms.ergmm}. For the list of the possible dyad
-distribution families, see \link{families.ergmm}.
-
+terms>}, see \code{\link{ergmTerm}}. For the list of the possible dyad
+distribution families, see \code{\link{families.ergmm}}.
 
 The arguments in the \code{\link{ergmm}} function specific to latent
-variable models are \code{ergmm.control}. See the help page for
+variable models are \code{\link{ergmm.control}}. See the help page for
 \code{\link{ergmm}} for the details.
 
 The result of a latent variable model fit is an \code{\link{ergmm}} object.
 Hence the \code{\link{summary}}, \code{print}, and \code{plot} functions
 apply to the fits.  The \code{\link{plot.ergmm}} function has many options
-specific to latent variable models. % are \code{mle}, \code{pie},
-\code{contour}, % \code{contour.colors}.  See the help page for
-\code{\link{plot.ergmm}} for the details.
+specific to latent variable models.
 }
 \references{
 Mark S. Handcock, Adrian E. Raftery and Jeremy Tantrum (2007).
@@ -70,7 +63,12 @@ Susan M. Shortreed, Mark S. Handcock, and Peter D. Hoff (2006).
 Methodology, 2(1), 24-33.
 }
 \seealso{
-\code{\link{ergmm}}, \link{terms.ergmm}
+Useful links:
+\itemize{
+  \item \url{https://statnet.org}
+  \item Report bugs at \url{https://github.com/statnet/latentnet/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Pavel N. Krivitsky \email{pavel@statnet.org} (\href{https://orcid.org/0000-0002-9101-3362}{ORCID})

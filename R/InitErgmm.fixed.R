@@ -7,6 +7,14 @@
 #
 #  Copyright 2003-2022 Statnet Commons
 ################################################################################
+
+#' @importFrom statnet.common ult
+nonlatent_error <- function(...){
+  myname <- sub("InitErgmTerm.", "", ult(as.character(sys.call()[[1]])), fixed=TRUE)
+
+  stop("It appears that you are using ", sQuote("latentnet"), " term ", sQuote(myname)," in a non-latent-space context. They should only be used in ", sQuote("ergmm()"), " calls and similar.", call. = FALSE)
+}
+
 .ergmm.add.fixed<-function(model, X, mean, var, coef.names=NULL, where=c("append","prepend")){
   where <- match.arg(where)
   
@@ -74,6 +82,43 @@
   .ergmm.add.fixed(model, X, mean, var)
 }
 
+#' @templateVar name Intercept
+#' @aliases 1-ergmTerm intercept-ergmTerm
+#' @title Intercept
+#' @description This term serves as an intercept term, is included by
+#'   default (though, as in \code{\link{lm}}, it can be excluded by
+#'   adding \code{+0} or \code{-1} into the model formula). It adds
+#'   one covariate to the model, for which \code{x[i,j]=1} for all
+#'   \code{i} and \code{j}.
+#'
+#'   It can be used explicitly to set prior mean and variance for the
+#'   intercept term.
+#'
+#'   This term differs from the \code{ergm}'s
+#'   \code{\link{edges-ergmTerm}} term if the network has self-loops.
+#'
+#' @usage
+#' # binary: 1(mean=0, var=9)
+#'
+#' # binary: Intercept(mean=0, var=9)
+#'
+#' # binary: intercept(mean=0, var=9)
+#'
+#' # valued: 1(mean=0, var=9)
+#'
+#' # valued: Intercept(mean=0, var=9)
+#'
+#' # valued: intercept(mean=0, var=9)
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept undirected
+#' @concept latent
+InitErgmTerm.Intercept <- InitErgmTerm.intercept <- InitErgmTerm.1 <- nonlatent_error
 InitErgmm.Intercept<-InitErgmm.intercept<-InitErgmm.1<-function(model, mean=0, var=9){
   #Check to ensure that we got the right number of arguments
   if (!(nargs() %in% 1:4))
@@ -86,7 +131,24 @@ InitErgmm.Intercept<-InitErgmm.intercept<-InitErgmm.1<-function(model, mean=0, v
                    "(Intercept)")
 }
 
-#' @export
+#' @templateVar name loops
+#' @title Self-loops
+#' @description Effect of the dyad being a self-loop (i.e., \eqn{(i,i)}).
+#'
+#' @usage
+#' # binary: loops(mean=0, var=9)
+#'
+#' # valued: loops(mean=0, var=9)
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept undirected
+#' @concept latent
+InitErgmTerm.loops <- nonlatent_error
 InitErgmm.loops<-function (model, mean=0, var=9){
   if(!has.loops(model[["Yg"]]))
     stop("Self-loop term is  meaningless in a network without self-loops", call.=FALSE)
@@ -99,7 +161,31 @@ InitErgmm.loops<-function (model, mean=0, var=9){
   .ergmm.add.fixed(model, diag(1,network.size(model[["Yg"]]),network.size(model[["Yg"]])), mean, var, "loops")
 }
 
-#' @export
+#' @templateVar name loopcov
+#' @title Covariate effect on self-loops
+#' @description This term adds one covariate to the model, for which
+#'   \code{x[i,i]=attrname(i)} and \code{x[i,j]=0} for \code{i!=j}.
+#'   This term only makes sense if the network has self-loops.
+#'
+#' @usage
+#' # binary: loopcov(attrname, mean=0, var=9)
+#'
+#' # valued: loopcov(attrname, mean=0, var=9)
+#'
+#' @param attrname a character string giving the name of a numeric
+#'   (not categorical) attribute in the network's vertex attribute
+#'   list.
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept quantitative nodal attribute
+#' @concept directed
+#' @concept undirected
+#' @concept latent
+InitErgmTerm.loopcov <- nonlatent_error
 InitErgmm.loopcov <- function (model, attrname, mean=0, var=9){
   if(!has.loops(model[["Yg"]]))
     stop("Self-loop covariates are meaningless in a network without self-loops", call.=FALSE)
@@ -117,7 +203,53 @@ InitErgmm.loopcov <- function (model, attrname, mean=0, var=9){
   .ergmm.add.fixed(model, xm, mean, var, cn)
 }
 
-#' @export
+#' @templateVar name loopfactor
+#' @title Factor attribute effect on self-loops
+#' @description This term adds multiple covariates to the model, one
+#'   for each of (a subset of) the unique values of the
+#'   \code{attrname} attribute (or each combination of the attributes
+#'   given). Each of these covariates has \code{x[i,i]=1} if
+#'   \code{attrname(i)==l}, where \code{l} is that covariate's level,
+#'   and \code{x[i,j]=0} otherwise. To include all attribute values se
+#'   \code{base=0} -- because the sum of all such statistics equals
+#'   twice the number of self-loops and hence a linear dependency
+#'   would arise in any model also including \code{loops}. Thus, the
+#'   \code{base} argument tells which value(s) (numbered in order
+#'   according to the \code{sort} function) should be omitted. The
+#'   default value, \code{base=1}, means that the smallest (i.e.,
+#'   first in sorted order) attribute value is omitted. For example,
+#'   if the \dQuote{fruit} factor has levels \dQuote{orange},
+#'   \dQuote{apple}, \dQuote{banana}, and \dQuote{pear}, then to add
+#'   just two terms, one for \dQuote{apple} and one for \dQuote{pear},
+#'   then set \dQuote{banana} and \dQuote{orange} to the base
+#'   (remember to sort the values first) by using
+#'   \code{nodefactor("fruit", base=2:3)}. For an analogous term for
+#'   quantitative vertex attributes, see
+#'   \code{nodecov}.\code{attrname} is a character string giving the
+#'   name of a numeric (not categorical) attribute in the network's
+#'   vertex attribute list.  This term adds one covariate to the
+#'   model, for which \code{x[i,i]=attrname(i)} and \code{x[i,j]=0}
+#'   for \code{i!=j}.  This term only makes sense if the network has
+#'   self-loops.
+#'
+#' @usage
+#' # binary: loopfactor(attrname, mean=0, var=9)
+#'
+#' # valued: loopfactor(attrname, mean=0, var=9)
+#'
+#' @param attrname a character vector giving one or more names of
+#'   categorical attributes in the network's vertex attribute list.
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept categorical nodal attribute
+#' @concept directed
+#' @concept undirected
+#' @concept latent
+InitErgmTerm.loopfactor <- nonlatent_error
 InitErgmm.loopfactor <- function (model, attrname, base=1, mean=0, var=9){
   if(!has.loops(model[["Yg"]]))
     stop("Self-loop covariates are meaningless in a network without self-loops", call.=FALSE)
@@ -154,7 +286,57 @@ InitErgmm.loopfactor <- function (model, attrname, base=1, mean=0, var=9){
   model
 }
 
-#' @export
+#' @templateVar name latentcov
+#' @title Edge covariates for the latent model
+#' @description This term adds multiple covariates to the model, one
+#'   for each of (a subset of) the unique values of the
+#'   \code{attrname} attribute (or each combination of the attributes
+#'   given). Each of these covariates has \code{x[i,i]=1} if
+#'   \code{attrname(i)==l}, where \code{l} is that covariate's level,
+#'   and \code{x[i,j]=0} otherwise. To include all attribute values se
+#'   \code{base=0} -- because the sum of all such statistics equals
+#'   twice the number of self-loops and hence a linear dependency
+#'   would arise in any model also including \code{loops}. Thus, the
+#'   \code{base} argument tells which value(s) (numbered in order
+#'   according to the \code{sort} function) should be omitted. The
+#'   default value, \code{base=1}, means that the smallest (i.e.,
+#'   first in sorted order) attribute value is omitted. For example,
+#'   if the \dQuote{fruit} factor has levels \dQuote{orange},
+#'   \dQuote{apple}, \dQuote{banana}, and \dQuote{pear}, then to add
+#'   just two terms, one for \dQuote{apple} and one for \dQuote{pear},
+#'   then set \dQuote{banana} and \dQuote{orange} to the base
+#'   (remember to sort the values first) by using
+#'   \code{nodefactor("fruit", base=2:3)}. For an analogous term for
+#'   quantitative vertex attributes, see
+#'   \code{nodecov}.\code{attrname} is a character string giving the
+#'   name of a numeric (not categorical) attribute in the network's
+#'   vertex attribute list.  This term adds one covariate to the
+#'   model, for which \code{x[i,i]=attrname(i)} and \code{x[i,j]=0}
+#'   for \code{i!=j}.  This term only makes sense if the network has
+#'   self-loops.
+#'
+#'   \code{latentcov} can be called more than once, to model the
+#'   effects of multiple covariates. Note that some covariates can be
+#'   more conveniently specified using the following terms.
+#'
+#' @usage
+#' # binary: latentcov(x, attrname=NULL, mean=0, var=9)
+#'
+#' # valued: latentcov(x, attrname=NULL, mean=0, var=9)
+#'
+#' @param x either a matrix of covariates on each pair of vertices, a
+#'   network, or an edge attribute.
+#' @param attrname optional argument to provide the name of the edge attribute.
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept undirected
+#' @concept latent
+InitErgmTerm.latentcov <- nonlatent_error
 InitErgmm.latentcov<-function (model, x, attrname=NULL,
                                mean=0, var=9) 
 {
@@ -179,7 +361,43 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
   .ergmm.add.fixed(model, xm, mean, var, cn)
 }
 
-#' @export
+#' @templateVar name sendercov
+#' @title Sender covariate effect
+#' @description \emph{Deprecated for networks without self-loops. Use
+#'   \code{\link{nodeocov-ergmTerm}},
+#'   \code{\link{nodeofactor-ergmTerm}},
+#'   \code{\link{nodecov-ergmTerm}} or
+#'   \code{\link{nodefactor-ergmTerm}} instead.}
+#'
+#'   If the attribute is numeric, this term adds one covariate to the
+#'   model equaling \code{attrname(i)}. If the attribute is not
+#'   numeric or \code{force.factor==TRUE}, this term adds \eqn{p-1}
+#'   covariates to the model, where \eqn{p} is the number of unique
+#'   values of \code{attrname}.  The \eqn{k}th such covariate has the
+#'   value \code{attrname(i) == value(k+1)}, where \code{value(k)} is
+#'   the \eqn{k}th smallest unique value of the \code{attrname}
+#'   attribute. This term only makes sense if the network is directed.
+#'
+#' @usage
+#' # binary: sendercov(attrname, force.factor=FALSE, mean=0, var=9)
+#'
+#' # valued: sendercov(attrname, force.factor=FALSE, mean=0, var=9)
+#'
+#' @param attrname a character string giving the name of an attribute
+#'   in the network's vertex attribute list.
+#' @param force.factor logical, indicating if `attrname`'s value
+#'   should be interpreted as categorical even if numeric.
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#' @template ergmTerm-directed
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept latent
+#' @concept loops
+InitErgmTerm.sendercov <- nonlatent_error
 InitErgmm.sendercov<-function (model, attrname, force.factor=FALSE, mean=0, var=9) 
 {
   if(!has.loops(model[["Yg"]])) warning("Term `sendercov` is deprecated for networks without self-loops. Use `nodeocov`, `nodecov`, `nodeofactor`, or `nodefactor` from package `ergm` instead.")
@@ -214,7 +432,43 @@ InitErgmm.sendercov<-function (model, attrname, force.factor=FALSE, mean=0, var=
   model
 }
 
-#' @export
+#' @templateVar name receivercov
+#' @title Receiver covariate effect
+#' @description \emph{Deprecated for networks without self-loops. Use
+#'   \code{\link{nodeicov-ergmTerm}},
+#'   \code{\link{nodeifactor-ergmTerm}},
+#'   \code{\link{nodecov-ergmTerm}} or
+#'   \code{\link{nodefactor-ergmTerm}} instead.}
+#'
+#'   If the attribute is numeric, this term adds one covariate to the
+#'   model equaling \code{attrname(i)}. If the attribute is not
+#'   numeric or \code{force.factor==TRUE}, this term adds \eqn{p-1}
+#'   covariates to the model, where \eqn{p} is the number of unique
+#'   values of \code{attrname}.  The \eqn{k}th such covariate has the
+#'   value \code{attrname(i) == value(k+1)}, where \code{value(k)} is
+#'   the \eqn{k}th smallest unique value of the \code{attrname}
+#'   attribute. This term only makes sense if the network is directed.
+#'
+#' @usage
+#' # binary: receivercov(attrname, force.factor=FALSE, mean=0, var=9)
+#'
+#' # valued: receivercov(attrname, force.factor=FALSE, mean=0, var=9)
+#'
+#' @param attrname a character string giving the name of an attribute
+#'   in the network's vertex attribute list.
+#' @param force.factor logical, indicating if `attrname`'s value
+#'   should be interpreted as categorical even if numeric.
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#' @template ergmTerm-directed
+#'
+#' @concept dyad-independent
+#' @concept directed
+#' @concept latent
+#' @concept loops
+InitErgmTerm.receivercov <- nonlatent_error
 InitErgmm.receivercov<-function (model, attrname, force.factor=FALSE, mean=0, var=9) 
 {
   if(!has.loops(model[["Yg"]])) warning("Term `receivercov` is deprecated for networks without self-loops. Use `nodeicov`, `nodecov`, `nodeifactor`, or `nodefactor` from package `ergm` instead.")
@@ -249,10 +503,44 @@ InitErgmm.receivercov<-function (model, attrname, force.factor=FALSE, mean=0, va
   model
 }
 
-#' @export
+#' @templateVar name socialitycov
+#' @title Sociality covariate effect
+#' @description \emph{Deprecated for networks without self-loops. Use
+#'   \code{\link{nodecov-ergmTerm}} or
+#'   \code{\link{nodefactor-ergmTerm}} instead.}
+#'
+#'   If the attribute is numeric, this term adds one covariate to the
+#'   model equaling \code{attrname(i)}. If the attribute is not
+#'   numeric or \code{force.factor==TRUE}, this term adds \eqn{p-1}
+#'   covariates to the model, where \eqn{p} is the number of unique
+#'   values of \code{attrname}.  The \eqn{k}th such covariate has the
+#'   value \code{attrname(i) == value(k+1)}, where \code{value(k)} is
+#'   the \eqn{k}th smallest unique value of the \code{attrname}
+#'   attribute. This term only makes sense if the network is directed.
+#'
+#' @usage
+#' # binary: socialitycov(attrname, force.factor=FALSE, mean=0, var=9)
+#'
+#' # valued: socialitycov(attrname, force.factor=FALSE, mean=0, var=9)
+#'
+#' @param attrname a character string giving the name of an attribute
+#'   in the network's vertex attribute list.
+#' @param force.factor logical, indicating if `attrname`'s value
+#'   should be interpreted as categorical even if numeric.
+#'
+#' @template ergmTerm-latentnet-prior
+#'
+#' @template ergmTerm-general
+#'
+#' @concept dyad-independent
+#' @concept undirected
+#' @concept bipartite
+#' @concept latent
+#' @concept loops
+InitErgmTerm.socialitycov <- nonlatent_error
 InitErgmm.socialitycov<-function (model, attrname, force.factor=FALSE, mean=0, var=9) 
 {
-  if(!has.loops(model[["Yg"]])) warning("Term `receivercov` is deprecated for networks without self-loops. Use `nodeicov`, `nodecov`, `nodeifactor`, or `nodefactor` from package `ergm` instead.")
+  if(!has.loops(model[["Yg"]])) warning("Term `socialitycov` is deprecated for networks without self-loops. Use `nodeicov`, `nodecov`, `nodeifactor`, or `nodefactor` from package `ergm` instead.")
 
   #Check to ensure that we got the right number of arguments
   if (!(nargs() %in% 2:5))
