@@ -186,6 +186,8 @@ unstack.ergmm.par.list<-function(x,...){
   mcmcList
 }
 
+#' @noRd
+#' @exportS3method NULL
 as.mcmc.list.ergmm.par.list<-function(x,which.vars,start=1,thin=1,...){
   x<-unstack(x)
   m.l<-list()

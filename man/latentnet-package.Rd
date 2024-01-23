@@ -4,12 +4,15 @@
 \name{latentnet-package}
 \alias{latentnet-package}
 \alias{latentnet}
-\title{Latent position and cluster models for networks}
+\title{latentnet: Latent Position and Cluster Models for Statistical Networks}
 \value{
 \code{\link{ergmm}} returns an object of class 'ergmm' that is a
 list.
 }
 \description{
+Fit and simulate latent position and cluster models for statistical networks. See Krivitsky and Handcock (2008) \doi{10.18637/jss.v024.i05} and Krivitsky, Handcock, Raftery, and Hoff (2009) \doi{10.1016/j.socnet.2009.04.001}.
+}
+\details{
 The package \code{latentnet} is used to fit latent cluster random effect
 models, where the probability of a network \eqn{g}, on a set of nodes is a
 product of dyad probabilities, each of which is a GLM with linear component
@@ -23,8 +26,7 @@ function of the two positions: either negative Euclidean
 are different from the eigenmodel of Hoff (2007) ``Modeling homophily and
 stochastic equivalence in symmetric relational data'', fit by package
 \code{eigenmodel}.)
-}
-\details{
+
 The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>} where
 \code{g} is a \code{network} object For the list of possible \code{<model
 terms>}, see \link{terms.ergmm}. For the list of the possible dyad
@@ -69,6 +71,26 @@ Methodology, 2(1), 24-33.
 }
 \seealso{
 \code{\link{ergmm}}, \link{terms.ergmm}
+}
+\author{
+\strong{Maintainer}: Pavel N. Krivitsky \email{pavel@statnet.org} (\href{https://orcid.org/0000-0002-9101-3362}{ORCID})
+
+Authors:
+\itemize{
+  \item Mark S. Handcock \email{handcock@stat.ucla.edu}
+}
+
+Other contributors:
+\itemize{
+  \item Susan M. Shortreed [contributor]
+  \item Jeremy Tantrum [contributor]
+  \item Peter D. Hoff [contributor]
+  \item Li Wang \email{lxwang@gmail.com} [contributor]
+  \item Kirk Li \email{kirkli@uw.edu} [contributor]
+  \item Jake Fisher \email{jcf26@duke.edu} [contributor]
+  \item Jordan T. Bates \email{jtbates@gmail.com} [contributor]
+}
+
 }
 \keyword{graphs}
 \keyword{models}

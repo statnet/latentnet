@@ -243,9 +243,7 @@ NULL
 
 
 
-#' Latent position and cluster models for networks
-#'
-#'
+#' @details
 #' The package \code{latentnet} is used to fit latent cluster random effect
 #' models, where the probability of a network \eqn{g}, on a set of nodes is a
 #' product of dyad probabilities, each of which is a GLM with linear component
@@ -305,9 +303,8 @@ NULL
 #' Susan M. Shortreed, Mark S. Handcock, and Peter D. Hoff (2006).
 #' \emph{Positional Estimation within the Latent Space Model for Networks}.
 #' Methodology, 2(1), 24-33.
-#' @docType package
 #' @keywords graphs package models regression nonlinear nonparametric
-NULL
+"_PACKAGE"
 
 
 
