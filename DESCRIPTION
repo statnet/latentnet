@@ -23,7 +23,6 @@ Suggests:
     rgl,
     heplots,
     rlecuyer,
-    ergm.userterms,
     covr
 BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE

@@ -32,8 +32,8 @@ their defaults}
 If \code{nsim = 1}, \code{simulate} returns an object of class
 \code{\link[network]{network}}. Otherwise, an object of class
 \code{network.series} that is a list consisting of the following elements:
-\item{\$formula}{The formula used to generate the sample.}
-\item{\$networks}{A list of the generated networks.}
+\item{$formula}{The formula used to generate the sample.}
+\item{$networks}{A list of the generated networks.}
 }
 \description{
 If passed a \code{\link[=ergmm.object]{ergmm}} fit object, \code{simulate}

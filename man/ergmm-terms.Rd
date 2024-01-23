@@ -264,12 +264,14 @@ this model is combined with clustering.}
 
  \code{\link{ergmm}} can use model terms implemented for the
  \code{\link[=ergm-package]{ergm}} package and via the
- \code{\link[ergm.userterms:ergm.userterms-package]{ergm.userterms}} API. See
- \code{\link[ergm]{ergmTerm}} for a list of available terms. If you wish to
- specify the prior mean and variance, you can add them to the
- call. E.g.,\cr \code{TERMNAME(..., mean=0, var=9)},\cr where
- \code{...} are the arguments for the \code{ergm} term, will initialize
- \code{TERMNAME} with prior mean of 0 and prior variance of 9.
+ \href{https://github.com/statnet/ergm.userterms}{\code{ergm.userterms}
+ API (in GitHub repository \code{statnet/ergm.userterms})}. See
+ \code{\link[ergm]{ergmTerm}} for a list of available terms. If you
+ wish to specify the prior mean and variance, you can add them to
+ the call. E.g.,\cr \code{TERMNAME(..., mean=0, var=9)},\cr where
+ \code{...} are the arguments for the \code{ergm} term, will
+ initialize \code{TERMNAME} with prior mean of 0 and prior variance
+ of 9.
 
  Some caveats:
  \itemize{
