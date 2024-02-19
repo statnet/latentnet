@@ -22,6 +22,7 @@
 #'
 #' @template ergmTerm-latentnet-random
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #' @template ergmTerm-directed
 #'
 #' @concept dyad-independent
@@ -51,6 +52,7 @@ InitErgmm.rsender<-function(model, var=1, var.df=3){
 #'
 #' @template ergmTerm-latentnet-random
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #' @template ergmTerm-directed
 #'
 #' @concept dyad-independent
@@ -80,6 +82,7 @@ InitErgmm.rreceiver<-function(model, var=1, var.df=3){
 #'
 #' @template ergmTerm-latentnet-random
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept undirected

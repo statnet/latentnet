@@ -24,6 +24,8 @@ variance. To set it in the \code{prior} argument to
 Adds a random receiver effect to the model, with normal
 prior centered around \eqn{0}{0} and a variance that is
 estimated. Can only be used on directed networks.
+
+\strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[=ergm]{ergm()}} will result in an error.
 }
 \details{
 The following parameters are associated with this term:

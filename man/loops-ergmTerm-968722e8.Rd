@@ -14,6 +14,8 @@
 }
 \description{
 Effect of the dyad being a self-loop (i.e., \eqn{(i,i)}).
+
+\strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[=ergm]{ergm()}} will result in an error.
 }
 \seealso{
 \code{\link{ergmTerm}} for index of model terms currently visible to the package.

@@ -63,6 +63,8 @@ respective actors in an unobserved social space. These positions
 may optionally have a finite spherical Gaussian mixture
 clustering structure. This term was previously called
 \code{latent}.
+
+\strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[=ergm]{ergm()}} will result in an error.
 }
 \details{
 The following parameters are associated with this term:

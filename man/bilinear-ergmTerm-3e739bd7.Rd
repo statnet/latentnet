@@ -66,6 +66,8 @@ effect, two actors being closer in the clustering sense does not
 necessarily mean that the expected value of a tie between them is
 higher. Thus, a warning is printed when this model is combined
 with clustering.}
+
+\strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[=ergm]{ergm()}} will result in an error.
 }
 \details{
 The following parameters are associated with this term:

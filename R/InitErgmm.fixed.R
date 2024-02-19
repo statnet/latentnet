@@ -113,6 +113,7 @@ nonlatent_error <- function(...){
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept directed
@@ -143,6 +144,7 @@ InitErgmm.Intercept<-InitErgmm.intercept<-InitErgmm.1<-function(model, mean=0, v
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept directed
@@ -179,6 +181,7 @@ InitErgmm.loops<-function (model, mean=0, var=9){
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept quantitative nodal attribute
@@ -243,6 +246,7 @@ InitErgmm.loopcov <- function (model, attrname, mean=0, var=9){
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept categorical nodal attribute
@@ -331,6 +335,7 @@ InitErgmm.loopfactor <- function (model, attrname, base=1, mean=0, var=9){
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept directed
@@ -391,6 +396,7 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #' @template ergmTerm-directed
 #'
 #' @concept dyad-independent
@@ -462,6 +468,7 @@ InitErgmm.sendercov<-function (model, attrname, force.factor=FALSE, mean=0, var=
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #' @template ergmTerm-directed
 #'
 #' @concept dyad-independent
@@ -531,6 +538,7 @@ InitErgmm.receivercov<-function (model, attrname, force.factor=FALSE, mean=0, va
 #' @template ergmTerm-latentnet-prior
 #'
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept undirected

@@ -33,6 +33,7 @@ InitErgmm.latent <- function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1,
 #'
 #' @template ergmTerm-latentnet-latent-params
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept undirected
@@ -94,6 +95,7 @@ InitErgmm.euclidean<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1
 #'
 #' @template ergmTerm-latentnet-latent-params
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept undirected
@@ -153,6 +155,7 @@ InitErgmm.bilinear<-function(model, d, G=0, var.mul=1/8, var=NULL, var.df.mul=1,
 #'
 #' @template ergmTerm-latentnet-latent-params
 #' @template ergmTerm-general
+#' @template ergmTerm-latentnet-general
 #'
 #' @concept dyad-independent
 #' @concept undirected

@@ -1,6 +1,6 @@
 Package: latentnet
-Version: 2.10.0-1641
-Date: 2024-01-24
+Version: 2.10.0-1642
+Date: 2024-02-19
 Title: Latent Position and Cluster Models for Statistical Networks
 Authors@R: c(
 	   person("Pavel N.", "Krivitsky", role=c("aut","cre"), email="pavel@statnet.org", comment=c(ORCID="0000-0002-9101-3362")),
@@ -28,5 +28,5 @@ BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE
 URL: https://statnet.org
 Encoding: UTF-8
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1
 Roxygen: list(markdown = TRUE)
