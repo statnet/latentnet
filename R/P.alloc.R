@@ -5,7 +5,7 @@
 #  open source, and has the attribution requirements (GPL Section 7) at
 #  https://statnet.org/attribution .
 #
-#  Copyright 2003-2022 Statnet Commons
+#  Copyright 2003-2024 Statnet Commons
 ################################################################################
 ## Lets the user call P.free.all from R. Only used for debugging.
 P.free.all<-function() invisible(try(.C("P_free_all", PACKAGE="latentnet")))

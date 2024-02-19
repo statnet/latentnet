@@ -5,7 +5,7 @@
 #  open source, and has the attribution requirements (GPL Section 7) at
 #  https://statnet.org/attribution .
 #
-#  Copyright 2003-2022 Statnet Commons
+#  Copyright 2003-2024 Statnet Commons
 ################################################################################
 .procrustes.Z.mean.C<-function(sample,Z.ref,center=FALSE,verbose=0){
   n<-dim(Z.ref)[1]

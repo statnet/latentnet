@@ -5,7 +5,7 @@
  *  open source, and has the attribution requirements (GPL Section 7) at
  *  https://statnet.org/attribution .
  *
- *  Copyright 2003-2022 Statnet Commons
+ *  Copyright 2003-2024 Statnet Commons
  */
 /**********************************************************************/
 /* Routines for memory management similar in functionality to R_alloc */

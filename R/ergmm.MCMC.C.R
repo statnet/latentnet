@@ -5,7 +5,7 @@
 #  open source, and has the attribution requirements (GPL Section 7) at
 #  https://statnet.org/attribution .
 #
-#  Copyright 2003-2022 Statnet Commons
+#  Copyright 2003-2024 Statnet Commons
 ################################################################################
 ### ergmm.MCMC.C: This is a pretty minimal R function that prepares the R data to be
 ### passed into the C function, calls the C function to estimate the latent space model,

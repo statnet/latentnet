@@ -5,7 +5,7 @@
 #  open source, and has the attribution requirements (GPL Section 7) at
 #  https://statnet.org/attribution .
 #
-#  Copyright 2003-2022 Statnet Commons
+#  Copyright 2003-2024 Statnet Commons
 ################################################################################
 bayesmbc<-function(G,Z,prior,Z.K.ref=NULL,sample.size=2000,interval=10,burnin=500,verbose=FALSE){
   start<-mbc.VII.EM(G,Z)
