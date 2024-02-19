@@ -1,3 +1,10 @@
+# latentnet 2.11.0
+
+* Term lookup is improved, using `statnet.common`'s function locator, cleaning up the package name space.
+* Integration of `latentnet`'s term documentation into `ergm`'s.
+* Updates to work better with the latest version of `Roxygen`.
+* Documentation issues flagged by CRAN fixed.
+
 # latentnet 2.10.6
 
 * Miscellaneous fixes and updates for compatibility to ergm 4.2.
