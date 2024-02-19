@@ -25,7 +25,7 @@ extern void klswitch_step2_wrapper(void *, void *, void *, void *, void *, void 
 extern void klswitch_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void MBC_MCMC_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 #ifdef DEBUG
-extern void P_free_all();
+extern void P_free_all(void);
 #endif // DEBUG
 extern void post_pred_wrapper(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void procr_transform_wrapper(void *, void *, void *, void *, void *, void *, void *, void *);

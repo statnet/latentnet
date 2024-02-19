@@ -27,9 +27,9 @@ typedef struct PMemNode_struct PMemNode;
 
 #ifdef DEBUG
 void *P_alloc(size_t nmemb, size_t size);
-void P_free_all();
+void P_free_all(void);
 void P_free_after(PMemNode *bookmark);
-PMemNode *P_bookmark();
+PMemNode *P_bookmark(void);
 #endif
 
 #endif
