@@ -73,7 +73,7 @@ InitErgmm.rreceiver<-function(model, var=1, var.df=3){
 #' @title Random sociality effect
 #' @description Adds a random sociality effect to the model, with normal
 #'   prior centered around \eqn{0}{0} and a variance that is
-#'   estimated. Can only be used on directed networks.
+#'   estimated.
 #'
 #' @usage
 #' # binary: rsociality(var=1, var.df=3)
