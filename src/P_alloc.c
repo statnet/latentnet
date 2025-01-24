@@ -28,7 +28,7 @@ PMemNode *PMemNodes=NULL;
 void *P_alloc(size_t nmemb, size_t size){
   Rprintf("P_alloc: ");
   P_print_alloc();
-  Rprintf(" --%uB-> ", (unsigned int) nmemb*size);
+  Rprintf(" --%zuB-> ", nmemb*size);
 
   PMemNode *memnode=(PMemNode *)calloc(1,sizeof(PMemNode));
   if(!memnode) return NULL;
