@@ -26,7 +26,7 @@ ergmm(
   <term 2> ...}, where \code{g} is a network object or a matrix
 that can be coerced to a network object, and \code{<term 1>},
 \code{<term 2>}, etc., are each terms for the model. See
-\code{\link{ergmTerm}} for the terms that can be fitted, though note the
+\code{\link[ergm:ergmTerm]{ergmTerm}} for the terms that can be fitted, though note the
 section on fixed effects below.  To create a network object in ,
 use the \code{network} function, then add nodal attributes to it
 using \code{set.vertex.attribute} if necessary.
@@ -188,6 +188,6 @@ Latent Cluster Models for Social Networks with \code{latentnet}}. Journal of
 Statistical Software, 24(5). \doi{10.18637/jss.v024.i05}
 }
 \seealso{
-\code{\link{network}}, \link{summary.ergmm}, \code{\link{ergmTerm}}, \code{\link{families.ergmm}}
+\code{\link[network:network]{network}}, \link{summary.ergmm}, \code{\link[ergm:ergmTerm]{ergmTerm}}, \code{\link{families.ergmm}}
 }
 \keyword{graphs}

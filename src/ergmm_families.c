@@ -80,7 +80,7 @@ double ERGMM_MCMC_E_edge_Bernoulli_logit(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par
 */
 double ERGMM_MCMC_lp_edge_binomial_logit(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double eta=ERGMM_MCMC_etaij(model,par,i,j);
-  return(model->iY[i][j]*eta-model->iconst[0]*log1p(exp(eta)));
+  return(model->iY[i][j]*eta-model->iconst[i + j*model->verts]*log1p(exp(eta)));
 }
 
 void ERGMM_MCMC_set_lp_Yconst_binomial_logit(ERGMM_MCMC_Model *model){
@@ -92,19 +92,19 @@ void ERGMM_MCMC_set_lp_Yconst_binomial_logit(ERGMM_MCMC_Model *model){
     for(i=0;i<model->verts;i++)
       for(j=0;j<model->verts;j++)
 	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->lp_Yconst+=lchoose(model->iconst[0],model->iY[i][j]);
+	  model->lp_Yconst+=lchoose(model->iconst[i + j*model->verts],model->iY[i][j]);
   }
   else{
     for(i=0;i<model->verts;i++)
       for(j=0;j<=i;j++)
 	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->lp_Yconst+=lchoose(model->iconst[0],model->iY[i][j]);
+	  model->lp_Yconst+=lchoose(model->iconst[i + j*model->verts],model->iY[i][j]);
   }
 }
 
 double ERGMM_MCMC_E_edge_binomial_logit(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double eta=ERGMM_MCMC_etaij(model,par,i,j);
-  return(model->iconst[0]/(1+exp(-eta)));
+  return(model->iconst[i + j*model->verts]/(1+exp(-eta)));
 }
 
 /* 2 Poisson_log */
@@ -159,7 +159,7 @@ double ERGMM_MCMC_E_edge_Bernoulli_cont_logit(ERGMM_MCMC_Model *model, ERGMM_MCM
 */
 double ERGMM_MCMC_lp_edge_binomial_cont_logit(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double eta=ERGMM_MCMC_etaij(model,par,i,j);
-  return(model->dY[i][j]*eta-model->iconst[0]*log1p(exp(eta)));
+  return(model->dY[i][j]*eta-model->iconst[i + j*model->verts]*log1p(exp(eta)));
 }
 
 void ERGMM_MCMC_set_lp_Yconst_binomial_cont_logit(ERGMM_MCMC_Model *model){
@@ -171,19 +171,19 @@ void ERGMM_MCMC_set_lp_Yconst_binomial_cont_logit(ERGMM_MCMC_Model *model){
     for(i=0;i<model->verts;i++)
       for(j=0;j<model->verts;j++)
 	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->lp_Yconst+=lchoose(model->iconst[0],model->dY[i][j]);
+	  model->lp_Yconst+=lchoose(model->iconst[i + j*model->verts],model->dY[i][j]);
   }
   else{
     for(i=0;i<model->verts;i++)
       for(j=0;j<=i;j++)
 	if(IS_OBSERVABLE(model->observed_ties,i,j))
-	  model->lp_Yconst+=lchoose(model->iconst[0],model->dY[i][j]);
+	  model->lp_Yconst+=lchoose(model->iconst[i + j*model->verts],model->dY[i][j]);
   }
 }
 
 double ERGMM_MCMC_E_edge_binomial_cont_logit(ERGMM_MCMC_Model *model, ERGMM_MCMC_Par *par, unsigned int i, unsigned int j){
   double eta=ERGMM_MCMC_etaij(model,par,i,j);
-  return(model->iconst[0]/(1+exp(-eta)));
+  return(model->iconst[i + j*model->verts]/(1+exp(-eta)));
 }
 
 /* 5 Poisson_cont_log */

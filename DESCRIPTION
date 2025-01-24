@@ -28,5 +28,5 @@ BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE
 URL: https://statnet.org
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.2.9000
 Roxygen: list(markdown = TRUE)

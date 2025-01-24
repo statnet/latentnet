@@ -76,11 +76,11 @@ ID \tab \code{C} name          \tab \R name   \tab Type       \tab Family    \ta
 require an appropriate \code{fam.par} argument to be supplied to
 \code{\link{ergmm}}:
 \describe{
-\item{binomial families}{a mandatory \code{trials} parameter for the
-number of trials (same for every dyad) whose success the response
-counts represent}
-\item{normal}{a mandatory \code{prior.var} and \code{prior.var.df} parameter for the prior scale and degrees of freedom of the variance of
-the dyad values}
+\item{binomial families}{A mandatory \code{trials} parameter for the
+number of trials whose success the response
+counts represent. This can be a single number if the same for all dyads, or a matrix if not. For non-bipartite networks, the matrix must be a square matrix with dimension equal to the number of nodes; for a bipartite network, it can also be a rectangular incidence matrix. }
+\item{normal}{Mandatory \code{prior.var} and \code{prior.var.df} parameters for the prior scale and degrees of freedom of the variance of
+the dyad values.}
 }
 }
 

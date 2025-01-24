@@ -66,7 +66,7 @@ g.sim <- with(gest,simulate(model,par=sample[[1]],prior=prior))
 plot(g.sim)
 }
 \seealso{
-\code{\link{ergmm}}, \code{ network},
+\code{\link{ergmm}}, \code{\link[network]{network}},
 \code{\link[network]{print.network}}
 }
 \keyword{cluster}

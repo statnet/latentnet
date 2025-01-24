@@ -32,10 +32,10 @@ value \code{attrname(i) == value(k+1)}, where \code{value(k)} is
 the \eqn{k}th smallest unique value of the \code{attrname}
 attribute. This term only makes sense if the network is directed.
 
-\strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[=ergm]{ergm()}} will result in an error.
+\strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[ergm:ergm]{ergm()}} will result in an error.
 }
 \seealso{
-\code{\link{ergmTerm}} for index of model terms currently visible to the package.
+\code{\link[ergm:ergmTerm]{ergmTerm}} for index of model terms currently visible to the package.
 
 \Sexpr[results=rd,stage=render]{ergm:::.formatTermKeywords("ergmTerm", "socialitycov", "subsection")}
 }

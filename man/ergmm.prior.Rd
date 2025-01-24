@@ -26,7 +26,7 @@ overwrite those specified in the model formula, and to supply miscellaneous
 prior parameters.
 }
 \seealso{
-\code{\link[=ergmm]{ergmm()}}, \code{\link{ergmTerm}}
+\code{\link[=ergmm]{ergmm()}}, \code{\link[ergm:ergmTerm]{ergmTerm}}
 }
 \keyword{graphs}
 \keyword{models}

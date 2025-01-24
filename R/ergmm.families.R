@@ -33,20 +33,20 @@ EY.Bernoulli.logit<-function(eta,dispersion=NULL,fam.par=NULL) 1/(1+exp(-eta))
 ## Binomial logit
 
 lpY.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par){
-  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-fam.par[["trials"]])+lchoose(fam.par[["trials"]],Y),
-         eta*Y-fam.par[["trials"]]*log1p(exp(eta))+lchoose(fam.par[["trials"]],Y))
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-fam.par[["trials"]][["V"]])+lchoose(fam.par[["trials"]][["V"]],Y),
+         eta*Y-fam.par[["trials"]][["V"]]*log1p(exp(eta))+lchoose(fam.par[["trials"]][["V"]],Y))
 }
 lpYc.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par){
-  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-fam.par[["trials"]]),
-         eta*Y-fam.par[["trials"]]*log1p(exp(eta)))
+  ifelse(eta>=.latentnetEnv$nlog.double.eps,eta*(Y-fam.par[["trials"]][["V"]]),
+         eta*Y-fam.par[["trials"]][["V"]]*log1p(exp(eta)))
 }
 pY.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par) exp(lpY.binomial.logit(Y,eta,dispersion=NULL,fam.par))
 dlpY.deta.binomial.logit<-function(Y,eta,dispersion=NULL,fam.par) (Y-EY.binomial.logit(eta,dispersion=NULL,fam.par))
 rsm.binomial.logit<-function(eta,dispersion=NULL,fam.par){
   n<-dim(eta)[1]
-  matrix(rbinom(n*n,fam.par[["trials"]],EY.binomial.logit(eta,dispersion=NULL,fam.par)/fam.par[["trials"]]),n,n)
+  matrix(rbinom(n*n,fam.par[["trials"]],EY.binomial.logit(eta,dispersion=NULL,fam.par)/fam.par[["trials"]][["M"]]),n,n)
 }
-EY.binomial.logit<-function(eta,dispersion=NULL,fam.par) fam.par[["trials"]]/(1+exp(-eta))
+EY.binomial.logit<-function(eta,dispersion=NULL,fam.par) fam.par[["trials"]][["M"]]/(1+exp(-eta))
 
 ## Poisson log
 
@@ -157,11 +157,37 @@ EY.fs<-c(EY.Bernoulli.logit,
          EY.normal.identity)
 
 fam.par.check<-function(model){
-  if(model[["familyID"]]==2){
-    if(is.null(model[["fam.par"]][["trials"]]))
-      stop("Binomial family requires parameter `trials'.")
-    model[["iconsts"]]<-model[["fam.par"]][["trials"]]
+  if(model[["familyID"]] %in% c(2,5)){
+    cont <- if(model[["familyID"]] == 5) " (cont)" else ""
+
+    if(is.null(trials <- model[["fam.par"]][["trials"]]))
+      stop("Binomial family", cont, " requires parameter `trials'.")
+
+    trials <-
+      if(!is.matrix(trials))
+        matrix(trials, nrow(model[["Ym"]]), ncol(model[["Ym"]]))
+      else if(identical(dim(trials), dim(model[["Ym"]]))) trials
+      else if(is.bipartite(model[["Yg"]])){
+        if(identical(dim(trials), c(model[["Yg"]] %n% "bipartite", network.size(model[["Yg"]]) - model[["Yg"]] %n% "bipartite")))
+          bipartite.augment(trials)
+        else stop("Binomial", cont, " family parameter `trials' for a bipartite network must be a scalar, an n*n matrix, or a b1*b2 matrix.")
+      }else
+        stop("Binomial", cont, " family parameter `trials' for a non-bipartite network must be a scalar or an n*n matrix.")
+
+    if(nchar(cont))
+      model[["dconsts"]]<-trials
+    else{
+      storage.mode(trials) <- "integer"
+      model[["iconsts"]]<-trials
+    }
+
+    model[["fam.par"]][["trials"]] <-
+      list(
+        M = trials,
+        V = trials[!c(is.na(model[["Ym"]]))]
+      )
   }
+
   if(model[["familyID"]]==5){
     if(is.null(model[["fam.par"]][["trials"]]))
       stop("Binomial (cont) family requires parameter `trials'.")
