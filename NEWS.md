@@ -1,3 +1,7 @@
+# latentnet 2.12.0
+
+* Binomial family can now take a sociomatrix for the number of trials, allowing a different number for each dyad.
+
 # latentnet 2.11.0
 
 * Term lookup is improved, using `statnet.common`'s function locator, cleaning up the package name space.
