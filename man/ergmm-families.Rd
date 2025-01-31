@@ -78,7 +78,7 @@ require an appropriate \code{fam.par} argument to be supplied to
 \describe{
 \item{binomial families}{A mandatory \code{trials} parameter for the
 number of trials whose success the response
-counts represent. This can be a single number if the same for all dyads, or a matrix if not. For non-bipartite networks, the matrix must be a square matrix with dimension equal to the number of nodes; for a bipartite network, it can also be a rectangular incidence matrix. }
+counts represent. This can be a single number if the same for all dyads, or a matrix if not. For non-bipartite networks, the matrix must be a square matrix with dimension equal to the number of nodes; for a bipartite network, it can also be a rectangular incidence matrix. If the network is undirected, the lower triangle is used.}
 \item{normal}{Mandatory \code{prior.var} and \code{prior.var.df} parameters for the prior scale and degrees of freedom of the variance of
 the dyad values.}
 }
