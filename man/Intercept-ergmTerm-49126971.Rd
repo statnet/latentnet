@@ -32,9 +32,6 @@ one covariate to the model, for which \code{x[i,j]=1} for all
 It can be used explicitly to set prior mean and variance for the
 intercept term.
 
-This term differs from the \code{ergm}'s
-\code{\link{edges-ergmTerm}} term if the network has self-loops.
-
 \strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[ergm:ergm]{ergm()}} will result in an error.
 }
 \seealso{

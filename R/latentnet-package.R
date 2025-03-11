@@ -14,7 +14,7 @@
 #' that period, various subsets of these women had met in a series of 14
 #' informal social events. The data recored which women met for which events.
 #' The data is originally from Davis, Gardner and Gardner (1941) via
-#' \code{UCINET} and stored as a \code{network} object.
+#' \code{UCINET} and stored as a [`network`] object.
 #'
 #' @name davis
 #'
@@ -110,11 +110,11 @@ NULL
 #' Class of Fitted Exponential Random Graph Mixed Models
 #'
 #' A class \code{\link[=ergmm.object]{ergmm}} to represent a fitted exponential
-#' random graph mixed model. The output of \code{\link{ergmm}}.
+#' random graph mixed model. The output of [ergmm()].
 #' 
-#'  There are methods \code{\link{summary.ergmm}}, \code{print.ergmm},
-#'  \code{\link{plot.ergmm}}, \code{\link{predict.ergmm}}, and
-#'  \code{\link{as.mcmc.list.ergmm}}.
+#'  There are methods [summary.ergmm()], [print.ergmm()],
+#'  [plot.ergmm()], [predict.ergmm()], and
+#'  [as.mcmc.list.ergmm()].
 #'  
 #'  The structure of \code{ergmm} is as follows:
 #'  \describe{
@@ -130,12 +130,12 @@ NULL
 #'    that was fitted.}
 #'     \item{\code{prior}}{ A list containing the
 #'    information about the prior distribution used. It can be passed as
-#'    parameter \code{prior} to \code{\link{ergmm}} to reproduce the prior
+#'    parameter \code{prior} to [ergmm()] to reproduce the prior
 #'    in a new fit.}
 #'     \item{\code{control}}{ A list containing the
 #'    information about the model fit settings that do not affect the
 #'    posterior distribution. It can be passed as
-#'    parameter \code{control} to \code{\link{ergmm}} to reproduce control
+#'    parameter \code{control} to [ergmm()] to reproduce control
 #'    parameters in a new fit.}
 #'     \item{\code{mle}}{ A list containing the MLE,
 #'    conditioned on cluster assignments.}
@@ -150,9 +150,9 @@ NULL
 #' 
 #' @name ergmm-class
 #' @aliases ergmm.object print.ergmm show.ergmm
-#' @seealso \code{\link{ergmm}}, \code{\link{summary.ergmm}},
-#' \code{\link{plot.ergmm}}, \code{\link{predict.ergmm}},
-#' \code{\link{as.mcmc.list.ergmm}}
+#' @seealso [ergmm()], [summary.ergmm()],
+#' [plot.ergmm()], [predict.ergmm()],
+#' [as.mcmc.list.ergmm()]
 #' @keywords graphs regression models
 NULL
 
@@ -168,7 +168,7 @@ NULL
 #' @name ergmm-families
 #'
 #' @description
-#' Family-link combinations supported by \code{\link{ergmm}}.
+#' Family-link combinations supported by [ergmm()].
 #'
 #' @details
 #' Each supported family has a family of functions, of the form \code{pY.}-,
@@ -210,7 +210,7 @@ NULL
 #'   }
 #'   \code{.link} can be omited when not ambiguous. Some families
 #'   require an appropriate \code{fam.par} argument to be supplied to
-#'   \code{\link{ergmm}}:
+#'   [ergmm()]:
 #'   \describe{
 #'     \item{binomial families}{A mandatory \code{trials} parameter for the
 #'       number of trials whose success the response
@@ -237,19 +237,19 @@ NULL
 #' stochastic equivalence in symmetric relational data'', fit by package
 #' \code{eigenmodel}.)
 #' 
-#' The \code{\link{ergmm}} specifies models via: \code{g ~ <model terms>} where
+#' [ergmm()] specifies models via: \code{g ~ <model terms>} where
 #' \code{g} is a \code{network} object For the list of possible \code{<model
-#' terms>}, see \code{\link{ergmTerm}}. For the list of the possible dyad
-#' distribution families, see \code{\link{families.ergmm}}.
+#' terms>}, see [`ergmTerm`]. For the list of the possible dyad
+#' distribution families, see [`families.ergmm`].
 #' 
 #' 
-#' The arguments in the \code{\link{ergmm}} function specific to latent
-#' variable models are \code{\link{ergmm.control}}. See the help page for
-#' \code{\link{ergmm}} for the details.
+#' The arguments in the [ergmm()] function specific to latent
+#' variable models are [ergmm.control()]. See the help page for
+#' [ergmm()] for the details.
 #' 
-#' The result of a latent variable model fit is an \code{\link{ergmm}} object.
-#' Hence the \code{\link{summary}}, \code{print}, and \code{plot} functions
-#' apply to the fits.  The \code{\link{plot.ergmm}} function has many options
+#' The result of a latent variable model fit is an [ergmm()] object.
+#' Hence the [summary()], [print()], and [plot()] methods
+#' apply to the fits.  The [plot.ergmm()] function has many options
 #' specific to latent variable models.
 #' 
 #' @name latentnet-package
@@ -294,7 +294,7 @@ NULL
 #' @name tribes
 #' @docType data
 #' @format
-#'  An undirected \code{\link[network]{network}} object with no loops, having the following attributes:
+#'  An undirected [`network`] object with no loops, having the following attributes:
 #'  \describe{
 #'    \item{\code{\%v\% "vertex.names"}}{Character attribute with names of tribes.}
 #'    \item{\code{\%e\% "pos"}}{Logical attribute indicating an
@@ -306,7 +306,7 @@ NULL
 #'    \item{\code{\%e\% "sign.012"}}{Numeric attribute coding 0 for enmity, 1
 #'      for no relationship, and 2 for alliance.}
 #'  }
-#'  Because of limitations of \code{\link[network]{network}} objects, the object
+#'  Because of limitations of [`network`] objects, the object
 #'  itself is a complete graph, and is thus meaningless if used directly
 #'  or plotted.
 #' @references Taken from UCINET IV, which cites the following: Hage P. and

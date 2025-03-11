@@ -18,38 +18,15 @@ network, or an edge attribute.}
 \item{mean, var}{prior mean and variance.}
 }
 \description{
-This term adds multiple covariates to the model, one
-for each of (a subset of) the unique values of the
-\code{attrname} attribute (or each combination of the attributes
-given). Each of these covariates has \code{x[i,i]=1} if
-\code{attrname(i)==l}, where \code{l} is that covariate's level,
-and \code{x[i,j]=0} otherwise. To include all attribute values se
-\code{base=0} -- because the sum of all such statistics equals
-twice the number of self-loops and hence a linear dependency
-would arise in any model also including \code{loops}. Thus, the
-\code{base} argument tells which value(s) (numbered in order
-according to the \code{sort} function) should be omitted. The
-default value, \code{base=1}, means that the smallest (i.e.,
-first in sorted order) attribute value is omitted. For example,
-if the \dQuote{fruit} factor has levels \dQuote{orange},
-\dQuote{apple}, \dQuote{banana}, and \dQuote{pear}, then to add
-just two terms, one for \dQuote{apple} and one for \dQuote{pear},
-then set \dQuote{banana} and \dQuote{orange} to the base
-(remember to sort the values first) by using
-\code{nodefactor("fruit", base=2:3)}. For an analogous term for
-quantitative vertex attributes, see
-\code{nodecov}.\code{attrname} is a character string giving the
-name of a numeric (not categorical) attribute in the network's
-vertex attribute list.  This term adds one covariate to the
-model, for which \code{x[i,i]=attrname(i)} and \code{x[i,j]=0}
-for \code{i!=j}.  This term only makes sense if the network has
-self-loops.
+This term adds one statistic to the model, providing a covariate for each dyad.
 
 \code{latentcov} can be called more than once, to model the
 effects of multiple covariates. Note that some covariates can be
-more conveniently specified using the following terms.
+more conveniently specified using other terms.
 
 \strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[ergm:ergm]{ergm()}} will result in an error.
+
+It is recommended to only use this term if your network contains self-loops. Otherwise, use the \CRANpkg{ergm} term(s) \Sexpr[results=rd,stage=build]{statnet.common::paste.and(paste0("\\\\ergmTerm{ergm}{", strsplit("edgecov", " ")[[1]], "}{()}"), con = "or")}.
 }
 \seealso{
 \code{\link[ergm:ergmTerm]{ergmTerm}} for index of model terms currently visible to the package.

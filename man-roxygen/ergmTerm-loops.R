@@ -1,0 +1,1 @@
+#' @description It is recommended to only use this term if your network contains self-loops. Otherwise, use the \CRANpkg{ergm} term(s) \Sexpr[results=rd,stage=build]{statnet.common::paste.and(paste0("\\\\ergmTerm{ergm}{", strsplit("<%= ergm_analogue %>", " ")\[\[1\]\], "}{()}"), con = "or")}.

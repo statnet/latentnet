@@ -8,12 +8,12 @@
 \title{Class of Fitted Exponential Random Graph Mixed Models}
 \description{
 A class \code{\link[=ergmm.object]{ergmm}} to represent a fitted exponential
-random graph mixed model. The output of \code{\link{ergmm}}.
+random graph mixed model. The output of \code{\link[=ergmm]{ergmm()}}.
 }
 \details{
-There are methods \code{\link{summary.ergmm}}, \code{print.ergmm},
-\code{\link{plot.ergmm}}, \code{\link{predict.ergmm}}, and
-\code{\link{as.mcmc.list.ergmm}}.
+There are methods \code{\link[=summary.ergmm]{summary.ergmm()}}, \code{\link[=print.ergmm]{print.ergmm()}},
+\code{\link[=plot.ergmm]{plot.ergmm()}}, \code{\link[=predict.ergmm]{predict.ergmm()}}, and
+\code{\link[=as.mcmc.list.ergmm]{as.mcmc.list.ergmm()}}.
 
 The structure of \code{ergmm} is as follows:
 \describe{
@@ -29,12 +29,12 @@ assignments) MCMC iteration. }
 that was fitted.}
 \item{\code{prior}}{ A list containing the
 information about the prior distribution used. It can be passed as
-parameter \code{prior} to \code{\link{ergmm}} to reproduce the prior
+parameter \code{prior} to \code{\link[=ergmm]{ergmm()}} to reproduce the prior
 in a new fit.}
 \item{\code{control}}{ A list containing the
 information about the model fit settings that do not affect the
 posterior distribution. It can be passed as
-parameter \code{control} to \code{\link{ergmm}} to reproduce control
+parameter \code{control} to \code{\link[=ergmm]{ergmm()}} to reproduce control
 parameters in a new fit.}
 \item{\code{mle}}{ A list containing the MLE,
 conditioned on cluster assignments.}
@@ -48,9 +48,9 @@ value for the sampling. }
 }
 }
 \seealso{
-\code{\link{ergmm}}, \code{\link{summary.ergmm}},
-\code{\link{plot.ergmm}}, \code{\link{predict.ergmm}},
-\code{\link{as.mcmc.list.ergmm}}
+\code{\link[=ergmm]{ergmm()}}, \code{\link[=summary.ergmm]{summary.ergmm()}},
+\code{\link[=plot.ergmm]{plot.ergmm()}}, \code{\link[=predict.ergmm]{predict.ergmm()}},
+\code{\link[=as.mcmc.list.ergmm]{as.mcmc.list.ergmm()}}
 }
 \keyword{graphs}
 \keyword{models}

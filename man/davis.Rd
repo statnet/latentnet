@@ -15,7 +15,7 @@ This is a data set of 18 women observed over a nine-month period. During
 that period, various subsets of these women had met in a series of 14
 informal social events. The data recored which women met for which events.
 The data is originally from Davis, Gardner and Gardner (1941) via
-\code{UCINET} and stored as a \code{network} object.
+\code{UCINET} and stored as a \code{\link[network:network]{network}} object.
 }
 \details{
 This documentation is taken from Freeman (2003) in his usual lucid

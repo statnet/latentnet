@@ -19,12 +19,6 @@ should be interpreted as categorical even if numeric.}
 \item{mean, var}{prior mean and variance.}
 }
 \description{
-\emph{Deprecated for networks without self-loops. Use
-\code{\link{nodeicov-ergmTerm}},
-\code{\link{nodeifactor-ergmTerm}},
-\code{\link{nodecov-ergmTerm}} or
-\code{\link{nodefactor-ergmTerm}} instead.}
-
 If the attribute is numeric, this term adds one covariate to the
 model equaling \code{attrname(i)}. If the attribute is not
 numeric or \code{force.factor==TRUE}, this term adds \eqn{p-1}
@@ -35,6 +29,8 @@ the \eqn{k}th smallest unique value of the \code{attrname}
 attribute. This term only makes sense if the network is directed.
 
 \strong{Important:} This term works in \CRANpkg{latentnet}'s \code{\link[=ergmm]{ergmm()}} only. Using it in \code{\link[ergm:ergm]{ergm()}} will result in an error.
+
+It is recommended to only use this term if your network contains self-loops. Otherwise, use the \CRANpkg{ergm} term(s) \Sexpr[results=rd,stage=build]{statnet.common::paste.and(paste0("\\\\ergmTerm{ergm}{", strsplit("nodeicov nodeifactor", " ")[[1]], "}{()}"), con = "or")}.
 }
 \note{
 This term can only be used with directed networks.

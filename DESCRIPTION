@@ -24,6 +24,7 @@ Suggests:
     heplots,
     rlecuyer,
     covr
+RdMacros: ergm
 BugReports: https://github.com/statnet/latentnet/issues
 License: GPL-3 + file LICENSE
 URL: https://statnet.org

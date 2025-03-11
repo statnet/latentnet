@@ -42,7 +42,7 @@
 \alias{fam.par.check}
 \title{Edge Weight Distribution Families}
 \description{
-Family-link combinations supported by \code{\link{ergmm}}.
+Family-link combinations supported by \code{\link[=ergmm]{ergmm()}}.
 }
 \details{
 Each supported family has a family of functions, of the form \code{pY.}-,
@@ -74,7 +74,7 @@ ID \tab \code{C} name          \tab \R name   \tab Type       \tab Family    \ta
 }
 \code{.link} can be omited when not ambiguous. Some families
 require an appropriate \code{fam.par} argument to be supplied to
-\code{\link{ergmm}}:
+\code{\link[=ergmm]{ergmm()}}:
 \describe{
 \item{binomial families}{A mandatory \code{trials} parameter for the
 number of trials whose success the response
