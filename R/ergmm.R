@@ -99,7 +99,7 @@
 #'  will be repeated until the needed length is reached.
 #'
 #'  \code{\link{ergmm}} can use model terms implemented for the
-#'  \code{\link[=ergm-package]{ergm}} package and via the
+#'  \CRANpkg{ergm} package and via the
 #'  \href{https://github.com/statnet/ergm.userterms}{\code{ergm.userterms}
 #'  API (in GitHub repository \code{statnet/ergm.userterms})}. See
 #'  \code{\link[ergm]{ergmTerm}} for a list of available terms. If you
@@ -111,19 +111,19 @@
 #'
 #'  Some caveats:
 #'
-#'  * \code{\link[=ergm-package]{ergm}} has a binary and a valued
+#'  * \CRANpkg{ergm} has a binary and a valued
 #'    mode. Regardless of the \code{\link[=families.ergmm]{family}}
 #'    used, the \emph{binary} variant of the
-#'    \code{\link[=ergm-package]{ergm}} term will be used in the
+#'    \CRANpkg{ergm} term will be used in the
 #'    linear predictor of the model.
 #'
-#'  * \code{\link[=ergm-package]{ergm}} does not support modeling
+#'  * \CRANpkg{ergm} does not support modeling
 #'    self-loops, so terms imported in this way will always have
 #'    predictor \code{x[i,i]==0}. This should not affect most
 #'    situations, but if you absolutely must model self-loops and
 #'    non-self-edges in one term, use the deprecated terms below.
 #'
-#'  * \code{latentnet} only fits models with dyadic
+#'  * \pkg{latentnet} only fits models with dyadic
 #'    independence. Terms that induce dyadic dependence (e.g.,
 #'    \code{triangles}) can be used, but then the likelihood of the
 #'    model will, effectively, be replaced with
@@ -148,7 +148,7 @@
 #' Networks, 31(3), 204-213.
 #' 
 #' Pavel N. Krivitsky and Mark S. Handcock (2008).  \emph{Fitting Position
-#' Latent Cluster Models for Social Networks with \code{latentnet}}. Journal of
+#' Latent Cluster Models for Social Networks with \pkg{latentnet}}. Journal of
 #' Statistical Software, 24(5). \doi{10.18637/jss.v024.i05}
 #' @keywords graphs
 #' @examples
