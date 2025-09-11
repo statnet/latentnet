@@ -20,3 +20,7 @@ appveyor.yml
 ^vignettes/.*_files$
 ^README.md$
 ^NEWS.md$
+_snaps
+^src/.*\.s?o$
+^\.vscode/
+.*\.code-workspace
