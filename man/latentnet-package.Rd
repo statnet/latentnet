@@ -9,7 +9,7 @@
 Fit and simulate latent position and cluster models for statistical networks. See Krivitsky and Handcock (2008) \doi{10.18637/jss.v024.i05} and Krivitsky, Handcock, Raftery, and Hoff (2009) \doi{10.1016/j.socnet.2009.04.001}.
 }
 \details{
-The package \code{latentnet} is used to fit latent cluster random effect
+The package \pkg{latentnet} is used to fit latent cluster random effect
 models, where the probability of a network \eqn{g}, on a set of nodes is a
 product of dyad probabilities, each of which is a GLM with linear component
 \eqn{\eta_{i,j}=\sum_{k=1}^p \beta_k
@@ -55,7 +55,7 @@ in social networks with latent cluster random effects models}.  Social
 Networks, 31(3), 204-213.
 
 Pavel N. Krivitsky and Mark S. Handcock (2008).  \emph{Fitting Position
-Latent Cluster Models for Social Networks with \code{latentnet}}. Journal of
+Latent Cluster Models for Social Networks with \pkg{latentnet}}. Journal of
 Statistical Software, 24(5). \doi{10.18637/jss.v024.i05}
 
 Susan M. Shortreed, Mark S. Handcock, and Peter D. Hoff (2006).
