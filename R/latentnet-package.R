@@ -314,7 +314,7 @@ NULL
 #' University Press. (See p 56-60).  Read K. (1954). Cultures of the central
 #' highlands, New Guinea. Southwestern Journal of Anthropology, 10, 1-43.
 #' @source
-#' \url{http://vlado.fmf.uni-lj.si/pub/networks/data/UciNet/UciData.htm#gama},
+#' \url{https://github.com/bavla/Nets/blob/master/data/Pajek/ucinet/README.md},
 #' with corrections from Read (1954).
 #' @keywords multivariate cluster graphs
 #' @examples
