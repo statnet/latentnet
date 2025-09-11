@@ -1,11 +1,11 @@
-#  File R/ergmm.statseval.R in package latentnet, part of the
-#  Statnet suite of packages for network analysis, https://statnet.org .
+#  File R/ergmm.statseval.R in package latentnet, part of the Statnet suite of
+#  packages for network analysis, https://statnet.org .
 #
-#  This software is distributed under the GPL-3 license.  It is free,
-#  open source, and has the attribution requirements (GPL Section 7) at
+#  This software is distributed under the GPL-3 license.  It is free, open
+#  source, and has the attribution requirements (GPL Section 7) at
 #  https://statnet.org/attribution .
 #
-#  Copyright 2003-2024 Statnet Commons
+#  Copyright 2003-2025 Statnet Commons
 ################################################################################
 ergmm.statseval <- function (mcmc.out, model, start, prior, control,Z.ref=NULL,Z.K.ref=NULL){
   if(control[["verbose"]]) cat("Post-processing the MCMC output:\n")

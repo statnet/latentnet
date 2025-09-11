@@ -10,10 +10,22 @@
 # valued: latentcov(x, attrname=NULL, mean=0, var=9)
 }
 \arguments{
-\item{x}{either a matrix of covariates on each pair of vertices, a
-network, or an edge attribute.}
+\item{x, attrname}{a specification for the dyadic covariate: either
+one of the following, or the name of a network attribute
+containing one of the following: \describe{
 
-\item{attrname}{optional argument to provide the name of the edge attribute.}
+\item{a covariate matrix}{with dimensions \eqn{n \times n}{n*n}
+for unipartite networks and \eqn{b \times (n-b)}{b*(n-b)} for
+bipartite networks; \code{attrname}, if given, is used to construct
+the term name.}
+
+\item{a network object}{with the same size and bipartitedness as
+LHS; \code{attrname}, if given, provides the name of the
+quantitative edge attribute to use for covariate values (in
+this case, missing edges in \code{x} are assigned a covariate value
+of zero).}
+
+}}
 
 \item{mean, var}{prior mean and variance.}
 }

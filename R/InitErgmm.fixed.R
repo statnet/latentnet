@@ -1,11 +1,11 @@
-#  File R/InitErgmm.fixed.R in package latentnet, part of the
-#  Statnet suite of packages for network analysis, https://statnet.org .
+#  File R/InitErgmm.fixed.R in package latentnet, part of the Statnet suite of
+#  packages for network analysis, https://statnet.org .
 #
-#  This software is distributed under the GPL-3 license.  It is free,
-#  open source, and has the attribution requirements (GPL Section 7) at
+#  This software is distributed under the GPL-3 license.  It is free, open
+#  source, and has the attribution requirements (GPL Section 7) at
 #  https://statnet.org/attribution .
 #
-#  Copyright 2003-2024 Statnet Commons
+#  Copyright 2003-2025 Statnet Commons
 ################################################################################
 
 #' @importFrom statnet.common ult
@@ -300,9 +300,7 @@ InitErgmm.loopfactor <- function (model, attrname, base=1, mean=0, var=9){
 #'
 #' # valued: latentcov(x, attrname=NULL, mean=0, var=9)
 #'
-#' @param x either a matrix of covariates on each pair of vertices, a
-#'   network, or an edge attribute.
-#' @param attrname optional argument to provide the name of the edge attribute.
+#' @template ergmTerm-x-attrname
 #'
 #' @template ergmTerm-latentnet-prior
 #'
@@ -324,18 +322,13 @@ InitErgmm.latentcov<-function (model, x, attrname=NULL,
   if (!(nargs() %in% 2:5))
     stop(paste("latentcov() model term expected between 1 and 4 arguments, got ", 
                                    nargs() - 1, sep = ""), call. = FALSE)
-  #Coerce x to an adjacency matrix
-  if(is.network(x)){
-    xm<-as.matrix.network(x,matrix.type="adjacency",attrname)
-    cn<-if(!is.null(attrname)) attrname else paste("network",length(model[["X"]])+1)
-  }else if(is.character(x)){
-    xm<-as.matrix.network(model[["Yg"]],matrix.type="adjacency",x)
-    cn<-x
-  }else{
-    xm<-as.matrix(x)
-    cn<-if(!is.null(attrname)) attrname else 
-				paste("latentcov", as.character(sys.call(0)[[3]]),	sep = ".")
-  }
+
+  # Create a fake check.ErgmTerm() list
+  a <- structure(list(x = x, attrname = attrname),
+                 exprs = list(x = substitute(x),
+                              attrname = substitute(attrname)))
+
+  l <- ergm_edgecov_args("latentcov", model[["Yg"]], a); xm <- l$xm; cn <- l$cn
 
   .ergmm.add.fixed(model, xm, mean, var, cn)
 }
