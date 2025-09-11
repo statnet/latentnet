@@ -22,7 +22,7 @@ itself is a complete graph, and is thus meaningless if used directly
 or plotted.
 }
 \source{
-\url{http://vlado.fmf.uni-lj.si/pub/networks/data/UciNet/UciData.htm#gama},
+\url{https://github.com/bavla/Nets/blob/master/data/Pajek/ucinet/README.md},
 with corrections from Read (1954).
 }
 \description{
