@@ -109,7 +109,8 @@
 #' summary(fits[[bestG]])
 #' plot(fits[[bestG]])
 #' }
-#' 
+#'
+#' @importFrom statnet.common sginv
 #' @export
 summary.ergmm <- function (object, point.est=c(
                                      if(!is.null(object[["mle"]])) "mle",
@@ -150,7 +151,7 @@ summary.ergmm <- function (object, point.est=c(
         if(se){
           beta.hess<-mle[["hessian"]][seq_len(p),seq_len(p)]
           
-          beta.cov <- try(MASS::ginv(-beta.hess), silent=TRUE)
+          beta.cov <- try(sginv(-beta.hess), silent=TRUE)
           if(inherits(beta.cov,"try-error")){
             warning("Coefficient Hessian appears to be singular. Using a less accurate estimate.")
             beta.cov <- diag(1/diag(-beta.hess))
